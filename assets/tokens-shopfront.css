@@ -1,0 +1,58 @@
+/* ============================================================
+   Grow Local — Shopfront design tokens
+   Source: growlocal-design-direction.md
+   Flat fields only. No gradients. Gold Leaf used sparingly.
+   ============================================================ */
+
+:root {
+  /* Colour — Shopfront */
+  --gl-bottle:       #12291F;
+  --gl-bone:         #F2EFE6;
+  --gl-bone-warm:    #EBE6DA;
+  --gl-gold:         #C6A15B;
+  --gl-gold-40:      rgba(198, 161, 91, 0.4);
+  --gl-ink:          #0E1613;
+  --gl-slate:        #5C6B62;
+  --gl-brass:        #A8813C;
+  --gl-brass-hover:  #916F32;
+  --gl-oxblood:      #7A2E2E;
+  --gl-bone-on-bottle: #F2EFE6;
+  --gl-slate-on-bottle: rgba(242, 239, 230, 0.72);
+
+  /* Type families (Google Fonts free equivalents) */
+  --gl-font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --gl-font-body:    "Archivo", system-ui, sans-serif;
+  --gl-font-utility: "Archivo Narrow", "Archivo", system-ui, sans-serif;
+
+  /* Type scale — desktop */
+  --gl-fs-64: 4rem;
+  --gl-fs-40: 2.5rem;
+  --gl-fs-28: 1.75rem;
+  --gl-fs-20: 1.25rem;
+  --gl-fs-16: 1rem;
+  --gl-fs-13: 0.8125rem;
+  --gl-fs-11: 0.6875rem;
+
+  /* Tracking / leading */
+  --gl-track-display: -0.02em;
+  --gl-track-utility: 0.16em;
+  --gl-lead-display: 1.1;
+
+  /* Rules */
+  --gl-rule: 0.5px solid var(--gl-gold-40);
+  --gl-rule-solid: 1px solid var(--gl-gold);
+
+  /* Motion */
+  --gl-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --gl-dur-load: 600ms;
+  --gl-dur-hover: 150ms;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gl-fs-64: 2.5rem;   /* 40 */
+    --gl-fs-40: 1.875rem; /* 30 */
+    --gl-fs-28: 1.375rem; /* 22 */
+    --gl-fs-20: 1.125rem; /* 18 */
+  }
+}

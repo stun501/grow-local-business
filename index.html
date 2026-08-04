@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Grow Local · Free tools for local businesses</title>
+ <meta name="description" content="Six free tools for local business. Set one up on your phone in about a minute. No sign-up, no sales pitch." />
+
+ <link rel="icon" href="assets/monogram-gl.svg" type="image/svg+xml" />
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet" />
+ <link rel="stylesheet" href="assets/tokens-shopfront.css" />
+
+ <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+   font-size: 16px;
+   -webkit-text-size-adjust: 100%;
+   scroll-behavior: smooth;
+   overflow-x: hidden;
+  }
+
+  body {
+   font-family: var(--gl-font-body);
+   font-size: var(--gl-fs-16);
+   font-weight: 400;
+   line-height: 1.55;
+   color: var(--gl-ink);
+   background: var(--gl-bone);
+   min-height: 100dvh;
+   -webkit-font-smoothing: antialiased;
+   overflow-x: hidden;
+  }
+
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+   outline: 2px solid var(--gl-gold);
+   outline-offset: 2px;
+  }
+
+  .utility {
+   font-family: var(--gl-font-utility);
+   font-size: var(--gl-fs-11);
+   font-weight: 600;
+   letter-spacing: var(--gl-track-utility);
+   text-transform: uppercase;
+  }
+
+  .eyebrow {
+   color: var(--gl-gold);
+   display: block;
+   margin-bottom: 14px;
+  }
+
+  /* -- Sticky header -- */
+  .site-header {
+   position: sticky;
+   top: 0;
+   z-index: 50;
+   height: 56px;
+   background: var(--gl-bottle);
+   border-bottom: 1px solid var(--gl-gold);
+  }
+
+  .site-header__inner {
+   max-width: 1100px;
+   height: 100%;
+   margin: 0 auto;
+   padding: 0 20px;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+  }
+
+  @media (min-width: 860px) {
+   .site-header__inner { padding: 0 40px; }
+  }
+
+  .site-header__wordmark {
+   font-family: var(--gl-font-display);
+   font-size: 1.05rem;
+   font-weight: 500;
+   letter-spacing: var(--gl-track-display);
+   color: var(--gl-bone);
+  }
+
+  .site-header__link {
+   color: var(--gl-gold);
+   white-space: nowrap;
+  }
+
+  .site-header__link:hover { color: var(--gl-bone); }
+
+  /* -- Hero fascia -- */
+  .hero {
+   background: var(--gl-bottle);
+   color: var(--gl-bone);
+   position: relative;
+   border-bottom: 1px solid var(--gl-gold);
+   overflow-x: hidden;
+   overflow-y: visible;
+  }
+
+  .hero__inner {
+   width: 100%;
+   max-width: 1100px;
+   margin: 0 auto;
+   padding: 32px 20px 40px;
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+   align-items: stretch;
+  }
+
+  @media (min-width: 860px) {
+   .hero__inner {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 48px 40px 40px;
+    min-height: 0;
+   }
+  }
+
+  .hero__copy {
+   flex: 1 1 auto;
+   max-width: 40rem;
+   padding-bottom: 0;
+   min-width: 0;
+  }
+
+  @media (min-width: 860px) {
+   .hero__copy { padding-bottom: 24px; }
+  }
+
+  .wordmark {
+   display: inline-flex;
+   flex-direction: column;
+   align-items: flex-start;
+   gap: 6px;
+   margin-bottom: 20px;
+  }
+
+  .wordmark__text {
+   font-family: var(--gl-font-display);
+   font-size: clamp(1.5rem, 4vw, 1.875rem);
+   font-weight: 500;
+   letter-spacing: var(--gl-track-display);
+   line-height: 1;
+   color: var(--gl-bone);
+  }
+
+  .wordmark__rule {
+   display: block;
+   height: 1px;
+   width: 0;
+   background: var(--gl-gold);
+   transform-origin: left center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+   .wordmark__rule {
+    animation: ruleDraw var(--gl-dur-load) var(--gl-ease) forwards;
+   }
+   .hero__headline {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: fadeUp var(--gl-dur-load) var(--gl-ease) 0.35s forwards;
+   }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+   .wordmark__rule { width: 100%; }
+   .phone__stage.is-active { opacity: 1; }
+  }
+
+  @keyframes ruleDraw {
+   from { width: 0; }
+   to { width: 100%; }
+  }
+
+  @keyframes fadeUp {
+   to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero__eyebrow {
+   font-size: var(--gl-fs-11);
+  }
+
+  .hero__headline {
+   font-family: var(--gl-font-display);
+   font-size: clamp(2.6rem, 11vw, var(--gl-fs-64));
+   font-weight: 500;
+   letter-spacing: var(--gl-track-display);
+   line-height: 1.05;
+   color: var(--gl-bone);
+   max-width: none;
+   width: 100%;
+   margin-top: 0;
+   margin-bottom: 18px;
+  }
+
+  .hero__headline-gold { color: var(--gl-gold); }
+
+  .hero__unit {
+   font-family: var(--gl-font-body);
+   font-size: clamp(1.05rem, 1.5vw + 0.75rem, 1.2rem);
+   color: var(--gl-bone);
+   line-height: 1.45;
+   max-width: 34rem;
+   margin: 0 0 14px;
+  }
+
+  .hero__nocatch {
+   color: var(--gl-gold);
+   margin: 0 0 22px;
+  }
+
+  .hero__sub {
+   font-family: var(--gl-font-body);
+   font-size: clamp(1rem, 1.4vw + 0.7rem, 1.15rem);
+   font-weight: 400;
+   color: var(--gl-slate-on-bottle);
+   line-height: 1.5;
+   max-width: 34rem;
+   margin-bottom: 26px;
+  }
+
+  /* Four-point unit: 1 col mobile, 2×2 from 640px */
+  .hero__points {
+   list-style: none;
+   display: grid;
+   grid-template-columns: 1fr;
+   row-gap: 0.55rem;
+   column-gap: 2rem;
+   margin: 0 0 28px;
+   padding: 0;
+   width: 100%;
+   max-width: 100%;
+  }
+
+  @media (min-width: 640px) {
+   .hero__points {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+   }
+  }
+
+  .hero__points li {
+   position: relative;
+   padding-left: 0.95em;
+   font-family: var(--gl-font-body);
+   font-size: clamp(0.875rem, 2.2vw, 1rem);
+   font-weight: 400;
+   color: var(--gl-slate-on-bottle);
+   line-height: 1.4;
+   min-width: 0;
+  }
+
+  .hero__points li::before {
+   content: "·";
+   position: absolute;
+   left: 0;
+   top: -0.05em;
+   color: var(--gl-gold);
+   font-size: 1.25em;
+   font-weight: 700;
+   line-height: 1.3;
+  }
+
+  @media (max-width: 430px) {
+   .hero__inner {
+    padding-left: 14px;
+    padding-right: 14px;
+   }
+  }
+
+  .btn-brass {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   font-family: var(--gl-font-body);
+   font-size: var(--gl-fs-16);
+   font-weight: 600;
+   padding: 0.85em 1.4em;
+   background: var(--gl-brass);
+   color: var(--gl-bone);
+   border: none;
+   cursor: pointer;
+   transition: background var(--gl-dur-hover) ease;
+  }
+
+  .btn-brass:hover {
+   background: var(--gl-brass-hover);
+   color: var(--gl-bone);
+   text-decoration: none;
+  }
+
+  .btn-brass:focus-visible {
+   outline: 2px solid var(--gl-gold);
+   outline-offset: 3px;
+  }
+
+  .btn-brass:disabled {
+   opacity: 0.55;
+   cursor: not-allowed;
+  }
+
+  /* CTA: under copy on desktop; centred above phone on mobile only */
+  .hero__cta--desktop {
+   display: inline-flex;
+  }
+
+  .hero__cta--mobile {
+   display: none;
+  }
+
+  @media (max-width: 859px) {
+   .hero__cta--desktop {
+    display: none;
+   }
+   .hero__cta--mobile {
+    display: inline-flex;
+   }
+  }
+
+  /* Phone column - mobile stacks CTA above phone; desktop is phone only */
+  .hero__showcase {
+   flex: 0 0 auto;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 14px;
+   width: 100%;
+   max-width: 100%;
+   min-width: 0;
+   box-sizing: border-box;
+  }
+
+  @media (min-width: 860px) {
+   .hero__showcase {
+    /* Align phone top with the headline (skip wordmark + eyebrow above it) */
+    align-self: flex-start;
+    width: 280px;
+    margin: 0 12px 0 0;
+    padding-top: calc(1.875rem + 26px + 1.15em + 4px);
+    gap: 10px;
+   }
+  }
+
+  .hero__showcase .hero__cta--mobile {
+   width: auto;
+   min-width: 11.5rem;
+  }
+
+  .hero__phone-wrap {
+   flex: 0 0 auto;
+   width: min(248px, 74vw);
+   max-width: 100%;
+   margin: 0;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   min-width: 0;
+   box-sizing: border-box;
+  }
+
+  @media (min-width: 860px) {
+   .hero__phone-wrap {
+    width: 280px;
+   }
+  }
+
+  .phone {
+   width: 100%;
+   max-width: 100%;
+   background: #1a1f1c;
+   border: 1px solid var(--gl-gold-40);
+   border-radius: 28px;
+   padding: 10px;
+   box-sizing: border-box;
+  }
+
+  .phone__screen {
+   position: relative;
+   background: var(--gl-bone);
+   border-radius: 20px;
+   overflow: hidden;
+   color: var(--gl-ink);
+   padding: 12px 12px 14px;
+   min-height: 300px;
+   box-sizing: border-box;
+  }
+
+  @media (min-width: 860px) {
+   .phone__screen {
+    padding: 16px 14px 18px;
+    min-height: 380px;
+   }
+  }
+
+  .phone__notch {
+   width: 72px;
+   height: 6px;
+   background: #2a322e;
+   border-radius: 999px;
+   margin: 0 auto 14px;
+  }
+
+  .phone__label {
+   color: var(--gl-gold);
+   margin-bottom: 8px;
+   display: block;
+  }
+
+  .phone__stages {
+   position: relative;
+   min-height: 250px;
+  }
+
+  .phone__stage {
+   position: absolute;
+   inset: 0;
+   opacity: 0;
+   transition: opacity 0.7s var(--gl-ease);
+   pointer-events: none;
+  }
+
+  .phone__stage.is-active {
+   opacity: 1;
+   pointer-events: auto;
+   position: relative;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+   .phone__stage {
+    transition: none;
+   }
+  }
+
+  .phone__title {
+   font-family: var(--gl-font-display);
+   font-size: 1.25rem;
+   font-weight: 500;
+   letter-spacing: var(--gl-track-display);
+   line-height: 1.15;
+   margin-bottom: 4px;
+  }
+
+  .phone__meta {
+   font-size: 0.75rem;
+   color: var(--gl-slate);
+   margin-bottom: 14px;
+  }
+
+  .phone__jobs {
+   list-style: none;
+   border-top: var(--gl-rule);
+  }
+
+  .phone__jobs li {
+   display: flex;
+   justify-content: space-between;
+   gap: 8px;
+   padding: 9px 0;
+   border-bottom: var(--gl-rule);
+   font-size: 0.78rem;
+  }
+
+  .phone__jobs strong {
+   font-weight: 600;
+   color: var(--gl-ink);
+  }
+
+  .phone__jobs span {
+   color: var(--gl-slate);
+   white-space: nowrap;
+  }
+
+  .phone__cta {
+   margin-top: 14px;
+   width: 100%;
+   text-align: center;
+   font-size: 0.8rem;
+   font-weight: 600;
+   padding: 0.7em;
+   background: var(--gl-brass);
+   color: var(--gl-bone);
+  }
+
+  .phone__caption {
+   color: var(--gl-gold);
+   margin-top: 14px;
+   text-align: center;
+  }
+
+  /* -- Why free -- */
+  .why-free {
+   background: var(--gl-bone);
+   padding: 48px 20px;
+  }
+
+  @media (min-width: 860px) {
+   .why-free { padding: 64px 40px; }
+  }
+
+  .why-free__inner {
+   max-width: 1100px;
+   margin: 0 auto;
+  }
+
+  .why-free__body {
+   max-width: 42rem;
+   font-size: var(--gl-fs-16);
+   line-height: 1.65;
+   color: var(--gl-ink);
+   margin-bottom: 18px;
+  }
+
+  @media (min-width: 640px) {
+   .why-free__inner { padding-left: 8%; }
+   .why-free__body { font-size: 1.1875rem; }
+  }
+
+  @media (min-width: 1024px) {
+   .why-free__inner { padding-left: 14%; }
+  }
+
+  .why-free__signature {
+   color: var(--gl-slate);
+   margin-top: 8px;
+  }
+
+  /* -- Tools -- */
+  .tools {
+   width: 100%;
+   max-width: 1100px;
+   margin: 0 auto;
+   padding: 8px 20px 40px;
+   border-top: var(--gl-rule);
+  }
+
+  @media (min-width: 860px) {
+   .tools { padding: 16px 40px 48px; }
+  }
+
+  .tools__intro {
+   padding: 32px 0 18px;
+  }
+
+  .tools__lead {
+   font-size: var(--gl-fs-16);
+   color: var(--gl-slate);
+   max-width: 40ch;
+   line-height: 1.5;
+   margin-top: 6px;
+  }
+
+  .tool {
+   display: flex;
+   align-items: flex-start;
+   justify-content: space-between;
+   gap: 20px;
+   padding: 26px 8px;
+   border-bottom: var(--gl-rule);
+   background: transparent;
+   transition: background var(--gl-dur-hover) ease;
+  }
+
+  .tool:first-of-type {
+   border-top: var(--gl-rule);
+  }
+
+  .tool:hover {
+   background: var(--gl-bone-warm);
+   text-decoration: none;
+  }
+
+  .tool:focus-visible {
+   outline: 2px solid var(--gl-gold);
+   outline-offset: -2px;
+  }
+
+  .tool__copy {
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
+   min-width: 0;
+   text-align: left;
+  }
+
+  .tool__audience { color: var(--gl-gold); }
+
+  .tool__title {
+   font-family: var(--gl-font-display);
+   font-size: var(--gl-fs-40);
+   font-weight: 500;
+   letter-spacing: var(--gl-track-display);
+   line-height: 1.12;
+   color: var(--gl-ink);
+  }
+
+  .tool__benefit {
+   font-size: var(--gl-fs-16);
+   color: var(--gl-slate);
+   max-width: 40ch;
+   line-height: 1.45;
+  }
+
+  .tool__outcome {
+   color: var(--gl-gold);
+   margin-top: 2px;
+  }
+
+  .tool__go {
+   flex-shrink: 0;
+   align-self: center;
+   color: var(--gl-gold);
+   font-size: 1.25rem;
+   line-height: 1;
+   transition: transform var(--gl-dur-hover) ease;
+  }
+
+  .tool:hover .tool__go { transform: translateX(4px); }
+
+  /* -- How it works -- */
+  .how-it-works {
+   background: var(--gl-bottle);
+   color: var(--gl-bone);
+   border-top: 1px solid var(--gl-gold);
+   border-bottom: 1px solid var(--gl-gold);
+   padding: 48px 20px;
+  }
+
+  @media (min-width: 860px) {
+   .how-it-works { padding: 64px 40px; }
+  }
+
+  .how-it-works__inner {
+   max-width: 1100px;
+   margin: 0 auto;
+  }
+
+  .how-it-works__steps {
+   list-style: none;
+   display: flex;
+   flex-direction: column;
+   gap: 26px;
+   margin-top: 8px;
+  }
+
+  @media (min-width: 760px) {
+   .how-it-works__steps {
+    flex-direction: row;
+    gap: 40px;
+   }
+   .how-it-works__steps li { flex: 1 1 0; }
+  }
+
+  .how-it-works__steps li {
+   display: flex;
+   gap: 14px;
+   align-items: flex-start;
+  }
+
+  .how-it-works__num {
+   color: var(--gl-gold);
+   flex-shrink: 0;
+   padding-top: 0.2em;
+  }
+
+  .how-it-works__steps li > span:last-child {
+   display: block;
+   min-width: 0;
+  }
+
+  .how-it-works__title {
+   font-family: var(--gl-font-display);
+   font-size: var(--gl-fs-20);
+   font-weight: 500;
+   letter-spacing: var(--gl-track-display);
+   color: var(--gl-bone);
+   margin-bottom: 6px;
+  }
+
+  .how-it-works__desc {
+   font-size: var(--gl-fs-16);
+   color: var(--gl-slate-on-bottle);
+   line-height: 1.5;
+  }
+
+  /* -- Who's behind this -- */
+  .who-behind {
+   background: var(--gl-bone);
+   padding: 48px 20px;
+   border-bottom: var(--gl-rule);
+  }
+
+  @media (min-width: 860px) {
+   .who-behind { padding: 64px 40px; }
+  }
+
+  .who-behind__inner {
+   max-width: 1100px;
+   margin: 0 auto;
+  }
+
+  .who-behind__inner p {
+   max-width: 60ch;
+   font-size: var(--gl-fs-16);
+   color: var(--gl-ink);
+   line-height: 1.6;
+   margin-bottom: 16px;
+  }
+
+  .who-behind__link {
+   display: inline-flex;
+   align-items: center;
+   gap: 6px;
+   color: var(--gl-gold);
+   font-weight: 600;
+   transition: transform var(--gl-dur-hover) ease;
+  }
+
+  .who-behind__link:hover { color: var(--gl-brass); }
+
+  /* -- Enquiry / Ideas -- */
+  .enquiry {
+   width: 100%;
+   max-width: 1100px;
+   margin: 0 auto;
+   padding: 40px 20px 56px;
+  }
+
+  @media (min-width: 860px) {
+   .enquiry { padding: 56px 40px 72px; }
+  }
+
+  .enquiry__grid {
+   display: flex;
+   flex-direction: column;
+   gap: 32px;
+   align-items: stretch;
+  }
+
+  @media (min-width: 860px) {
+   .enquiry__grid {
+    flex-direction: row;
+    gap: 56px;
+    align-items: flex-start;
+   }
+   .enquiry__copy { flex: 0 0 38%; max-width: 22rem; }
+   .enquiry__form-wrap { flex: 1 1 auto; min-width: 0; }
+  }
+
+  .enquiry__heading {
+   font-family: var(--gl-font-display);
+   font-size: var(--gl-fs-28);
+   font-weight: 500;
+   letter-spacing: var(--gl-track-display);
+   line-height: 1.15;
+   color: var(--gl-ink);
+   margin-bottom: 14px;
+  }
+
+  .enquiry__lead {
+   font-size: var(--gl-fs-16);
+   color: var(--gl-slate);
+   line-height: 1.55;
+  }
+
+  .field {
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
+   margin-bottom: 18px;
+   text-align: left;
+  }
+
+  .field label {
+   font-family: var(--gl-font-body);
+   font-size: var(--gl-fs-13);
+   font-weight: 600;
+   color: var(--gl-ink);
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+   font-family: var(--gl-font-body);
+   font-size: var(--gl-fs-16);
+   padding: 0.7em 0.8em;
+   border: 1px solid var(--gl-gold-40);
+   border-radius: 0;
+   background: var(--gl-bone);
+   color: var(--gl-ink);
+   width: 100%;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+   outline: 2px solid var(--gl-gold);
+   outline-offset: 1px;
+  }
+
+  .field__hint {
+   font-size: var(--gl-fs-13);
+   color: var(--gl-slate);
+  }
+
+  .field--other { display: none; }
+  .field--other.is-visible { display: flex; }
+
+  .consent-row {
+   display: flex;
+   align-items: flex-start;
+   gap: 10px;
+   margin: 8px 0 20px;
+   font-size: var(--gl-fs-13);
+   color: var(--gl-ink);
+   line-height: 1.45;
+   text-align: left;
+  }
+
+  .consent-row input {
+   margin-top: 2px;
+   width: 18px;
+   height: 18px;
+   flex-shrink: 0;
+   accent-color: var(--gl-brass);
+  }
+
+  .enquiry__reassure {
+   display: block;
+   margin-top: 14px;
+   color: var(--gl-slate);
+  }
+
+  .enquiry__thanks {
+   display: none;
+   font-family: var(--gl-font-display);
+   font-size: var(--gl-fs-28);
+   font-weight: 500;
+   letter-spacing: var(--gl-track-display);
+   line-height: 1.35;
+   color: var(--gl-ink);
+   max-width: 28ch;
+  }
+
+  .enquiry__thanks.is-visible { display: block; }
+  .enquiry__form.is-hidden { display: none; }
+
+  .enquiry__error {
+   display: none;
+   margin-bottom: 12px;
+   font-size: var(--gl-fs-13);
+   color: #8b2e2e;
+  }
+
+  .enquiry__error.is-visible { display: block; }
+
+  /* -- Footer fascia -- */
+  .site-footer {
+   background: var(--gl-bottle);
+   color: var(--gl-bone);
+   border-top: 1px solid var(--gl-gold);
+   padding: 40px 20px;
+  }
+
+  @media (min-width: 860px) {
+   .site-footer { padding: 48px 40px; }
+  }
+
+  .site-footer__inner {
+   max-width: 1100px;
+   margin: 0 auto;
+   display: flex;
+   flex-direction: column;
+   gap: 14px;
+   align-items: flex-start;
+  }
+
+  .site-footer__inner .wordmark { margin-bottom: 0; }
+
+  .site-footer__lead {
+   font-size: var(--gl-fs-16);
+   color: var(--gl-bone);
+   line-height: 1.55;
+   max-width: 44ch;
+  }
+
+  .site-footer__contact {
+   font-size: var(--gl-fs-16);
+   color: var(--gl-slate-on-bottle);
+   line-height: 1.55;
+   max-width: 44ch;
+  }
+
+  .site-footer__contact a { color: var(--gl-bone); font-weight: 600; }
+  .site-footer__contact a:hover { color: var(--gl-gold); }
+
+  .site-footer__domain {
+   color: var(--gl-gold);
+   margin-top: 6px;
+  }
+
+  .site-footer__about {
+   color: var(--gl-gold);
+   font-size: var(--gl-fs-13);
+   font-weight: 600;
+  }
+
+  .site-footer__about:hover { color: var(--gl-bone); }
+ </style>
+</head>
+<body>
+ <header class="site-header">
+  <div class="site-header__inner">
+   <a class="site-header__wordmark" href="/" aria-label="Grow Local home">Grow Local</a>
+   <a class="utility site-header__link" href="#tools">See the tools</a>
+  </div>
+ </header>
+
+ <section class="hero" aria-label="Introduction">
+  <div class="hero__inner">
+   <div class="hero__copy">
+    <a class="wordmark" href="/" aria-label="Grow Local home">
+     <span class="wordmark__text">GROW LOCAL</span>
+     <span class="wordmark__rule" aria-hidden="true"></span>
+    </a>
+
+    <p class="utility eyebrow hero__eyebrow">A growth agency for local business</p>
+    <h1 class="hero__headline">More customers. Fewer headaches. <span class="hero__headline-gold">Nothing to pay.</span></h1>
+    <p class="hero__sub">Free tools that bring in more customers, win more reviews, and take the admin off your plate. Works in less than a minute.</p>
+    <ul class="hero__points">
+     <li>Pick a tool. It's yours.</li>
+     <li>Add your business name.</li>
+     <li>Start using it immediately.</li>
+     <li>No sign-up required.</li>
+    </ul>
+    <p class="hero__unit">If any of these bring in one extra job a month, they've more than paid for themselves. They're free anyway.</p>
+    <p class="utility hero__nocatch">No catch. We give these away because they work</p>
+    <a class="btn-brass hero__cta--desktop" href="#tools">See the free tools</a>
+   </div>
+
+   <div class="hero__showcase">
+    <a class="btn-brass hero__cta--mobile" href="#tools">See the free tools</a>
+    <div class="hero__phone-wrap">
+     <div class="phone" aria-live="polite">
+      <div class="phone__screen">
+       <div class="phone__notch" aria-hidden="true"></div>
+       <span class="utility phone__label">Instant Quote</span>
+       <div class="phone__stages" id="phone-stages">
+        <div class="phone__stage is-active" data-trade="dental">
+         <p class="phone__title">Northgate Dental</p>
+         <p class="phone__meta">Dental practice · Ballpark prices</p>
+         <ul class="phone__jobs">
+          <li><strong>Check-up</strong><span>£35–£60</span></li>
+          <li><strong>Hygienist</strong><span>£55–£90</span></li>
+          <li><strong>White filling</strong><span>£110–£180</span></li>
+         </ul>
+        </div>
+        <div class="phone__stage" data-trade="garage">
+         <p class="phone__title">Ashford Motors</p>
+         <p class="phone__meta">Garage · Ballpark prices</p>
+         <ul class="phone__jobs">
+          <li><strong>Full service</strong><span>£149–£219</span></li>
+          <li><strong>Brake pads (front)</strong><span>£89–£140</span></li>
+          <li><strong>Diagnostics</strong><span>£45–£80</span></li>
+         </ul>
+        </div>
+        <div class="phone__stage" data-trade="salon">
+         <p class="phone__title">The Rye Salon</p>
+         <p class="phone__meta">Salon · Ballpark prices</p>
+         <ul class="phone__jobs">
+          <li><strong>Cut &amp; finish</strong><span>£35–£55</span></li>
+          <li><strong>Colour (half head)</strong><span>£70–£110</span></li>
+          <li><strong>Blow dry</strong><span>£22–£30</span></li>
+         </ul>
+        </div>
+       </div>
+       <div class="phone__cta">Request a callback</div>
+      </div>
+     </div>
+     <p class="utility phone__caption">One tool · every trade</p>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <main>
+  <section class="why-free" aria-labelledby="why-free-heading">
+   <div class="why-free__inner">
+    <h2 class="utility eyebrow" id="why-free-heading">Why is all this free?</h2>
+    <p class="why-free__body">Fair question. We're a growth agency and we help local businesses bring in more customers and spend less of the week on the bits that eat it. Most of what we build for people starts with something small; a price on a website, a review that got asked for at the right moment, a booking that didn't need three phone calls.</p>
+    <p class="why-free__body">These are those small things. They cost us almost nothing to give away and they work whether or not we ever speak. If you want a hand with the bigger stuff later, you know where we are. If you don't, keep them anyway. They're yours.</p>
+    <p class="why-free__body">These took months to build. We give them away because they work, and because the people they help tend to come back when they need something bigger.</p>
+    <img class="why-free__signature-img" src="assets/signature-ink.png" alt="Craig's signature" width="200" height="48" style="width:200px;height:auto;display:block;margin:20px 0 10px" />
+    <p class="utility why-free__signature">Craig · Grow Local</p>
+   </div>
+  </section>
+
+  <section class="tools" id="tools" aria-labelledby="tools-heading">
+   <div class="tools__intro">
+    <h2 class="utility eyebrow" id="tools-heading">Choose a tool</h2>
+    <p class="tools__lead">Each tool is built around your business, not a template.</p>
+    <p class="tools__lead">Pick one, add your business name, and it's ready.</p>
+    <p class="tools__lead">These are the simple versions. The ones we build for clients do considerably more. We give the simple ones away because they still work.</p>
+   </div>
+
+   <a class="tool" href="scorecard/index.html">
+    <span class="tool__copy">
+     <span class="utility tool__audience">Any business on Google</span>
+     <h3 class="tool__title">Google Listing Scorecard</h3>
+     <p class="tool__benefit">Score the essentials on your Google listing out of 100 and see the three things quietly costing you customers.</p>
+     <span class="utility tool__outcome">Most local listings score under 50</span>
+    </span>
+    <span class="tool__go" aria-hidden="true">→</span>
+   </a>
+   <a class="tool" href="quote/index.html">
+    <span class="tool__copy">
+     <span class="utility tool__audience">Garages · Trades · Salons · Any business that quotes</span>
+     <h3 class="tool__title">Instant Quote Form</h3>
+     <p class="tool__benefit">Someone is looking at your business right now, wondering what you charge. Give them an answer before they ask someone else.</p>
+     <span class="utility tool__outcome">Turns after-hours browsers into named leads</span>
+    </span>
+    <span class="tool__go" aria-hidden="true">→</span>
+   </a>
+
+   <a class="tool" href="review/index.html">
+    <span class="tool__copy">
+     <span class="utility tool__audience">Any business with customers</span>
+     <h3 class="tool__title">Google Review QR</h3>
+     <p class="tool__benefit">You've earned far more five-star reviews than you've actually been given. This closes the gap.</p>
+     <span class="utility tool__outcome">More recent reviews means You're higher in local search</span>
+    </span>
+    <span class="tool__go" aria-hidden="true">→</span>
+   </a>
+
+   <a class="tool" href="reply/index.html">
+    <span class="tool__copy">
+     <span class="utility tool__audience">Any business with reviews</span>
+     <h3 class="tool__title">Review Reply Writer</h3>
+     <p class="tool__benefit">Every review deserves an answer. Write a good one in about a minute, in your own words.</p>
+     <span class="utility tool__outcome">Replied-to reviews build more trust than ratings alone</span>
+    </span>
+    <span class="tool__go" aria-hidden="true">→</span>
+   </a>
+
+   <a class="tool" href="booking/index.html">
+    <span class="tool__copy">
+     <span class="utility tool__audience">Salons · Clinics · Trades · Anyone with a diary</span>
+     <h3 class="tool__title">Booking Link</h3>
+     <p class="tool__benefit">One link that ends the back-and-forth. They pick a slot, you get on with your day.</p>
+     <span class="utility tool__outcome">Fewer calls · Fewer no-shows</span>
+    </span>
+    <span class="tool__go" aria-hidden="true">→</span>
+   </a>
+
+   <a class="tool" href="valuation/index.html">
+    <span class="tool__copy">
+     <span class="utility tool__audience">Estate agents · Lettings</span>
+     <h3 class="tool__title">Instant Valuation</h3>
+     <p class="tool__benefit">The people who'll instruct you in the spring are browsing tonight. Be the one who answers them.</p>
+     <span class="utility tool__outcome">Turns a curious browser into a named seller</span>
+    </span>
+    <span class="tool__go" aria-hidden="true">→</span>
+   </a>
+  </section>
+
+  <section class="how-it-works" aria-labelledby="how-heading">
+   <div class="how-it-works__inner">
+    <h2 class="utility eyebrow" id="how-heading">How it works</h2>
+    <ol class="how-it-works__steps">
+     <li>
+      <span class="utility how-it-works__num">01</span>
+      <span>
+       <p class="how-it-works__title">Pick your tool</p>
+       <p class="how-it-works__desc">Choose whichever fits how you get customers.</p>
+      </span>
+     </li>
+     <li>
+      <span class="utility how-it-works__num">02</span>
+      <span>
+       <p class="how-it-works__title">Add your business name</p>
+       <p class="how-it-works__desc">And your prices, if the tool uses them. Under a minute.</p>
+      </span>
+     </li>
+     <li>
+      <span class="utility how-it-works__num">03</span>
+      <span>
+       <p class="how-it-works__title">Put it to work</p>
+       <p class="how-it-works__desc">Print it, text it, or add it to your website. We'll show you exactly where it works hardest.</p>
+      </span>
+     </li>
+    </ol>
+   </div>
+  </section>
+
+  <section class="who-behind" aria-labelledby="who-behind-heading">
+   <div class="who-behind__inner">
+    <h2 class="utility eyebrow" id="who-behind-heading">Who's behind this</h2>
+    <p>Grow Local is run by Craig. I spend most of my week with people who run real businesses; the sort where you're quoting a job in the morning, sorting a supplier at lunch, and doing the invoicing at nine at night because that's when the day finally goes quiet.</p>
+    <p>What I've noticed is that these businesses rarely lose out because they're not good enough. They lose out because they're busy. The enquiry that came in on a Sunday and never got answered. The customer who'd have left a glowing review if anyone had asked. Small things, easy to miss, and they quietly add up over a year.</p>
+    <p>So that's what I do; help good local businesses get found more easily, lose fewer enquiries, and spend less of the week on jobs that shouldn't take one. The tools here are the simplest version of that, and they're free because they cost me very little and they genuinely help. If you ever want a hand with something bigger, I'm a text away. And if you don't, that's completely fine. Take the tools and put them to work.</p>
+    <a class="who-behind__link" href="about/index.html">More about how we work →</a>
+   </div>
+  </section>
+
+  <section class="enquiry" id="ideas" aria-labelledby="enquiry-heading">
+   <div class="enquiry__grid">
+    <div class="enquiry__copy">
+     <h2 class="enquiry__heading" id="enquiry-heading">What should we build next?</h2>
+     <p class="enquiry__lead">
+      Every tool here started with a local owner telling us what was eating their week.
+      If there's something you wish existed, or something here that could work harder, tell us.
+      We build the ones we hear most.
+     </p>
+    </div>
+
+    <div class="enquiry__form-wrap">
+     <p class="enquiry__thanks" id="enquiry-thanks" role="status">
+      <strong>Thanks. That's with us.</strong><br />
+      We read everything, usually the same day. If it's something we can help with, you'll hear from us within two working days. If it's a tool idea, we'll let you know if it makes the build list.
+     </p>
+
+     <form class="enquiry__form" id="enquiry-form" novalidate>
+      <p class="enquiry__error" id="enquiry-error" role="alert"></p>
+
+      <div class="field">
+       <label for="biz-type">What kind of business do you run?</label>
+       <select id="biz-type" name="businessType" required>
+        <option value="">Select one</option>
+       </select>
+      </div>
+
+      <div class="field field--other" id="biz-other-wrap">
+       <label for="biz-other">Tell us what kind</label>
+       <input id="biz-other" name="businessOther" type="text" autocomplete="organization" />
+      </div>
+
+      <div class="field">
+       <label for="challenge">What's the biggest hassle in your week?</label>
+       <textarea
+        id="challenge"
+        name="challenge"
+        rows="3"
+        required
+        placeholder="Chasing quotes, no-shows, getting reviews, paperwork…"
+       ></textarea>
+      </div>
+
+      <div class="field">
+       <label for="idea-name">Your name</label>
+       <input id="idea-name" name="name" type="text" required autocomplete="name" />
+      </div>
+
+      <div class="field">
+       <label for="idea-email">Email</label>
+       <input id="idea-email" name="email" type="email" required autocomplete="email" />
+      </div>
+
+      <div class="field">
+       <label for="idea-phone">Mobile (optional)</label>
+       <input id="idea-phone" name="phone" type="tel" autocomplete="tel" />
+       <span class="field__hint">If you'd rather we text you back.</span>
+      </div>
+
+      <label class="consent-row">
+       <input type="checkbox" id="idea-notify" name="notify" checked />
+       <span>Let me know when new free tools are ready.</span>
+      </label>
+
+      <button type="submit" class="btn-brass" id="enquiry-submit">Send my idea</button>
+      <span class="utility enquiry__reassure">We won't ring you.</span>
+     </form>
+    </div>
+   </div>
+  </section>
+ </main>
+
+ <footer class="site-footer">
+  <div class="site-footer__inner">
+   <a class="wordmark" href="/" aria-label="Grow Local home">
+    <span class="wordmark__text">GROW LOCAL</span>
+    <span class="wordmark__rule" aria-hidden="true"></span>
+   </a>
+
+   <p class="site-footer__lead">Grow Local · a growth agency for local business.</p>
+   <p class="site-footer__lead">We explain everything. Even the bits you could do yourself.</p>
+
+   <p class="site-footer__contact">
+    Text us on <a href="sms:07379028832">07379 028832</a>; quickest way to reach us. Tell us briefly what you need and we'll come back to you.
+   </p>
+   <p class="site-footer__contact">
+    Prefer email? <a href="mailto:hello@growlocalbusiness.co.uk">hello@growlocalbusiness.co.uk</a>
+   </p>
+   <p class="site-footer__contact">
+    If you'd rather call and we're with a client, leave a voicemail and we'll ring you back.
+   </p>
+
+   <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+   <a class="site-footer__about" href="about/index.html">About Grow Local</a>
+  </div>
+ </footer>
+
+ <script src="assets/shared.js"></script>
+ <script>
+  (function () {
+   "use strict";
+
+   /* TODO(analytics): privacy-friendly return-visit / repeat-tool tracking once the site has traffic. Out of scope for this build (Sutherland §9c). */
+   /* CONFIG - fill TOOL_IDEAS_TABLE_ID + token (see SETUP-GUIDE) */
+   var CONFIG = {
+    BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+    TOOL_IDEAS_TABLE_ID: "1092868",
+    BASEROW_URL: "https://api.baserow.io"
+   };
+
+   /* -- Business type options (single source of truth: shared.js) -- */
+   var bizTypeSelect = document.getElementById("biz-type");
+   if (window.TBA && window.TBA.businessTypeOptionsHtml) {
+    bizTypeSelect.innerHTML =
+     '<option value="">Select one</option>' + window.TBA.businessTypeOptionsHtml();
+   }
+
+   /* -- Phone trade cycle -- */
+   var stages = document.querySelectorAll(".phone__stage");
+   var stageIndex = 0;
+   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+   function showStage(i) {
+    for (var n = 0; n < stages.length; n++) {
+     stages[n].classList.toggle("is-active", n === i);
+    }
+   }
+
+   if (stages.length > 1 && !reduceMotion) {
+    window.setInterval(function () {
+     stageIndex = (stageIndex + 1) % stages.length;
+     showStage(stageIndex);
+    }, 4000);
+   }
+
+   /* -- Enquiry form -- */
+   var form = document.getElementById("enquiry-form");
+   var bizType = document.getElementById("biz-type");
+   var otherWrap = document.getElementById("biz-other-wrap");
+   var otherInput = document.getElementById("biz-other");
+   var thanks = document.getElementById("enquiry-thanks");
+   var errEl = document.getElementById("enquiry-error");
+   var submitBtn = document.getElementById("enquiry-submit");
+
+   function showError(msg) {
+    errEl.textContent = msg;
+    errEl.classList.add("is-visible");
+   }
+
+   function clearError() {
+    errEl.textContent = "";
+    errEl.classList.remove("is-visible");
+   }
+
+   bizType.addEventListener("change", function () {
+    var isOther = bizType.value === "Other";
+    otherWrap.classList.toggle("is-visible", isOther);
+    otherInput.required = isOther;
+    if (!isOther) otherInput.value = "";
+   });
+
+   form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    clearError();
+
+    var type = bizType.value;
+    if (!type) {
+     showError("Please choose a business type.");
+     return;
+    }
+    if (type === "Other") {
+     var otherVal = (otherInput.value || "").trim();
+     if (!otherVal) {
+      showError("Please tell us what kind of business you run.");
+      return;
+     }
+     type = otherVal;
+    }
+
+    var challenge = (document.getElementById("challenge").value || "").trim();
+    var name = (document.getElementById("idea-name").value || "").trim();
+    var email = (document.getElementById("idea-email").value || "").trim();
+    var phone = (document.getElementById("idea-phone").value || "").trim();
+    var notify = document.getElementById("idea-notify").checked ? "Yes" : "No";
+
+    if (!challenge || !name || !email) {
+     showError("Please fill in the required fields.");
+     return;
+    }
+
+    var row = {
+     "Business type": type,
+     Challenge: challenge,
+     Name: name,
+     Email: email,
+     Phone: phone,
+     Notify: notify,
+     Date: new Date().toISOString()
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending…";
+
+    function showThanks() {
+     form.classList.add("is-hidden");
+     thanks.classList.add("is-visible");
+    }
+
+    if (window.TBA && window.TBA.baserowReady(CONFIG, CONFIG.TOOL_IDEAS_TABLE_ID)) {
+     window.TBA.baserowAdd(CONFIG, CONFIG.TOOL_IDEAS_TABLE_ID, row)
+      .then(showThanks)
+      .catch(function () {
+       submitBtn.disabled = false;
+       submitBtn.textContent = "Send my idea";
+       showError("Couldn't send just now. Please email hello@growlocalbusiness.co.uk.");
+      });
+    } else {
+     console.warn("[Grow Local] Tool Ideas Baserow not configured: showing thanks anyway.");
+     showThanks();
+    }
+   });
+  })();
+ </script>
+</body>
+</html>

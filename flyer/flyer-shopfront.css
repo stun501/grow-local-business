@@ -1,0 +1,711 @@
+/* Shared Shopfront flyer styles — A4 4-up / A6 tiles */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+@page { size: A4; margin: 0; }
+
+html, body {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0;
+  padding: 0;
+  background: #d9d4c8;
+  font-family: var(--gl-font-body);
+  color: var(--gl-ink);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.sheet-wrap {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  margin: 0 auto 10mm;
+  background: var(--gl-bone);
+}
+
+.sheet-wrap:last-child { margin-bottom: 0; }
+
+.sheet-wrap__label {
+  position: absolute;
+  top: -6mm;
+  left: 0;
+  font-family: var(--gl-font-utility);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6b6558;
+}
+
+.crop {
+  position: absolute;
+  width: 6mm;
+  height: 6mm;
+  pointer-events: none;
+  z-index: 5;
+}
+.crop::before,
+.crop::after {
+  content: "";
+  position: absolute;
+  background: #1a1a1a;
+}
+.crop--tl { top: 0; left: 0; }
+.crop--tr { top: 0; right: 0; }
+.crop--bl { bottom: 0; left: 0; }
+.crop--br { bottom: 0; right: 0; }
+.crop--tm { top: 0; left: 50%; margin-left: -3mm; }
+.crop--bm { bottom: 0; left: 50%; margin-left: -3mm; }
+.crop--ml { top: 50%; left: 0; margin-top: -3mm; }
+.crop--mr { top: 50%; right: 0; margin-top: -3mm; }
+
+.crop--tl::before, .crop--tr::before, .crop--bl::before, .crop--br::before,
+.crop--tm::before, .crop--bm::before {
+  width: 6mm; height: 0.2mm; top: 0; left: 0;
+}
+.crop--tl::after, .crop--tr::after, .crop--bl::after, .crop--br::after,
+.crop--ml::after, .crop--mr::after {
+  width: 0.2mm; height: 6mm; top: 0; left: 0;
+}
+.crop--tr::before { left: auto; right: 0; }
+.crop--tr::after { left: auto; right: 0; }
+.crop--bl::before { top: auto; bottom: 0; }
+.crop--bl::after { top: auto; bottom: 0; }
+.crop--br::before { top: auto; bottom: 0; left: auto; right: 0; }
+.crop--br::after { top: auto; bottom: 0; left: auto; right: 0; }
+.crop--tm::before { left: 0; }
+.crop--bm::before { top: auto; bottom: 0; left: 0; }
+.crop--ml::after { left: 0; }
+.crop--mr::after { left: auto; right: 0; }
+
+.sheet {
+  width: 210mm;
+  height: 297mm;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  overflow: hidden;
+}
+
+.tile {
+  width: 105mm;
+  height: 148.5mm;
+  display: flex;
+  flex-direction: column;
+  background: var(--gl-bone);
+  overflow: hidden;
+  position: relative;
+}
+
+.fascia {
+  flex: 0 0 36mm;
+  background: var(--gl-bottle);
+  border-top: 0.5px solid var(--gl-gold);
+  border-bottom: 0.5px solid var(--gl-gold);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.8mm;
+  padding: 4mm 7mm;
+  text-align: center;
+}
+
+.fascia__wordmark {
+  font-family: var(--gl-font-display);
+  font-size: 15pt;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--gl-bone);
+}
+
+.fascia__rule {
+  width: 40mm;
+  height: 0.5px;
+  background: var(--gl-gold);
+}
+
+.fascia__strap {
+  font-family: var(--gl-font-body);
+  font-size: 7pt;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--gl-gold);
+  line-height: 1.3;
+  max-width: 92mm;
+  text-wrap: balance;
+}
+
+.body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 5.5mm 8mm 0;
+  min-height: 0;
+}
+
+.hook {
+  font-family: var(--gl-font-display);
+  font-size: 12.5pt;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--gl-ink);
+  text-align: left;
+  max-width: 86mm;
+  margin-bottom: 3.5mm;
+}
+
+.points {
+  list-style: none;
+  text-align: left;
+  margin: 0 0 4mm;
+  padding: 0;
+}
+
+.points li {
+  position: relative;
+  padding-left: 3.2mm;
+  margin-bottom: 1.6mm;
+  font-family: var(--gl-font-utility);
+  font-size: 6.8pt;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.35;
+  color: var(--gl-slate);
+}
+
+.points li::before {
+  content: "·";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--gl-gold);
+  font-size: 9pt;
+  line-height: 1;
+}
+
+.cta-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2.4mm;
+  margin-top: auto;
+  margin-bottom: 4mm;
+  width: 100%;
+}
+
+.action {
+  font-family: var(--gl-font-utility);
+  font-size: 6.6pt;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gl-ink);
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.action__lead {
+  color: var(--gl-gold);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-size: 7.4pt;
+}
+
+.qr-panel {
+  flex: 0 0 auto;
+  border: 0.5px solid var(--gl-gold);
+  background: var(--gl-bone);
+  padding: 2mm;
+  margin: 0 auto;
+}
+
+.qr-panel .qr-target,
+.qr-panel img,
+.qr-panel canvas,
+.qr-panel table {
+  display: block;
+  width: 30mm !important;
+  height: 30mm !important;
+}
+
+.foot {
+  flex: 0 0 auto;
+  background: var(--gl-bottle);
+  border-top: 0.5px solid var(--gl-gold);
+  border-bottom: 0.5px solid var(--gl-gold);
+  padding: 4mm 7mm 4.5mm;
+  text-align: left;
+}
+
+.foot__contact {
+  font-family: var(--gl-font-body);
+  font-size: 7.5pt;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--gl-bone);
+  margin-bottom: 1.2mm;
+}
+
+.foot__middot {
+  color: var(--gl-gold);
+  margin: 0 0.25em;
+}
+
+.foot__from {
+  font-family: var(--gl-font-utility);
+  font-size: 6pt;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gl-gold);
+}
+
+.screen-hint {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gl-bottle);
+  color: var(--gl-bone);
+  border: 0.5px solid var(--gl-gold);
+  font-family: var(--gl-font-body);
+  font-size: 13px;
+  padding: 8px 16px;
+  z-index: 999;
+}
+
+@media print {
+  html, body { background: none; }
+  .screen-hint { display: none !important; }
+  .sheet-wrap { margin: 0; page-break-after: always; }
+  .sheet-wrap:last-of-type { page-break-after: auto; }
+  .sheet-wrap__label { display: none !important; }
+}
+
+/* ============================================================
+   A6 card — front + back, 4-up on A4 (proofing)
+   Bands follow growlocal-flyer-spec.md §3–§4
+   ============================================================ */
+
+.card-tile {
+  width: 105mm;
+  height: 148.5mm;
+  display: flex;
+  flex-direction: column;
+  background: var(--gl-bone);
+  overflow: hidden;
+  position: relative;
+}
+
+.card-band { flex: 0 0 auto; }
+
+.card-eyebrow {
+  font-family: var(--gl-font-utility);
+  font-size: 6pt;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gl-gold);
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* ---- Front — Band 1: fascia ---- */
+
+.card-band--fascia {
+  flex: 0 0 20mm;
+  background: var(--gl-bottle);
+  border-top: 0.5px solid var(--gl-gold);
+  border-bottom: 0.5px solid var(--gl-gold);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4mm;
+  padding: 2.5mm 6mm;
+  text-align: center;
+}
+
+.card-band--fascia .fascia__wordmark { font-size: 12.5pt; }
+.card-band--fascia .fascia__rule { width: 30mm; }
+
+/* ---- Front — Band 2: the hook ---- */
+
+.card-band--hook {
+  flex: 0 0 auto;
+  background: var(--gl-bone);
+  padding: 3.5mm 6.5mm 2mm;
+}
+
+.card-h1 {
+  font-family: var(--gl-font-display);
+  font-weight: 600;
+  font-size: 12.2pt;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--gl-ink);
+  max-width: 92mm;
+  margin-bottom: 0;
+}
+
+.card-h1__line2 {
+  display: block;
+  font-size: 0.8em;
+  margin-top: 0.8mm;
+}
+
+.card-h1--arm-b {
+  font-size: 14pt;
+  line-height: 1.08;
+  margin-bottom: 2mm;
+}
+
+.card-sub {
+  font-family: var(--gl-font-body);
+  font-weight: 400;
+  font-size: 6.4pt;
+  line-height: 1.32;
+  color: var(--gl-slate);
+  max-width: 92mm;
+  margin-top: 2mm;
+}
+
+/* ---- Front — Band 3: certainty cluster ---- */
+
+.card-band--certainty {
+  flex: 0 0 auto;
+  background: var(--gl-bone);
+  padding: 1.5mm 6.5mm 2mm;
+}
+
+.card-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.card-points li {
+  position: relative;
+  padding-left: 3.2mm;
+  margin-bottom: 1mm;
+  font-family: var(--gl-font-body);
+  font-size: 6.3pt;
+  font-weight: 400;
+  line-height: 1.28;
+  color: var(--gl-ink);
+}
+
+.card-points li:last-child { margin-bottom: 0; }
+
+.card-points li::before {
+  content: "·";
+  position: absolute;
+  left: 0;
+  top: -0.4mm;
+  color: var(--gl-gold);
+  font-size: 9pt;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ---- Front — Band 4: cost signal ---- */
+
+.card-band--cost {
+  flex: 0 0 auto;
+  background: var(--gl-bone);
+  border-top: 0.5px solid var(--gl-gold);
+  padding: 2mm 6.5mm 2.2mm;
+}
+
+.card-cost {
+  font-family: var(--gl-font-body);
+  font-weight: 400;
+  font-size: 6.6pt;
+  line-height: 1.3;
+  color: var(--gl-ink);
+}
+
+/* ---- Front — Band 5: QR action ---- */
+
+.card-band--action {
+  flex: 1 1 auto;
+  background: var(--gl-bone);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3.5mm;
+  padding: 2.5mm 6.5mm 3mm;
+  min-height: 0;
+}
+
+.card-qr-panel {
+  flex: 0 0 auto;
+  border: 0.75px solid var(--gl-gold);
+  background: var(--gl-bone);
+  padding: 1.4mm;
+  border-radius: 0;
+}
+
+.card-qr-panel .qr-target,
+.card-qr-panel img,
+.card-qr-panel canvas,
+.card-qr-panel table {
+  display: block;
+  width: 32mm !important;
+  height: 32mm !important;
+}
+
+.card-action {
+  flex: 1 1 auto;
+  font-family: var(--gl-font-body);
+  font-size: 7.6pt;
+  line-height: 1.28;
+  color: var(--gl-ink);
+}
+
+.card-action__lead {
+  display: block;
+  font-family: var(--gl-font-utility);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gl-gold);
+  font-size: 9pt;
+  margin-bottom: 0.8mm;
+}
+
+/* ---- Front — Band 6: contact ---- */
+
+.card-band--contact {
+  flex: 0 0 auto;
+  background: var(--gl-bottle);
+  border-top: 0.5px solid var(--gl-gold);
+  border-bottom: 0.5px solid var(--gl-gold);
+  padding: 2.8mm 6.5mm 3.2mm;
+}
+
+.card-signature {
+  display: block;
+  width: 30mm;
+  height: 10mm;
+  margin-bottom: 1.6mm;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.card-signature-slot {
+  width: 30mm;
+  height: 10mm;
+  margin-bottom: 1.6mm;
+}
+
+.card-contact-line {
+  font-family: var(--gl-font-body);
+  font-weight: 400;
+  font-size: 7.5pt;
+  line-height: 1.3;
+  color: var(--gl-bone);
+  margin-bottom: 0.8mm;
+}
+
+.card-contact-line strong { font-weight: 600; }
+
+.card-contact-line .foot__middot { color: var(--gl-gold); margin: 0 0.28em; }
+
+.card-contact-from {
+  font-family: var(--gl-font-utility);
+  font-weight: 600;
+  font-size: 6.2pt;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gl-gold);
+  margin-top: 1.4mm;
+}
+
+/* ---- Back — head band ---- */
+
+.card-band--headband {
+  flex: 0 0 8mm;
+  background: var(--gl-bottle);
+  border-top: 0.5px solid var(--gl-gold);
+  border-bottom: 0.5px solid var(--gl-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-band--headband .card-eyebrow { font-size: 7pt; }
+
+/* ---- Back — tool list ---- */
+
+.card-tool-list {
+  flex: 0 0 auto;
+  background: var(--gl-bone);
+  list-style: none;
+  margin: 0;
+  padding: 0 6mm;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-tool {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2.2mm;
+  padding: 1.7mm 0;
+  border-bottom: 0.5px solid var(--gl-gold);
+}
+
+.card-tool:last-child { border-bottom: 0.5px solid var(--gl-gold); }
+
+.card-tool__num {
+  flex: 0 0 5.5mm;
+  font-family: var(--gl-font-utility);
+  font-weight: 700;
+  font-size: 8pt;
+  line-height: 1.15;
+  color: var(--gl-gold);
+}
+
+.card-tool__body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3mm;
+  min-width: 0;
+}
+
+.card-tool__name {
+  font-family: var(--gl-font-display);
+  font-weight: 600;
+  font-size: 7.4pt;
+  line-height: 1.15;
+  color: var(--gl-ink);
+}
+
+.card-tool__name em {
+  font-style: italic;
+  font-weight: 400;
+  font-size: 6.2pt;
+  color: var(--gl-slate);
+}
+
+.card-tool__benefit {
+  font-family: var(--gl-font-body);
+  font-weight: 400;
+  font-size: 5.5pt;
+  line-height: 1.2;
+  color: var(--gl-slate);
+}
+
+/* ---- Back — downsell ---- */
+
+.card-downsell {
+  flex: 0 0 auto;
+  padding: 1.8mm 6mm 1.6mm;
+  font-family: var(--gl-font-body);
+  font-style: italic;
+  font-size: 6pt;
+  line-height: 1.25;
+  color: var(--gl-slate);
+}
+
+/* ---- Back — useful box ---- */
+
+.card-useful {
+  flex: 1 1 auto;
+  margin: 0 6mm;
+  padding: 2mm 2.4mm 1.8mm;
+  border: 0.75px solid var(--gl-gold);
+  background: var(--gl-bone);
+  min-height: 0;
+}
+
+.card-useful__head {
+  font-family: var(--gl-font-utility);
+  font-weight: 600;
+  font-size: 5.4pt;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gl-gold);
+  line-height: 1.25;
+  margin-bottom: 1.4mm;
+}
+
+.card-useful__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.card-useful__list li {
+  font-family: var(--gl-font-body);
+  font-size: 5.8pt;
+  line-height: 1.28;
+  color: var(--gl-ink);
+  margin-bottom: 0.55mm;
+}
+
+.card-useful__note {
+  font-family: var(--gl-font-body);
+  font-size: 5.4pt;
+  line-height: 1.25;
+  color: var(--gl-slate);
+  margin-top: 1.2mm;
+}
+
+/* ---- Back — value line ---- */
+
+.card-value {
+  flex: 0 0 auto;
+  padding: 1.6mm 6mm 1.4mm;
+  font-family: var(--gl-font-body);
+  font-size: 6.2pt;
+  line-height: 1.25;
+  color: var(--gl-ink);
+}
+
+/* ---- Back — closing / pass-it-on ---- */
+
+.card-closing {
+  flex: 0 0 auto;
+  background: var(--gl-bone);
+  border-top: 1px solid var(--gl-gold);
+  padding: 2.2mm 6mm 2.8mm;
+}
+
+.card-closing__q {
+  font-family: var(--gl-font-display);
+  font-weight: 600;
+  font-size: 8pt;
+  line-height: 1.15;
+  color: var(--gl-ink);
+  margin-bottom: 0.8mm;
+}
+
+.card-closing__a {
+  font-family: var(--gl-font-body);
+  font-weight: 400;
+  font-size: 6pt;
+  line-height: 1.3;
+  color: var(--gl-ink);
+  margin-bottom: 1.6mm;
+}
+
+.card-closing__url {
+  font-family: var(--gl-font-utility);
+  font-weight: 600;
+  font-size: 6.2pt;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gl-gold);
+}

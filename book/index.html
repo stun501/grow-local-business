@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Book a free 30-minute chat · Grow Local</title>
+ <meta name="description" content="Book a free, no-pressure 30-minute chat with Grow Local about your local business." />
+ <link rel="icon" href="../assets/monogram-gl.svg" type="image/svg+xml" />
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet" />
+ <link rel="stylesheet" href="../assets/tokens-shopfront.css" />
+ <link rel="stylesheet" href="../assets/product-shell.css" />
+ <style>
+  body { background: var(--gl-bottle); color: var(--gl-bone); }
+  .book-wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 56px; }
+  .book-brand {
+   display: inline-block; font-size: 0.8125rem; color: var(--gl-slate-on-bottle);
+   margin-bottom: 14px; text-decoration: none;
+  }
+  .book-brand:hover { color: var(--gl-gold); }
+  .book-title {
+   font-family: var(--gl-font-display); font-weight: 500;
+   font-size: clamp(1.75rem, 6vw, 2.25rem); letter-spacing: var(--gl-track-display);
+   margin-bottom: 10px;
+  }
+  .book-sub { color: var(--gl-slate-on-bottle); max-width: 38rem; margin-bottom: 22px; }
+  .book-panel {
+   background: var(--gl-bone); color: var(--gl-ink);
+   border: 1px solid var(--gl-gold-40); padding: 8px;
+   min-height: 700px;
+  }
+  .calendly-inline-widget { min-width: 320px; height: 700px; }
+  .book-fallback {
+   background: var(--gl-bone); color: var(--gl-ink);
+   border: 1px solid var(--gl-gold-40); padding: 22px;
+  }
+  .book-fallback h2 {
+   font-family: var(--gl-font-display); font-weight: 500; font-size: 1.25rem; margin-bottom: 8px;
+  }
+  .book-fallback p { color: var(--gl-slate); margin-bottom: 14px; }
+  .book-reassure {
+   display: block; margin-top: 18px; color: var(--gl-gold); text-align: center;
+  }
+  .book-footer { text-align: center; margin-top: 26px; font-size: 0.8125rem; color: var(--gl-slate-on-bottle); }
+  .book-footer a { color: var(--gl-gold); }
+ </style>
+</head>
+<body>
+ <div class="book-wrap">
+  <a class="book-brand" href="../index.html">← Grow Local</a>
+  <h1 class="book-title">Book a free 30-minute chat.</h1>
+  <p class="book-sub">No charge, no pressure, and no obligation afterwards. Half an hour to look at where you're losing time or customers, and whether there's a simple way to fix it.</p>
+
+  <!-- Calendly embed (shown when CALENDLY_URL is set below) -->
+  <div id="calendlyPanel" class="book-panel" hidden>
+   <div
+    class="calendly-inline-widget"
+    id="calendlyWidget"
+    data-url=""
+    style="min-width:320px;height:700px;"
+    role="region"
+    aria-label="Book a free 30-minute chat"
+   ></div>
+  </div>
+
+  <!-- Existing Grow Local booking system (used until a Calendly event exists for hello@) -->
+  <div id="fallbackPanel" class="book-fallback" hidden>
+   <h2>Pick a time that works</h2>
+   <p>Choose a slot and request it. We'll confirm with you by text or email shortly. Requests are sent to <strong>hello@growlocalbusiness.co.uk</strong>.</p>
+   <a class="btn-brass" id="fallbackCta" href="#">See available times</a>
+  </div>
+
+  <span class="utility book-reassure">No charge · No pressure · No obligation</span>
+  <p class="book-footer">
+   Prefer to message first?
+   <a href="sms:07379028832">Text 07379 028832</a>
+   ·
+   <a href="mailto:hello@growlocalbusiness.co.uk">hello@growlocalbusiness.co.uk</a>
+  </p>
+ </div>
+
+ <script>
+  (function () {
+   /**
+    * Prefer a Grow Local Calendly event when available.
+    * Existing TBA pattern (same stack as Think Beyond Automation site):
+    *  https://calendly.com/thinkbeyondautomation-info/30min
+    * Leave empty until a Grow Local–branded event URL exists for hello@growlocalbusiness.co.uk.
+    */
+   var CALENDLY_URL = "https://calendly.com/hello-growlocalbusiness/30min";
+
+   // Pre-built Grow Local consult config for our Booking Link system
+   // (Mon–Fri 9–5 London, 30-min slots, notify hello@growlocalbusiness.co.uk)
+   var BOOKING_HASH =
+    "eyJuIjoiR3JvdyBMb2NhbCIsImVtIjoiaGVsbG9AZ3Jvd2xvY2FsYnVzaW5lc3MuY28udWsiLCJkIjpbeyJvIjp0cnVlLCJzIjoiMDk6MDAiLCJlIjoiMTc6MDAifSx7Im8iOnRydWUsInMiOiIwOTowMCIsImUiOiIxNzowMCJ9LHsibyI6dHJ1ZSwicyI6IjA5OjAwIiwiZSI6IjE3OjAwIn0seyJvIjp0cnVlLCJzIjoiMDk6MDAiLCJlIjoiMTc6MDAifSx7Im8iOnRydWUsInMiOiIwOTowMCIsImUiOiIxNzowMCJ9LHsibyI6ZmFsc2UsInMiOiIwOTowMCIsImUiOiIxNzowMCJ9LHsibyI6ZmFsc2UsInMiOiIwOTowMCIsImUiOiIxNzowMCJ9XSwibGVuIjozMCwiYnVmIjoxNSwic3YiOlt7Im4iOiJGcmVlIDMwLW1pbnV0ZSBjaGF0IiwibGVuIjozMH1dfQ";
+   var FALLBACK_HREF = "../booking/request.html#bk=" + BOOKING_HASH;
+
+   var calendlyPanel = document.getElementById("calendlyPanel");
+   var fallbackPanel = document.getElementById("fallbackPanel");
+   var fallbackCta = document.getElementById("fallbackCta");
+   fallbackCta.href = FALLBACK_HREF;
+
+   if (CALENDLY_URL) {
+    var embedUrl = new URL(CALENDLY_URL);
+    embedUrl.searchParams.set("hide_event_type_details", "1");
+    embedUrl.searchParams.set("hide_gdpr_banner", "1");
+    document.getElementById("calendlyWidget").setAttribute("data-url", embedUrl.toString());
+    calendlyPanel.hidden = false;
+
+    var existing = document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]');
+    if (!existing) {
+     var script = document.createElement("script");
+     script.src = "https://assets.calendly.com/assets/external/widget.js";
+     script.async = true;
+     document.body.appendChild(script);
+    } else if (window.Calendly && window.Calendly.initInlineWidgets) {
+     window.Calendly.initInlineWidgets();
+    }
+   } else {
+    // Live now via our existing booking system, no Calendly login required.
+    window.location.replace(FALLBACK_HREF);
+    fallbackPanel.hidden = false;
+   }
+  })();
+ </script>
+</body>
+</html>

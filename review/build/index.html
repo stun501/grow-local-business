@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build your review QR · Grow Local</title>
+<meta name="description" content="Create a QR code that sends happy customers straight to your Google review box. Free, ready in about a minute.">
+<link rel="icon" href="../../assets/monogram-gl.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="../../assets/tokens-shopfront.css">
+<link rel="stylesheet" href="../../assets/product-shell.css">
+
+<style>
+ .step { display: none; }
+ .step.active { display: block; }
+ @media (prefers-reduced-motion: no-preference) {
+  .step.active { animation: revStepIn .25s ease; }
+  @keyframes revStepIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+ }
+
+ .field-grid { display: grid; gap: 14px; }
+ @media (min-width: 560px) { .field-grid { grid-template-columns: 1.4fr 1fr; } }
+
+ .msg { padding: 10px 14px; font-size: 0.875rem; margin-top: 10px; display: none; border: 1px solid var(--gl-gold-40); }
+ .msg.show { display: block; }
+ .msg--err { background: rgba(122, 46, 46, 0.08); color: var(--gl-oxblood); border-color: var(--gl-oxblood); }
+ .msg--ok { background: rgba(198, 161, 91, 0.16); color: var(--gl-ink); }
+
+ .candidates { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+ .candidate-btn {
+  width: 100%; text-align: left; font: inherit; background: var(--gl-bone);
+  border: 1.5px solid var(--gl-gold-40); padding: 14px; cursor: pointer;
+  transition: border-color .15s; color: var(--gl-ink);
+ }
+ .candidate-btn:hover { border-color: var(--gl-gold); }
+ .candidate-btn.selected { border-color: var(--gl-brass); box-shadow: inset 3px 0 0 var(--gl-gold); }
+ .candidate-btn__name { font-family: var(--gl-font-display); font-weight: 500; font-size: 1.0625rem; }
+ .candidate-btn__addr { font-size: 0.875rem; color: var(--gl-slate); margin-top: 2px; }
+
+ .consent { display: flex; gap: 9px; align-items: flex-start; margin: 4px 0 14px; }
+ .consent input { margin-top: 3px; accent-color: var(--gl-brass); }
+ .consent span { font-size: 0.8125rem; color: var(--gl-slate); }
+
+ .qr-panel {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  background: var(--gl-bone); border: 1px solid var(--gl-gold);
+  padding: 24px; margin: 18px 0;
+ }
+ .qr-panel__biz { font-family: var(--gl-font-display); font-weight: 500; font-size: 1.125rem; margin-bottom: 10px; }
+ .qr-panel__cta { font-size: 0.875rem; color: var(--gl-slate); margin-top: 12px; }
+
+ .build-head { max-width: 640px; padding-top: 20px; }
+ .build-head h1 {
+  font-family: var(--gl-font-display);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 500;
+  margin: 8px 0 16px;
+ }
+</style>
+</head>
+<body>
+
+<header class="sticky-bar">
+  <a class="sticky-bar__mark" href="../../index.html">Grow Local</a>
+  <a class="sticky-bar__link" href="../">Back to overview</a>
+</header>
+
+<main>
+<section class="generator" id="generator">
+  <div class="wrap build-head">
+   <p class="utility" style="color:var(--gl-gold)">Google Review QR</p>
+   <h1>Build your review QR in just one step</h1>
+
+   <!-- Search -->
+   <section class="step active" id="step-search">
+    <div class="field-grid">
+     <div class="field">
+      <label for="bizName">Business name</label>
+      <input type="text" id="bizName" placeholder="e.g. Craig's Coffee House" autocomplete="organization">
+     </div>
+     <div class="field">
+      <label for="bizLocation">Postcode <span class="hint">(or town)</span></label>
+      <input type="text" id="bizLocation" placeholder="e.g. M1 2AB" autocomplete="postal-code">
+     </div>
+    </div>
+    <button class="btn-brass" id="btnSearch" style="width:100%">Generate the QR code</button>
+    <p class="msg msg--err" id="searchErr"></p>
+   </section>
+
+   <!-- Candidate picker -->
+   <section class="step" id="step-pick">
+    <h3 style="font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:4px">Is this your business?</h3>
+    <p style="color:var(--gl-slate);font-size:0.9375rem">Tap the correct one below.</p>
+    <div class="candidates" id="candidateList"></div>
+    <button class="btn-brass" id="btnConfirm" style="width:100%" disabled>Confirm &amp; generate QR</button>
+    <button class="btn-outline" id="btnNotListed" style="width:100%;margin-top:10px">My business isn't listed</button>
+   </section>
+
+   <!-- Manual fallback: only after zero results or API error -->
+   <section class="step" id="step-fallback">
+    <h3 style="font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:4px">We couldn't find that listing</h3>
+    <p style="color:var(--gl-slate);font-size:0.9375rem;margin-bottom:16px">Paste your Google review URL or Google Maps link below. You can find it on your Google Business Profile.</p>
+    <div class="field">
+     <label for="manualUrl">Google review or Maps URL</label>
+     <input type="text" id="manualUrl" placeholder="https://search.google.com/local/writereview?placeid=...">
+    </div>
+    <div class="field">
+     <label for="manualBiz">Business name (for the QR label)</label>
+     <input type="text" id="manualBiz" placeholder="e.g. Craig's Coffee House">
+    </div>
+    <button class="btn-brass" id="btnManualGo" style="width:100%">Generate my QR code</button>
+    <button class="btn-outline" id="btnBackSearch" style="width:100%;margin-top:10px">Try another search</button>
+    <p class="msg msg--err" id="manualErr"></p>
+   </section>
+
+   <!-- QR preview + unlock explanation -->
+   <section class="step" id="step-preview">
+    <h3 style="font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:4px">Your review QR is ready</h3>
+    <p style="color:var(--gl-slate);font-size:0.9375rem">Customers scan this and go straight to your Google review page.</p>
+    <div class="qr-panel">
+     <p class="qr-panel__biz" id="previewBizName"></p>
+     <div id="previewQR"></div>
+     <p class="qr-panel__cta">Scan to leave a Google review</p>
+    </div>
+    <p style="color:var(--gl-slate);font-size:0.9375rem;margin:4px 0 18px">Next you can unlock a <strong>downloadable QR</strong> and a <strong>shareable review link</strong> to save for later.</p>
+    <button class="btn-brass" id="btnToCapture" style="width:100%">Unlock download &amp; link</button>
+   </section>
+
+   <!-- Email gate (no phone) -->
+   <section class="step" id="step-capture">
+    <h3 style="font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:4px">Unlock your download</h3>
+    <p style="color:var(--gl-slate);font-size:0.9375rem;margin-bottom:16px">Enter your name and email to unlock the QR download and shareable link.</p>
+    <div class="field">
+     <label for="leadName">Your name</label>
+     <input type="text" id="leadName" autocomplete="name">
+    </div>
+    <div class="field">
+     <label for="leadEmail">Email address</label>
+     <input type="email" id="leadEmail" autocomplete="email" placeholder="you@business.co.uk">
+    </div>
+    <p class="utility" style="color:var(--gl-gold);margin-bottom:10px">Your details unlock the download. We won't ring you.</p>
+    <div class="consent">
+     <input type="checkbox" id="consent" checked>
+     <span id="consentText"></span>
+    </div>
+    <button class="btn-brass" id="btnUnlock" style="width:100%">Unlock my QR code</button>
+    <p class="msg msg--err" id="captureErr"></p>
+   </section>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer"><div class="wrap">
+  <p style="font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:8px">Grow Local</p>
+  <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+</div></footer>
+
+<script src="../../assets/shared.js"></script>
+<script src="../../assets/tool-flow.js"></script>
+<script>
+const CONFIG = {
+ BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ OWNER_LEADS_TABLE_ID: "1092861",
+ BASEROW_URL: "https://api.baserow.io"
+};
+
+const GENERATOR_STEPS = ["step-search","step-pick","step-fallback","step-preview","step-capture"];
+let selectedPlace = null;
+let reviewUrl = "";
+let bizName = "";
+
+const $ = (id) => document.getElementById(id);
+
+function applyStep(step) {
+ if (window.GLFlow && typeof window.GLFlow.showStep === "function") {
+  window.GLFlow.showStep(GENERATOR_STEPS, step);
+ } else {
+  GENERATOR_STEPS.forEach(function (s) {
+   var el = $(s);
+   if (el) el.classList.toggle("active", s === step);
+  });
+ }
+}
+function show(step) {
+ applyStep(step);
+ if (window.GLFlow && typeof window.GLFlow.pushStep === "function") {
+  window.GLFlow.pushStep("review", step);
+ }
+}
+if (window.GLFlow && typeof window.GLFlow.bindStepHistory === "function") {
+ window.GLFlow.bindStepHistory("review", function (stepId) {
+  if (GENERATOR_STEPS.indexOf(stepId) !== -1) applyStep(stepId);
+ }, "step-search");
+}
+
+async function searchPlaces(query, location) {
+ const body = { query };
+ if (location) body.location = location;
+
+ try {
+  const res = await fetch("/.netlify/functions/places-search", {
+   method: "POST",
+   headers: { "Content-Type": "application/json" },
+   body: JSON.stringify(body)
+  });
+
+  let data = null;
+  try { data = await res.json(); } catch (e) { data = null; }
+
+  if (res.status === 503) {
+   return { ok: false, configured: false, candidates: [], message: "Business lookup is not configured on this site yet." };
+  }
+
+  if (!res.ok) {
+   var detail = data && (data.detail || data.error);
+   var message = (data && data.message) || (
+    detail === "REQUEST_DENIED"
+     ? "Google could not authorise the search. Please try pasting your review link instead."
+     : detail === "OVER_QUERY_LIMIT"
+      ? "Lookup is temporarily busy. Please try again shortly, or paste your review link."
+      : "We couldn't search Google just now. You can paste your review link instead."
+   );
+   return { ok: false, configured: true, candidates: [], detail: detail, message: message };
+  }
+
+  return { ok: true, configured: true, candidates: Array.isArray(data) ? data : [] };
+ } catch {
+  return { ok: false, configured: true, candidates: [], message: "We couldn't reach the lookup service. You can paste your review link instead." };
+ }
+}
+
+$("btnSearch").addEventListener("click", async () => {
+ const name = $("bizName").value.trim();
+ const loc = $("bizLocation").value.trim();
+ const err = $("searchErr");
+ err.classList.remove("show");
+
+ if (!name) {
+  err.textContent = "Please enter your business name.";
+  err.classList.add("show");
+  return;
+ }
+
+ $("btnSearch").disabled = true;
+ $("btnSearch").textContent = "Searching\u2026";
+
+ const result = await searchPlaces(name, loc);
+
+ $("btnSearch").disabled = false;
+ $("btnSearch").textContent = "Generate the QR code";
+
+ if (result.ok && result.candidates.length > 0) {
+  renderCandidates(result.candidates);
+  show("step-pick");
+  return;
+ }
+
+ // Manual URL fallback ONLY when zero results or API error
+ $("manualBiz").value = name;
+ if (result.message) {
+  $("manualErr").textContent = result.message;
+  $("manualErr").classList.add("show");
+ } else {
+  $("manualErr").classList.remove("show");
+ }
+ show("step-fallback");
+});
+
+function renderCandidates(candidates) {
+ const list = $("candidateList");
+ list.innerHTML = "";
+ selectedPlace = null;
+ $("btnConfirm").disabled = true;
+
+ candidates.forEach((c) => {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "candidate-btn";
+  btn.innerHTML = `<div class="candidate-btn__name">${esc(c.name)}</div><div class="candidate-btn__addr">${esc(c.address)}</div>`;
+  btn.addEventListener("click", () => {
+   list.querySelectorAll(".candidate-btn").forEach(b => b.classList.remove("selected"));
+   btn.classList.add("selected");
+   selectedPlace = c;
+   $("btnConfirm").disabled = false;
+  });
+  list.appendChild(btn);
+ });
+}
+
+$("btnConfirm").addEventListener("click", () => {
+ if (!selectedPlace) return;
+ bizName = selectedPlace.name;
+ reviewUrl = selectedPlace.reviewUrl;
+ showPreview();
+});
+
+$("btnNotListed").addEventListener("click", () => {
+ $("manualBiz").value = $("bizName").value.trim();
+ $("manualErr").classList.remove("show");
+ show("step-fallback");
+});
+
+$("btnBackSearch").addEventListener("click", () => show("step-search"));
+
+$("btnManualGo").addEventListener("click", () => {
+ const url = $("manualUrl").value.trim();
+ const name = $("manualBiz").value.trim();
+ const err = $("manualErr");
+ err.classList.remove("show");
+
+ if (!url || !name) {
+  err.textContent = "Please paste a URL and enter your business name.";
+  err.classList.add("show");
+  return;
+ }
+
+ if (!url.startsWith("http")) {
+  err.textContent = "That doesn't look like a valid URL. It should start with https://";
+  err.classList.add("show");
+  return;
+ }
+
+ bizName = name;
+ reviewUrl = url;
+ showPreview();
+});
+
+function showPreview() {
+ $("previewBizName").textContent = bizName;
+ $("previewQR").innerHTML = "";
+ new QRCode($("previewQR"), {
+  text: reviewUrl,
+  width: 180,
+  height: 180,
+  colorDark: "#0E1613",
+  colorLight: "#ffffff",
+  correctLevel: QRCode.CorrectLevel.M
+ });
+ show("step-preview");
+}
+
+$("btnToCapture").addEventListener("click", () => show("step-capture"));
+
+function encodeReview() {
+ const payload = { n: bizName, u: reviewUrl };
+ return btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+  .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function brandedShareUrl() {
+ const product = new URL("../", window.location.href);
+ product.hash = "r=" + encodeReview();
+ return product.href;
+}
+
+$("btnUnlock").addEventListener("click", async () => {
+ const name = $("leadName").value.trim();
+ const email = $("leadEmail").value.trim();
+ const err = $("captureErr");
+ err.classList.remove("show");
+
+ if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+  err.textContent = "Please enter your name and a valid email address.";
+  err.classList.add("show");
+  return;
+ }
+
+ $("btnUnlock").disabled = true;
+ $("btnUnlock").textContent = "One moment\u2026";
+
+ if (window.TBA && window.TBA.baserowReady(CONFIG, CONFIG.OWNER_LEADS_TABLE_ID)) {
+  try {
+   await window.TBA.baserowAdd(CONFIG, CONFIG.OWNER_LEADS_TABLE_ID, {
+    "Name": name,
+    "Email": email,
+    "Business": bizName,
+    "Tool": "Google Review QR",
+    "Consent": $("consent").checked ? "Yes" : "No",
+    "Date": new Date().toISOString()
+   });
+  } catch (e) {
+   console.warn("Lead not saved:", e);
+  }
+ } else {
+  console.warn("Baserow not configured: lead not saved:", { name, email, bizName });
+ }
+
+ const shareURL = brandedShareUrl();
+ if (window.GLFlow) {
+  window.GLFlow.goToDone("review", {
+   bizName: bizName || "",
+   shareURL: shareURL,
+   googleReviewUrl: reviewUrl,
+   qrText: reviewUrl
+  }, "../done/");
+  return;
+ }
+
+ $("btnUnlock").disabled = false;
+ $("btnUnlock").textContent = "Unlock my QR code";
+});
+
+function esc(s) {
+ return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+(function boot() {
+ if (window.TBA && typeof window.TBA.consentText === "function") {
+  $("consentText").textContent = window.TBA.consentText();
+ } else {
+  $("consentText").textContent = "It's fine to email me about this tool and other free ideas for my business. Unsubscribe any time.";
+ }
+})();
+</script>
+</body>
+</html>

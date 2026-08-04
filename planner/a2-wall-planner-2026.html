@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Grow Local; A2 Wall Planner 2026</title>
+ <!--
+  Print-ready A2 wall planner (growlocal-sutherland-implementation.md §12).
+  Trim: 420 × 594mm. Sheet with 3mm bleed: 426 × 600mm.
+  Next year: change PLANNER_DATA.year and the holiday / business date arrays.
+  Bank holidays sourced from https://www.gov.uk/bank-holidays.json (verified).
+ -->
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="../assets/tokens-shopfront.css">
+ <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @page {
+   size: 426mm 600mm;
+   margin: 0;
+  }
+
+  html, body {
+   width: 426mm;
+   min-height: 600mm;
+   margin: 0;
+   padding: 0;
+   background: #d9d4c8;
+   font-family: var(--gl-font-body);
+   color: var(--gl-ink);
+   -webkit-print-color-adjust: exact;
+   print-color-adjust: exact;
+  }
+
+  .sheet {
+   position: relative;
+   width: 426mm;
+   height: 600mm;
+   margin: 0 auto;
+   background: var(--gl-bone);
+   overflow: hidden;
+  }
+
+  .bleed-guide {
+   position: absolute;
+   inset: 3mm;
+   border: 0.2mm dashed rgba(14, 22, 19, 0.12);
+   pointer-events: none;
+   z-index: 2;
+  }
+
+  .planner {
+   position: absolute;
+   inset: 3mm;
+   display: flex;
+   flex-direction: column;
+   background: var(--gl-bone);
+  }
+
+  /* ---- Fascia ---- */
+  .fascia {
+   flex: 0 0 42mm;
+   background: var(--gl-bottle);
+   border-top: 0.5px solid var(--gl-gold);
+   border-bottom: 0.5px solid var(--gl-gold);
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   gap: 3mm;
+   padding: 6mm 16mm;
+   text-align: center;
+  }
+
+  .fascia__wordmark {
+   font-family: var(--gl-font-display);
+   font-size: 28pt;
+   font-weight: 500;
+   letter-spacing: -0.02em;
+   line-height: 1;
+   color: var(--gl-bone);
+  }
+
+  .fascia__rule {
+   width: 72mm;
+   height: 0.6px;
+   background: var(--gl-gold);
+  }
+
+  .fascia__title {
+   font-family: var(--gl-font-utility);
+   font-size: 11pt;
+   font-weight: 600;
+   letter-spacing: 0.18em;
+   text-transform: uppercase;
+   color: var(--gl-gold);
+  }
+
+  /* ---- Body ---- */
+  .body {
+   flex: 1 1 auto;
+   display: flex;
+   flex-direction: column;
+   padding: 6mm 8mm 4mm;
+   min-height: 0;
+   gap: 4mm;
+  }
+
+  .legend {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 3mm 8mm;
+   align-items: center;
+   font-family: var(--gl-font-body);
+   font-size: 7.5pt;
+   color: var(--gl-slate);
+  }
+
+  .legend__item {
+   display: inline-flex;
+   align-items: center;
+   gap: 1.6mm;
+  }
+
+  .swatch {
+   display: inline-block;
+   width: 3.2mm;
+   height: 3.2mm;
+   border: 0.5px solid var(--gl-gold);
+   background: var(--gl-bone);
+  }
+
+  .swatch--bh { background: var(--gl-bottle); border-color: var(--gl-bottle); }
+  .swatch--biz { background: var(--gl-gold); border-color: var(--gl-brass); }
+
+  .months {
+   flex: 1 1 auto;
+   display: grid;
+   grid-template-columns: repeat(4, 1fr);
+   grid-template-rows: repeat(3, 1fr);
+   gap: 4mm;
+   min-height: 0;
+  }
+
+  .month {
+   display: flex;
+   flex-direction: column;
+   min-height: 0;
+   border-top: 0.5px solid var(--gl-gold);
+   padding-top: 2mm;
+  }
+
+  .month__name {
+   font-family: var(--gl-font-display);
+   font-size: 12pt;
+   font-weight: 600;
+   letter-spacing: -0.01em;
+   color: var(--gl-ink);
+   margin-bottom: 1.6mm;
+   line-height: 1;
+  }
+
+  .month__head {
+   display: grid;
+   grid-template-columns: 5mm repeat(7, 1fr);
+   gap: 0;
+   margin-bottom: 0.8mm;
+  }
+
+  .month__head span {
+   font-family: var(--gl-font-utility);
+   font-size: 5.5pt;
+   font-weight: 600;
+   letter-spacing: 0.08em;
+   text-transform: uppercase;
+   color: var(--gl-slate);
+   text-align: center;
+  }
+
+  .month__head .wk-label { text-align: left; color: var(--gl-gold); }
+
+  .month__grid {
+   flex: 1 1 auto;
+   display: flex;
+   flex-direction: column;
+   gap: 0.4mm;
+   min-height: 0;
+  }
+
+  .week {
+   flex: 1 1 auto;
+   display: grid;
+   grid-template-columns: 5mm repeat(7, 1fr);
+   gap: 0.4mm;
+   min-height: 0;
+  }
+
+  .week__num {
+   font-family: var(--gl-font-utility);
+   font-size: 5pt;
+   font-weight: 600;
+   color: var(--gl-gold);
+   align-self: start;
+   padding-top: 0.6mm;
+   line-height: 1;
+  }
+
+  .day {
+   position: relative;
+   border: 0.4px solid rgba(198, 161, 91, 0.35);
+   background: var(--gl-bone);
+   min-height: 0;
+   padding: 0.6mm 0.8mm;
+   overflow: hidden;
+  }
+
+  .day--empty {
+   border-color: transparent;
+   background: transparent;
+  }
+
+  .day--bh {
+   background: rgba(18, 41, 31, 0.08);
+   border-color: var(--gl-bottle);
+  }
+
+  .day--biz {
+   border-color: var(--gl-gold);
+   background: rgba(198, 161, 91, 0.12);
+  }
+
+  .day--bh.day--biz {
+   background: rgba(198, 161, 91, 0.18);
+   border-color: var(--gl-brass);
+  }
+
+  .day__n {
+   font-family: var(--gl-font-utility);
+   font-size: 7pt;
+   font-weight: 600;
+   color: var(--gl-ink);
+   line-height: 1;
+  }
+
+  .day--bh .day__n { color: var(--gl-bottle); }
+  .day--biz .day__n { color: var(--gl-brass); }
+
+  .day__mark {
+   display: block;
+   margin-top: 0.5mm;
+   font-family: var(--gl-font-body);
+   font-size: 4.2pt;
+   line-height: 1.15;
+   color: var(--gl-slate);
+  }
+
+  .day--biz .day__mark { color: var(--gl-brass); font-weight: 500; }
+  .day--bh .day__mark { color: var(--gl-bottle); }
+
+  .key-dates {
+   border-top: 0.5px solid var(--gl-gold);
+   padding-top: 2.5mm;
+   display: grid;
+   grid-template-columns: 1fr 1.4fr;
+   gap: 4mm;
+  }
+
+  .key-dates h2 {
+   font-family: var(--gl-font-utility);
+   font-size: 7pt;
+   font-weight: 600;
+   letter-spacing: 0.14em;
+   text-transform: uppercase;
+   color: var(--gl-gold);
+   margin-bottom: 1.4mm;
+  }
+
+  .key-dates ul {
+   list-style: none;
+   columns: 2;
+   column-gap: 4mm;
+   font-family: var(--gl-font-body);
+   font-size: 6.5pt;
+   line-height: 1.35;
+   color: var(--gl-ink);
+  }
+
+  .key-dates li { break-inside: avoid; margin-bottom: 0.6mm; }
+  .key-dates .tag {
+   font-family: var(--gl-font-utility);
+   font-weight: 600;
+   letter-spacing: 0.04em;
+   color: var(--gl-brass);
+  }
+  .key-dates .nation {
+   color: var(--gl-slate);
+   font-size: 5.8pt;
+  }
+
+  /* ---- Footer ---- */
+  .foot {
+   flex: 0 0 38mm;
+   background: var(--gl-bottle);
+   border-top: 0.5px solid var(--gl-gold);
+   border-bottom: 0.5px solid var(--gl-gold);
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   justify-content: space-between;
+   gap: 8mm;
+   padding: 5mm 10mm;
+  }
+
+  .foot__brand {
+   display: flex;
+   flex-direction: column;
+   gap: 1.8mm;
+   min-width: 0;
+  }
+
+  .foot__wordmark {
+   font-family: var(--gl-font-display);
+   font-size: 16pt;
+   font-weight: 500;
+   letter-spacing: -0.02em;
+   color: var(--gl-bone);
+   line-height: 1;
+  }
+
+  .foot__rule {
+   width: 40mm;
+   height: 0.5px;
+   background: var(--gl-gold);
+  }
+
+  .foot__meta {
+   font-family: var(--gl-font-body);
+   font-size: 9pt;
+   color: var(--gl-bone);
+   line-height: 1.35;
+  }
+
+  .foot__meta .middot { color: var(--gl-gold); margin: 0 0.35em; }
+
+  .foot__line {
+   font-family: var(--gl-font-body);
+   font-size: 9.5pt;
+   color: var(--gl-bone);
+   line-height: 1.3;
+   max-width: 180mm;
+  }
+
+  .foot__qr {
+   flex: 0 0 auto;
+   border: 0.75px solid var(--gl-gold);
+   background: var(--gl-bone);
+   padding: 1.5mm;
+  }
+
+  .foot__qr .qr-target,
+  .foot__qr img,
+  .foot__qr canvas,
+  .foot__qr table {
+   display: block;
+   width: 25mm !important;
+   height: 25mm !important;
+  }
+
+  .screen-hint {
+   position: fixed;
+   bottom: 12px;
+   left: 50%;
+   transform: translateX(-50%);
+   background: var(--gl-bottle);
+   color: var(--gl-bone);
+   border: 0.5px solid var(--gl-gold);
+   font-family: var(--gl-font-body);
+   font-size: 13px;
+   padding: 8px 16px;
+   z-index: 999;
+   max-width: 90vw;
+   text-align: center;
+  }
+
+  @media print {
+   html, body { background: none; width: 426mm; height: 600mm; }
+   .sheet { margin: 0; }
+   .bleed-guide { display: none !important; }
+   .screen-hint { display: none !important; }
+  }
+
+  @media screen {
+   body { padding: 12px 0 48px; }
+   .sheet {
+    box-shadow: none;
+    outline: 0.5px solid rgba(14, 22, 19, 0.2);
+   }
+  }
+ </style>
+</head>
+<body>
+
+<script id="planner-data" type="application/json">
+{
+ "year": 2026,
+ "hubUrl": "https://grow-local-business.netlify.app/",
+ "source": "https://www.gov.uk/bank-holidays.json",
+ "bankHolidays": [
+  { "date": "2026-01-01", "title": "New Year's Day", "nations": ["EW", "S", "NI"] },
+  { "date": "2026-01-02", "title": "2nd January", "nations": ["S"] },
+  { "date": "2026-03-17", "title": "St Patrick's Day", "nations": ["NI"] },
+  { "date": "2026-04-03", "title": "Good Friday", "nations": ["EW", "S", "NI"] },
+  { "date": "2026-04-06", "title": "Easter Monday", "nations": ["EW", "NI"] },
+  { "date": "2026-05-04", "title": "Early May bank holiday", "nations": ["EW", "S", "NI"] },
+  { "date": "2026-05-25", "title": "Spring bank holiday", "nations": ["EW", "S", "NI"] },
+  { "date": "2026-06-15", "title": "World Cup bank holiday", "nations": ["S"] },
+  { "date": "2026-07-13", "title": "Battle of the Boyne (substitute)", "nations": ["NI"] },
+  { "date": "2026-08-03", "title": "Summer bank holiday", "nations": ["S"] },
+  { "date": "2026-08-31", "title": "Summer bank holiday", "nations": ["EW", "NI"] },
+  { "date": "2026-11-30", "title": "St Andrew's Day", "nations": ["S"] },
+  { "date": "2026-12-25", "title": "Christmas Day", "nations": ["EW", "S", "NI"] },
+  { "date": "2026-12-28", "title": "Boxing Day (substitute)", "nations": ["EW", "S", "NI"] }
+ ],
+ "businessDates": [
+  { "date": "2026-01-01", "label": "Corp tax due (Mar YE)" },
+  { "date": "2026-01-31", "label": "Self Assessment" },
+  { "date": "2026-03-31", "label": "VAT Q end (std)" },
+  { "date": "2026-04-05", "label": "Payroll / tax year end" },
+  { "date": "2026-05-31", "label": "P60 deadline" },
+  { "date": "2026-06-30", "label": "VAT Q end (std)" },
+  { "date": "2026-07-06", "label": "P11D deadline" },
+  { "date": "2026-07-31", "label": "Self Assessment (PoA)" },
+  { "date": "2026-09-30", "label": "VAT Q end (std)" },
+  { "date": "2026-12-31", "label": "VAT Q end (std)" }
+ ],
+ "notes": {
+  "corpTax": "Corporation tax payment is usually 9 months and 1 day after the accounting period ends. 1 Jan marked as the common reference for companies with a 31 March year end. Confirm against your own year end.",
+  "vat": "VAT quarter ends shown for the standard calendar-quarter scheme (Mar/Jun/Sep/Dec). Staggered schemes differ. Omit or edit if unsure for a recipient.",
+  "omitted": []
+ }
+}
+</script>
+
+ <div class="sheet">
+  <div class="bleed-guide" aria-hidden="true"></div>
+  <div class="planner">
+   <header class="fascia">
+    <p class="fascia__wordmark">GROW LOCAL</p>
+    <div class="fascia__rule" aria-hidden="true"></div>
+    <p class="fascia__title" id="fascia-title">Wall planner 2026</p>
+   </header>
+
+   <div class="body">
+    <div class="legend" aria-label="Key">
+     <span class="legend__item"><span class="swatch swatch--bh" aria-hidden="true"></span> Bank holiday</span>
+     <span class="legend__item"><span class="swatch swatch--biz" aria-hidden="true"></span> Key business date</span>
+     <span class="legend__item">EW England &amp; Wales · S Scotland · NI Northern Ireland</span>
+     <span class="legend__item">Week numbers; ISO</span>
+    </div>
+
+    <div class="months" id="months"></div>
+
+    <div class="key-dates">
+     <div>
+      <h2>Bank holidays <span id="year-bh"></span></h2>
+      <ul id="bh-list"></ul>
+     </div>
+     <div>
+      <h2>Key business dates</h2>
+      <ul id="biz-list"></ul>
+     </div>
+    </div>
+   </div>
+
+   <footer class="foot">
+    <div class="foot__brand">
+     <p class="foot__wordmark">GROW LOCAL</p>
+     <div class="foot__rule" aria-hidden="true"></div>
+     <p class="foot__meta">growlocalbusiness.co.uk <span class="middot" aria-hidden="true">·</span> 07379 028832</p>
+     <p class="foot__line">Six free tools for local business. Scan any time.</p>
+    </div>
+    <div class="foot__qr">
+     <div class="qr-target" aria-label="QR code linking to Grow Local"></div>
+    </div>
+   </footer>
+  </div>
+ </div>
+
+ <p class="screen-hint">Ctrl+P → Save as PDF · Custom size 426×600mm (A2 + 3mm bleed) or A2 with bleed handled by printer · Background graphics ON</p>
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+ <script>
+  (function () {
+   var DATA = JSON.parse(document.getElementById("planner-data").textContent);
+   var YEAR = DATA.year;
+   var MONTH_NAMES = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+   ];
+   var DOW = ["M", "T", "W", "T", "F", "S", "S"];
+
+   document.getElementById("fascia-title").textContent = "Wall planner " + YEAR;
+   document.getElementById("year-bh").textContent = YEAR;
+   document.title = "Grow Local; A2 Wall Planner " + YEAR;
+
+   function pad(n) { return n < 10 ? "0" + n : String(n); }
+   function isoDate(y, m0, d) { return y + "-" + pad(m0 + 1) + "-" + pad(d); }
+
+   /** ISO week number (Mon-based). */
+   function isoWeek(date) {
+    var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    var dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+   }
+
+   /** Monday = 0 … Sunday = 6 */
+   function mondayIndex(jsDay) {
+    return jsDay === 0 ? 6 : jsDay - 1;
+   }
+
+   var bhByDate = {};
+   DATA.bankHolidays.forEach(function (h) {
+    bhByDate[h.date] = h;
+   });
+
+   var bizByDate = {};
+   DATA.businessDates.forEach(function (b) {
+    if (!bizByDate[b.date]) bizByDate[b.date] = [];
+    bizByDate[b.date].push(b);
+   });
+
+   function nationLabel(nations) {
+    if (nations.length === 3) return "UK";
+    return nations.join("/");
+   }
+
+   function dayLabel(dateStr) {
+    var parts = [];
+    var bh = bhByDate[dateStr];
+    var biz = bizByDate[dateStr];
+    if (bh) {
+     var short = bh.title
+      .replace("bank holiday", "BH")
+      .replace("New Year's Day", "New Year")
+      .replace("Early May BH", "Early May")
+      .replace("Spring BH", "Spring")
+      .replace("Summer BH", "Summer")
+      .replace("Boxing Day (substitute)", "Boxing Day*")
+      .replace("Battle of the Boyne (substitute)", "Boyne*")
+      .replace("World Cup BH", "World Cup")
+      .replace("St Andrew's Day", "St Andrew")
+      .replace("St Patrick's Day", "St Patrick")
+      .replace("2nd January", "2 Jan")
+      .replace("Good Friday", "Good Fri")
+      .replace("Easter Monday", "Easter Mon")
+      .replace("Christmas Day", "Christmas");
+     parts.push(short + " (" + nationLabel(bh.nations) + ")");
+    }
+    if (biz) {
+     biz.forEach(function (b) { parts.push(b.label); });
+    }
+    return parts.join(" · ");
+   }
+
+   var monthsEl = document.getElementById("months");
+
+   for (var m = 0; m < 12; m++) {
+    var monthEl = document.createElement("section");
+    monthEl.className = "month";
+    monthEl.setAttribute("aria-label", MONTH_NAMES[m] + " " + YEAR);
+
+    var name = document.createElement("h3");
+    name.className = "month__name";
+    name.textContent = MONTH_NAMES[m];
+    monthEl.appendChild(name);
+
+    var head = document.createElement("div");
+    head.className = "month__head";
+    head.innerHTML = '<span class="wk-label">Wk</span>' + DOW.map(function (d) {
+     return "<span>" + d + "</span>";
+    }).join("");
+    monthEl.appendChild(head);
+
+    var grid = document.createElement("div");
+    grid.className = "month__grid";
+
+    var first = new Date(YEAR, m, 1);
+    var daysInMonth = new Date(YEAR, m + 1, 0).getDate();
+    var startPad = mondayIndex(first.getDay());
+
+    var cells = [];
+    var i;
+    for (i = 0; i < startPad; i++) cells.push(null);
+    for (i = 1; i <= daysInMonth; i++) cells.push(i);
+    while (cells.length % 7 !== 0) cells.push(null);
+
+    for (var w = 0; w < cells.length; w += 7) {
+     var weekEl = document.createElement("div");
+     weekEl.className = "week";
+
+     var weekNumEl = document.createElement("div");
+     weekNumEl.className = "week__num";
+     var firstDayInWeek = null;
+     for (var c = 0; c < 7; c++) {
+      if (cells[w + c] != null) {
+       firstDayInWeek = new Date(YEAR, m, cells[w + c]);
+       break;
+      }
+     }
+     weekNumEl.textContent = firstDayInWeek ? String(isoWeek(firstDayInWeek)) : "";
+     weekEl.appendChild(weekNumEl);
+
+     for (c = 0; c < 7; c++) {
+      var dayEl = document.createElement("div");
+      var d = cells[w + c];
+      if (d == null) {
+       dayEl.className = "day day--empty";
+      } else {
+       var dateStr = isoDate(YEAR, m, d);
+       var isBh = !!bhByDate[dateStr];
+       var isBiz = !!bizByDate[dateStr];
+       dayEl.className = "day" + (isBh ? " day--bh" : "") + (isBiz ? " day--biz" : "");
+       var n = document.createElement("span");
+       n.className = "day__n";
+       n.textContent = String(d);
+       dayEl.appendChild(n);
+       var mark = dayLabel(dateStr);
+       if (mark) {
+        var markEl = document.createElement("span");
+        markEl.className = "day__mark";
+        markEl.textContent = mark;
+        dayEl.appendChild(markEl);
+       }
+      }
+      weekEl.appendChild(dayEl);
+     }
+     grid.appendChild(weekEl);
+    }
+
+    monthEl.appendChild(grid);
+    monthsEl.appendChild(monthEl);
+   }
+
+   var bhList = document.getElementById("bh-list");
+   DATA.bankHolidays.forEach(function (h) {
+    var li = document.createElement("li");
+    var parts = h.date.split("-");
+    var nice = parseInt(parts[2], 10) + " " + MONTH_NAMES[parseInt(parts[1], 10) - 1].slice(0, 3);
+    li.innerHTML = "<span class=\"tag\">" + nice + "</span> " + h.title +
+     " <span class=\"nation\">(" + nationLabel(h.nations) + ")</span>";
+    bhList.appendChild(li);
+   });
+
+   var bizList = document.getElementById("biz-list");
+   DATA.businessDates.forEach(function (b) {
+    var li = document.createElement("li");
+    var parts = b.date.split("-");
+    var nice = parseInt(parts[2], 10) + " " + MONTH_NAMES[parseInt(parts[1], 10) - 1].slice(0, 3);
+    li.innerHTML = "<span class=\"tag\">" + nice + "</span> " + b.label;
+    bizList.appendChild(li);
+   });
+
+   new QRCode(document.querySelector(".qr-target"), {
+    text: DATA.hubUrl,
+    width: 128,
+    height: 128,
+    colorDark: "#0E1613",
+    colorLight: "#F2EFE6",
+    correctLevel: QRCode.CorrectLevel.M
+   });
+  })();
+ </script>
+</body>
+</html>

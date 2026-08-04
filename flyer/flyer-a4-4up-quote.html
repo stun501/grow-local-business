@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Grow Local · Flyer Quote (A4 4-up)</title>
+
+ <script>
+  const HUB_URL = "https://grow-local-business.netlify.app/";
+  const FLYER_VARIANT = "quote";
+ </script>
+
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="../assets/tokens-shopfront.css">
+ <link rel="stylesheet" href="flyer-shopfront.css">
+</head>
+<body>
+
+ <div class="sheet-wrap">
+  <span class="crop crop--tl" aria-hidden="true"></span>
+  <span class="crop crop--tr" aria-hidden="true"></span>
+  <span class="crop crop--bl" aria-hidden="true"></span>
+  <span class="crop crop--br" aria-hidden="true"></span>
+  <span class="crop crop--tm" aria-hidden="true"></span>
+  <span class="crop crop--bm" aria-hidden="true"></span>
+  <span class="crop crop--ml" aria-hidden="true"></span>
+  <span class="crop crop--mr" aria-hidden="true"></span>
+  <div class="sheet" id="sheet"></div>
+ </div>
+
+ <p class="screen-hint">Ctrl+P → Save as PDF · A4 · No margins · Background graphics ON · Quote variant</p>
+
+ <template id="tile-template">
+  <article class="tile">
+   <header class="fascia">
+    <p class="fascia__wordmark">GROW LOCAL</p>
+    <div class="fascia__rule" aria-hidden="true"></div>
+    <p class="fascia__strap">Because good local businesses deserve better tools</p>
+   </header>
+
+   <div class="body">
+    <h1 class="hook">Catch the customers who look you up online but never call</h1>
+    <ul class="points">
+     <li>A free quote tool, live on your phone in 60 seconds</li>
+     <li>Catch enquiries when you're closed</li>
+     <li>Works on your counter, in a text, or on your website</li>
+    </ul>
+
+    <div class="cta-block">
+     <p class="action"><span class="action__lead">SCAN NOW.</span> See it working before you walk away</p>
+     <div class="qr-panel">
+      <div class="qr-target" aria-label="QR code linking to Grow Local hub"></div>
+     </div>
+    </div>
+   </div>
+
+   <footer class="foot">
+    <p class="foot__contact">
+     Craig
+     <span class="foot__middot" aria-hidden="true">·</span>
+     hello@growlocalbusiness.co.uk
+     <span class="foot__middot" aria-hidden="true">·</span>
+     07379 028832
+    </p>
+    <p class="foot__from">Grow Local</p>
+   </footer>
+  </article>
+ </template>
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+ <script src="flyer-render.js"></script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Request a time · Grow Local</title>
+<meta name="description" content="Pick a slot and request it. The business will confirm shortly." />
+<link rel="icon" href="../assets/monogram-gl.svg" type="image/svg+xml" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="../assets/tokens-shopfront.css" />
+<link rel="stylesheet" href="../assets/product-shell.css" />
+
+<style>
+ body { background: var(--gl-bottle); color: var(--gl-bone); }
+
+ .req-wrap { max-width: 480px; margin: 0 auto; padding: 28px 20px 56px; }
+
+ .req-brand {
+  display: inline-block; font-size: 0.8125rem; color: var(--gl-slate-on-bottle);
+  margin-bottom: 14px; text-decoration: none;
+ }
+ .req-brand:hover { color: var(--gl-gold); }
+
+ .req-biz {
+  font-family: var(--gl-font-display); font-weight: 500;
+  font-size: clamp(1.5rem, 6vw, 1.875rem); color: var(--gl-bone);
+  margin-bottom: 6px; letter-spacing: var(--gl-track-display);
+ }
+ .req-sub { color: var(--gl-slate-on-bottle); font-size: 0.9375rem; margin-bottom: 20px; }
+
+ .card {
+  background: var(--gl-bone); color: var(--gl-ink);
+  border: 1px solid var(--gl-gold-40); padding: 18px; margin-top: 16px;
+ }
+
+ .week-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+ .week-nav button {
+  font: inherit; font-size: 0.8125rem; font-weight: 700; background: none;
+  border: 1.5px solid var(--gl-gold); color: var(--gl-brass); padding: 8px 14px; cursor: pointer;
+ }
+ .week-nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+ .week-nav__label { font-family: var(--gl-font-utility); font-size: 0.6875rem; font-weight: 600; letter-spacing: var(--gl-track-utility); text-transform: uppercase; color: var(--gl-slate); }
+
+ .day-block { margin-bottom: 18px; }
+ .day-block:last-child { margin-bottom: 0; }
+ .day-block h3 { font-family: var(--gl-font-display); font-weight: 500; font-size: 1.0625rem; margin-bottom: 8px; }
+ .slot-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+ .slot-btn {
+  font: inherit; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem; font-weight: 600; background: #fffef9; color: var(--gl-ink);
+  border: 1.5px solid var(--gl-gold-40); padding: 10px 14px; cursor: pointer;
+ }
+ .slot-btn:hover { border-color: var(--gl-gold); }
+ .slot-btn.selected { background: var(--gl-gold); border-color: var(--gl-gold); color: var(--gl-ink); }
+ .slot-btn:focus-visible { outline: 2px solid var(--gl-gold); outline-offset: 2px; }
+
+ .no-slots { font-size: 0.9375rem; color: var(--gl-slate); padding: 8px 0; }
+
+ .utility-line {
+  font-family: var(--gl-font-utility); font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: var(--gl-track-utility); text-transform: uppercase;
+  color: var(--gl-gold); text-align: center; margin: 20px 0 4px; line-height: 1.6;
+ }
+
+ .req-form { display: none; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--gl-gold-40); }
+ .req-form.show { display: block; }
+ .req-form__slot {
+  font-family: var(--gl-font-display); font-weight: 500; font-size: 1.0625rem;
+  margin-bottom: 14px; padding: 10px 12px; background: var(--gl-bone-warm); border: 1px solid var(--gl-gold-40);
+ }
+
+ .msg { padding: 12px 14px; font-size: 0.875rem; margin-top: 12px; display: none; border: 1px solid var(--gl-gold-40); }
+ .msg.show { display: block; }
+ .msg--err { background: rgba(122, 46, 46, 0.08); color: var(--gl-oxblood); border-color: var(--gl-oxblood); }
+
+ .done-state { text-align: center; padding: 10px 0; }
+ .done-tick { font-size: 2.25rem; margin-bottom: 8px; color: var(--gl-brass); }
+ .done-state h2 { font-family: var(--gl-font-display); font-weight: 500; font-size: 1.25rem; margin-bottom: 8px; }
+ .done-state p { font-size: 0.9375rem; color: var(--gl-slate); }
+
+ .error-card { text-align: center; }
+ .error-card h2 { font-family: var(--gl-font-display); font-weight: 500; font-size: 1.25rem; margin-bottom: 8px; }
+ .error-card p { font-size: 0.9375rem; color: var(--gl-slate); margin-bottom: 6px; }
+
+ .step { display: none; }
+ .step.active { display: block; }
+
+ .req-footer { text-align: center; margin-top: 26px; font-size: 0.8125rem; color: var(--gl-slate-on-bottle); }
+ .req-footer a { color: var(--gl-gold); }
+
+ @media (prefers-reduced-motion: no-preference) {
+  .step.active { animation: fadeUp .25s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+ }
+</style>
+</head>
+<body>
+
+<div class="req-wrap">
+ <a class="req-brand" href="../index.html">Grow Local</a>
+
+ <!-- Valid config -->
+ <div id="step-book" class="step">
+  <h1 class="req-biz" id="bizNameOut"></h1>
+  <p class="req-sub">Pick a time that works. <span id="bizNameInline"></span> will confirm it with you shortly.</p>
+
+  <div class="card">
+   <div class="week-nav">
+    <button type="button" id="prevBtn" disabled>&larr; Earlier</button>
+    <span class="week-nav__label" id="pageLabel"></span>
+    <button type="button" id="nextBtn">Later &rarr;</button>
+   </div>
+   <div id="daysArea"></div>
+  </div>
+
+  <p class="utility-line" id="utilityLine"></p>
+
+  <div class="card req-form" id="reqForm">
+   <div class="req-form__slot" id="chosenSlotLabel"></div>
+   <div class="field">
+    <label for="custName">Your name</label>
+    <input type="text" id="custName" autocomplete="name">
+   </div>
+   <div class="field">
+    <label for="custMobile">Mobile number</label>
+    <input type="tel" id="custMobile" autocomplete="tel" placeholder="e.g. 07700 900123">
+   </div>
+   <div class="field" id="whatForWrap">
+    <label for="custWhatFor">What's it for?</label>
+    <input type="text" id="custWhatFor" placeholder="e.g. MOT, cut &amp; finish, consultation">
+   </div>
+   <button class="btn-brass" id="btnRequest" style="width:100%;">Request this slot</button>
+   <p class="msg msg--err" id="reqErr"></p>
+  </div>
+
+  <div class="card done-state" id="doneState" style="display:none;">
+   <div class="done-tick" aria-hidden="true">&#10003;</div>
+   <h2>Request sent</h2>
+   <p id="doneMsg"></p>
+  </div>
+ </div>
+
+ <!-- Invalid / missing config -->
+ <div id="step-error" class="step">
+  <div class="card error-card">
+   <h2>This booking link isn't working</h2>
+   <p>The link looks incomplete or out of date. Please go back to whoever sent it and ask for a fresh one, or contact the business directly.</p>
+  </div>
+ </div>
+
+ <p class="req-footer">Free tool from <a href="../index.html">Grow Local</a>. No app, no sign-up.</p>
+</div>
+
+<script src="../assets/shared.js"></script>
+<script>
+/* ================================================================
+  CONFIG
+  ================================================================ */
+const CONFIG = {
+ BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ BOOKING_REQUESTS_TABLE_ID: "1098285",
+ BASEROW_URL: "https://api.baserow.io"
+};
+
+const $ = (id) => document.getElementById(id);
+const DOW_ABBR  = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const MONTH_ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const PAGE_SIZE = 3; // days shown per page of the week strip
+
+let cfg = null;
+let dayList = [];
+let page = 0;
+let chosen = null; // { dayKey, dateLabel, y, mo, d, mins, label }
+
+/* ================================================================
+  DECODE; mirrors booking/index.html's encodeConfig()
+  ================================================================ */
+function decodeConfig(s) {
+ s = s.replace(/-/g, "+").replace(/_/g, "/");
+ return JSON.parse(decodeURIComponent(escape(atob(s))));
+}
+
+/* ================================================================
+  SLOT GENERATION; Europe/London, no past, no <2h, max 14 days
+  (mirrored in booking/index.html)
+  ================================================================ */
+function londonNow() {
+ const fmt = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit",
+  hour: "2-digit", minute: "2-digit", hour12: false
+ });
+ const parts = fmt.formatToParts(new Date());
+ const get = (t) => parseInt(parts.find((p) => p.type === t).value, 10);
+ return { y: get("year"), mo: get("month"), d: get("day"), h: get("hour"), mi: get("minute") };
+}
+function pad2(n) { return String(n).padStart(2, "0"); }
+function timeToMinutes(t) { const [h, m] = t.split(":").map(Number); return h * 60 + m; }
+function minutesToLabel(mins) {
+ let h = Math.floor(mins / 60), m = mins % 60;
+ const ampm = h < 12 ? "am" : "pm";
+ let h12 = h % 12; if (h12 === 0) h12 = 12;
+ return h12 + (m ? ":" + pad2(m) : "") + ampm;
+}
+function generateSlots(c) {
+ const maxDays = 14; // fortnight ahead, maximum
+ const now = londonNow();
+ const cursor = new Date(Date.UTC(now.y, now.mo - 1, now.d));
+ const todayKey = now.y * 10000 + now.mo * 100 + now.d;
+ const cutoff = now.h * 60 + now.mi + 120; // no slots within next 2 hours
+ const out = [];
+ for (let i = 0; i < maxDays; i++) {
+  const y = cursor.getUTCFullYear(), mo = cursor.getUTCMonth() + 1, d = cursor.getUTCDate();
+  const dow = (cursor.getUTCDay() + 6) % 7; // 0=Mon..6=Sun
+  const dayCfg = c.d[dow];
+  const dayKey = y * 10000 + mo * 100 + d;
+  if (dayCfg && dayCfg.o) {
+   const startM = timeToMinutes(dayCfg.s), endM = timeToMinutes(dayCfg.e);
+   const step = (c.len || 60) + (c.buf || 0);
+   const slots = [];
+   if (step > 0 && endM > startM) {
+    for (let t = startM; t + (c.len || 60) <= endM; t += step) {
+     if (dayKey === todayKey && t < cutoff) continue;
+     slots.push({ mins: t, label: minutesToLabel(t) });
+    }
+   }
+   if (slots.length) {
+    out.push({ dayKey, y, mo, d, dateLabel: DOW_ABBR[dow] + " " + d + " " + MONTH_ABBR[mo - 1], slots });
+   }
+  }
+  cursor.setUTCDate(cursor.getUTCDate() + 1);
+ }
+ return out;
+}
+
+/* ================================================================
+  RENDER WEEK STRIP (paginated)
+  ================================================================ */
+function renderPage() {
+ const area = $("daysArea");
+ area.innerHTML = "";
+ const start = page * PAGE_SIZE;
+ const pageDays = dayList.slice(start, start + PAGE_SIZE);
+
+ if (!pageDays.length) {
+  area.innerHTML = '<p class="no-slots">No times available in this range. Please contact ' + esc(cfg.n) + ' directly.</p>';
+ } else {
+  pageDays.forEach((day) => {
+   const block = document.createElement("div");
+   block.className = "day-block";
+   const grid = document.createElement("div");
+   grid.className = "slot-grid";
+   day.slots.forEach((slot) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "slot-btn";
+    btn.textContent = slot.label;
+    btn.setAttribute("aria-pressed", "false");
+    if (chosen && chosen.dayKey === day.dayKey && chosen.mins === slot.mins) {
+     btn.classList.add("selected");
+     btn.setAttribute("aria-pressed", "true");
+    }
+    btn.addEventListener("click", () => selectSlot(day, slot));
+    grid.appendChild(btn);
+   });
+   block.innerHTML = "<h3>" + esc(day.dateLabel) + "</h3>";
+   block.appendChild(grid);
+   area.appendChild(block);
+  });
+ }
+
+ $("prevBtn").disabled = page === 0;
+ $("nextBtn").disabled = start + PAGE_SIZE >= dayList.length;
+ const totalPages = Math.max(1, Math.ceil(dayList.length / PAGE_SIZE));
+ $("pageLabel").textContent = dayList.length ? ("Page " + (page + 1) + " of " + totalPages) : "";
+}
+
+$("prevBtn").addEventListener("click", () => { if (page > 0) { page--; renderPage(); } });
+$("nextBtn").addEventListener("click", () => {
+ if ((page + 1) * PAGE_SIZE < dayList.length) { page++; renderPage(); }
+});
+
+function selectSlot(day, slot) {
+ chosen = { dayKey: day.dayKey, dateLabel: day.dateLabel, y: day.y, mo: day.mo, d: day.d, mins: slot.mins, label: slot.label };
+ renderPage();
+ $("chosenSlotLabel").textContent = day.dateLabel + ", " + slot.label;
+ $("reqForm").classList.add("show");
+ $("doneState").style.display = "none";
+ $("reqForm").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+/* ================================================================
+  REQUEST SUBMISSION
+  ================================================================ */
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+var CLASH_LS = "gl_booking_slot_requests_v1";
+
+function noteLocalRequest(business, slotISO) {
+ try {
+  var prev = JSON.parse(localStorage.getItem(CLASH_LS) || "[]");
+  prev.push({ b: business, s: slotISO, t: Date.now() });
+  localStorage.setItem(CLASH_LS, JSON.stringify(prev.slice(-300)));
+ } catch (e) {}
+}
+
+function localClash(business, slotISO) {
+ try {
+  var prev = JSON.parse(localStorage.getItem(CLASH_LS) || "[]");
+  return prev.some(function (r) { return r.b === business && r.s === slotISO; });
+ } catch (e) {
+  return false;
+ }
+}
+
+async function checkPossibleClash(business, slotISO) {
+ // Create-only Baserow tokens cannot read rows. Prefer a same-browser
+ // local flag; otherwise Unknown. Never blocks the request.
+ if (localClash(business, slotISO)) return "Yes";
+ if (!window.TBA || !window.TBA.baserowReady(CONFIG, CONFIG.BOOKING_REQUESTS_TABLE_ID)) return "Unknown";
+ try {
+  const url = CONFIG.BASEROW_URL.replace(/\/+$/, "") +
+   "/api/database/rows/table/" + CONFIG.BOOKING_REQUESTS_TABLE_ID +
+   "/?user_field_names=true&filter__Business__equal=" + encodeURIComponent(business) +
+   "&filter__Slot%20ISO__equal=" + encodeURIComponent(slotISO);
+  const res = await fetch(url, { headers: { "Authorization": "Token " + CONFIG.BASEROW_TOKEN } });
+  if (!res.ok) return "Unknown";
+  const data = await res.json();
+  return (data && data.count > 0) ? "Yes" : "No";
+ } catch (e) {
+  return "Unknown";
+ }
+}
+
+$("btnRequest").addEventListener("click", async () => {
+ const name = $("custName").value.trim();
+ const mobile = $("custMobile").value.trim();
+ const whatFor = $("custWhatFor").value.trim();
+ const err = $("reqErr");
+ err.classList.remove("show");
+
+ if (!name || mobile.replace(/\D/g, "").length < 10) {
+  err.textContent = "Please add your name and a valid mobile number.";
+  err.classList.add("show");
+  return;
+ }
+ if (!chosen) {
+  err.textContent = "Please pick a time first.";
+  err.classList.add("show");
+  return;
+ }
+
+ const btn = $("btnRequest");
+ btn.disabled = true;
+ btn.textContent = "Sending\u2026";
+
+ const slotISO = chosen.y + "-" + pad2(chosen.mo) + "-" + pad2(chosen.d) + "T" + pad2(Math.floor(chosen.mins / 60)) + ":" + pad2(chosen.mins % 60);
+ const slotHuman = chosen.dateLabel + ", " + chosen.label;
+
+ // Never blocks or refuses the slot; a requested slot is always accepted,
+ // even if it clashes with an earlier unconfirmed request (companion doc §4.2).
+ const clash = await checkPossibleClash(cfg.n, slotISO);
+ noteLocalRequest(cfg.n, slotISO);
+
+ if (window.TBA && window.TBA.baserowReady(CONFIG, CONFIG.BOOKING_REQUESTS_TABLE_ID)) {
+  try {
+   await window.TBA.baserowAdd(CONFIG, CONFIG.BOOKING_REQUESTS_TABLE_ID, {
+    "Customer name": name,
+    "Mobile": mobile,
+    "What for": whatFor,
+    "Business": cfg.n,
+    "Slot": slotHuman,
+    "Slot ISO": slotISO,
+    "Notify email": cfg.em || "",
+    "Possible clash": clash,
+    "Date": (window.TBA && window.TBA.baserowDateToday) ? window.TBA.baserowDateToday() : new Date().toISOString().slice(0, 10)
+   });
+  } catch (e) { console.warn("Booking request not saved:", e); }
+ } else {
+  console.warn("Baserow not configured: booking request not saved:", { name, mobile, slotHuman, business: cfg.n });
+ }
+
+ $("reqForm").classList.remove("show");
+ $("doneState").style.display = "block";
+ $("doneMsg").textContent = "Request sent; " + cfg.n + " will confirm shortly.";
+ $("doneState").scrollIntoView({ behavior: "smooth", block: "center" });
+
+ btn.disabled = false;
+ btn.textContent = "Request this slot";
+ $("custName").value = ""; $("custMobile").value = ""; $("custWhatFor").value = "";
+ chosen = null;
+});
+
+/* ================================================================
+  BOOT
+  ================================================================ */
+(function boot() {
+ const m = location.hash.match(/#bk=(.+)/);
+ if (!m) { $("step-error").classList.add("active"); return; }
+
+ try {
+  cfg = decodeConfig(m[1]);
+  if (!cfg || !cfg.n || !Array.isArray(cfg.d)) throw new Error("bad config");
+ } catch (e) {
+  console.warn("Invalid booking link:", e);
+  $("step-error").classList.add("active");
+  return;
+ }
+
+ document.title = cfg.n + "; Request a booking";
+ $("bizNameOut").textContent = cfg.n;
+ $("bizNameInline").textContent = cfg.n;
+ $("utilityLine").textContent = "Slots shown are usual availability; " + cfg.n.toUpperCase() + " will confirm your time";
+
+ // Grow Local consult booking; warmer copy for the free 30-minute chat
+ if (cfg.n === "Grow Local" && cfg.em === "hello@growlocalbusiness.co.uk") {
+  document.title = "Book a free 30-minute chat · Grow Local";
+  $("bizNameOut").textContent = "Free 30-minute chat";
+  var subEl = document.querySelector(".req-sub");
+  if (subEl) {
+   subEl.innerHTML = "Pick a time that works. We'll confirm with you shortly, no charge, no pressure.";
+  }
+  $("utilityLine").textContent = "Slots shown are usual availability; GROW LOCAL will confirm your time";
+  var doneHeading = document.querySelector("#doneState h2");
+  if (doneHeading) doneHeading.textContent = "Request sent";
+ }
+
+ if (Array.isArray(cfg.sv) && cfg.sv.length) {
+  const wrap = $("whatForWrap");
+  wrap.innerHTML = '<label for="custWhatFor">What\u2019s it for?</label>' +
+   '<select id="custWhatFor">' +
+   '<option value="">Choose\u2026</option>' +
+   cfg.sv.map((s) => '<option value="' + esc(s.n) + '">' + esc(s.n) + (s.len ? " (" + s.len + " min)" : "") + '</option>').join("") +
+   '<option value="Something else">Something else</option>' +
+   '</select>';
+ }
+
+ dayList = generateSlots(cfg);
+ renderPage();
+ $("step-book").classList.add("active");
+})();
+</script>
+</body>
+</html>

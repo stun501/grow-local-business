@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Grow Local · Mobile preview</title>
+<style>
+ :root {
+  --bg: #1a1a1a;
+  --shell: #0d0d0d;
+  --bezel: #2a2a2a;
+  --label: #c8c8c8;
+ }
+ * { box-sizing: border-box; margin: 0; padding: 0; }
+ body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--label);
+  font-family: system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 40px;
+ }
+ h1 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+ }
+ p {
+  font-size: 0.875rem;
+  opacity: 0.8;
+  margin-bottom: 20px;
+  text-align: center;
+  max-width: 28rem;
+  line-height: 1.4;
+ }
+ p a { color: #c6a15b; }
+ .phone {
+  width: 390px;
+  max-width: 100%;
+  background: var(--shell);
+  border: 10px solid var(--bezel);
+  border-radius: 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  overflow: hidden;
+  position: relative;
+ }
+ .notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 22px;
+  background: var(--bezel);
+  border-radius: 0 0 14px 14px;
+  z-index: 2;
+ }
+ iframe {
+  display: block;
+  width: 100%;
+  height: 844px;
+  border: 0;
+  background: #F2EFE6;
+ }
+ .actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+ }
+ .actions a {
+  color: #F2EFE6;
+  background: #12291F;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+ }
+</style>
+</head>
+<body>
+ <h1>Grow Local · mobile view (390×844)</h1>
+ <p>
+  This frames the landing page at phone size so you can review layout on desktop.
+  Prefer checking on your actual phone? Open the full page link below.
+ </p>
+ <div class="phone" aria-label="Phone-sized preview of the Grow Local landing page">
+  <div class="notch" aria-hidden="true"></div>
+  <iframe src="./index.html" title="Grow Local landing page mobile preview"></iframe>
+ </div>
+ <div class="actions">
+  <a href="./index.html">Open full landing page</a>
+  <a href="./index.html" target="_blank" rel="noopener">Open in new tab</a>
+ </div>
+</body>
+</html>

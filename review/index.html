@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Review QR · Grow Local</title>
+<meta name="description" content="Create a QR code that sends happy customers straight to your Google review box. Free, no sign-up, ready in about a minute.">
+<link rel="icon" href="../assets/monogram-gl.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="../assets/tokens-shopfront.css">
+<link rel="stylesheet" href="../assets/product-shell.css">
+
+<style>
+ /* ============================================================
+   Google Review QR; page-specific styles
+   (Tokens + shell come from tokens-shopfront.css / product-shell.css.
+   Everything here is hero-mockup, wizard and result-panel styling.)
+   ============================================================ */
+
+ /* ---- Hero mockup: review card, fifth star fills ---- */
+ .review-star-card {
+  background: var(--gl-bone);
+  border: 1px solid var(--gl-gold-40);
+  padding: 26px 18px;
+  text-align: center;
+ }
+ .review-star-card__label { font-size: 0.8125rem; color: var(--gl-slate); margin-bottom: 12px; }
+ .review-star-card__stars {
+  display: flex; justify-content: center; gap: 8px;
+  font-size: 1.875rem; line-height: 1; margin-bottom: 16px;
+ }
+ .review-star-card__stars .star { color: var(--gl-gold); }
+ .review-star-card__stars .star--last {
+  color: var(--gl-gold-40); display: inline-block;
+  transition: color .4s ease, transform .4s ease;
+ }
+ .mockup.in-view .review-star-card__stars .star--last {
+  color: var(--gl-gold); transform: scale(1.25); transition-delay: .5s;
+ }
+ .review-star-card__thanks {
+  font-family: var(--gl-font-display); font-size: 1rem; font-weight: 500;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity .5s ease, transform .5s ease; transition-delay: 1.1s;
+ }
+ .mockup.in-view .review-star-card__thanks { opacity: 1; transform: none; }
+
+ /* ---- Wizard steps (the generator) ---- */
+ .step { display: none; }
+ .step.active { display: block; }
+ @media (prefers-reduced-motion: no-preference) {
+  .step.active { animation: revStepIn .25s ease; }
+  @keyframes revStepIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+ }
+
+ .field-grid { display: grid; gap: 14px; }
+ @media (min-width: 560px) { .field-grid { grid-template-columns: 1.4fr 1fr; } }
+
+ .msg { padding: 10px 14px; font-size: 0.875rem; margin-top: 10px; display: none; border: 1px solid var(--gl-gold-40); }
+ .msg.show { display: block; }
+ .msg--err { background: rgba(122, 46, 46, 0.08); color: var(--gl-oxblood); border-color: var(--gl-oxblood); }
+ .msg--ok { background: rgba(198, 161, 91, 0.16); color: var(--gl-ink); }
+
+ .candidates { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+ .candidate-btn {
+  width: 100%; text-align: left; font: inherit; background: var(--gl-bone);
+  border: 1.5px solid var(--gl-gold-40); padding: 14px; cursor: pointer;
+  transition: border-color .15s; color: var(--gl-ink);
+ }
+ .candidate-btn:hover { border-color: var(--gl-gold); }
+ .candidate-btn.selected { border-color: var(--gl-brass); box-shadow: inset 3px 0 0 var(--gl-gold); }
+ .candidate-btn__name { font-family: var(--gl-font-display); font-weight: 500; font-size: 1.0625rem; }
+ .candidate-btn__addr { font-size: 0.875rem; color: var(--gl-slate); margin-top: 2px; }
+
+ .consent { display: flex; gap: 9px; align-items: flex-start; margin: 4px 0 14px; }
+ .consent input { margin-top: 3px; accent-color: var(--gl-brass); }
+ .consent span { font-size: 0.8125rem; color: var(--gl-slate); }
+
+ .qr-panel {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  background: var(--gl-bone); border: 1px solid var(--gl-gold);
+  padding: 24px; margin: 18px 0;
+ }
+ .qr-panel__biz { font-family: var(--gl-font-display); font-weight: 500; font-size: 1.125rem; margin-bottom: 10px; }
+ .qr-panel__cta { font-size: 0.875rem; color: var(--gl-slate); margin-top: 12px; }
+
+ .open-link-btn {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+  font-size: 0.875rem; color: var(--gl-brass); font-weight: 600;
+  background: none; border: none; cursor: pointer; text-decoration: underline;
+ }
+
+ .result-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+
+ .top-placements { list-style: none; counter-reset: tp; margin-top: 24px; }
+ .top-placements li {
+  counter-increment: tp;
+  padding: 12px 0; border-bottom: var(--gl-rule); font-size: 0.9375rem;
+ }
+ .top-placements li:last-child { border-bottom: none; }
+ .top-placements li::before {
+  content: counter(tp, decimal-leading-zero) " ";
+  font-family: var(--gl-font-utility); font-size: var(--gl-fs-11); font-weight: 600;
+  letter-spacing: var(--gl-track-utility); color: var(--gl-gold);
+ }
+ .see-all-link {
+  display: inline-flex; align-items: center; gap: 4px; margin-top: 12px;
+  font-weight: 600; color: var(--gl-brass);
+ }
+ .see-all-link:hover { color: var(--gl-brass-hover); }
+
+ .quiet-line { margin-top: 22px; padding-top: 18px; border-top: var(--gl-rule); font-size: 0.9375rem; color: var(--gl-slate); }
+ .quiet-line a { color: var(--gl-brass); font-weight: 600; }
+
+ /* ---- Pull-quote / teaching panel refinements ---- */
+ .pull-quote { font-family: var(--gl-font-display); font-weight: 500; line-height: 1.5; }
+ .teach-panel h3 { font-family: var(--gl-font-display); font-size: 1.125rem; font-weight: 500; margin-bottom: 10px; }
+ .teach-panel p + p { margin-top: 10px; }
+ .teach-panel ul { margin: 10px 0; padding-left: 1.1em; }
+ .teach-panel li + li { margin-top: 6px; }
+
+ /* ---- Customer-facing display mode (via #r=...) ---- */
+ .customer-page {
+  display: none; min-height: 100vh; background: var(--gl-bottle); color: var(--gl-bone);
+  text-align: center; padding: 48px 20px;
+ }
+ .customer-page.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+ .customer-page__brand {
+  font-family: var(--gl-font-display); font-size: 1.125rem; color: var(--gl-gold);
+  text-decoration: none; margin-bottom: 28px;
+ }
+ .customer-page__biz {
+  font-family: var(--gl-font-display); font-size: clamp(1.75rem, 6vw, 2.5rem);
+  font-weight: 500; margin-bottom: 24px; max-width: 20ch;
+ }
+ .customer-page__qr { background: var(--gl-bone); border: 1px solid var(--gl-gold); padding: 20px; margin-bottom: 16px; }
+ .customer-page__label { color: var(--gl-slate-on-bottle); }
+</style>
+</head>
+<body>
+
+<div id="siteChrome">
+
+<header class="sticky-bar">
+ <a class="sticky-bar__mark" href="../index.html">Grow Local</a>
+ <a class="sticky-bar__link" href="../index.html#tools">See the tools</a>
+</header>
+
+<!-- 1. HERO -->
+<section class="tool-hero">
+ <div class="wrap">
+  <div>
+   <p class="utility tool-hero__eyebrow">Any business with customers</p>
+   <h1>Ask while they're still smiling.</h1>
+   <p class="tool-hero__sub">You've probably earned somewhere near fifty five-star reviews this year and you've probably only been given a fraction of them. This closes the gap, and turns reviews from something you get a few in a year into something you get a few in a month.</p>
+   <div class="tool-hero__cta">
+    <a class="btn-brass" href="/review/build/">Build my review QR</a>
+   </div>
+  </div>
+  <div class="mockup" id="heroMockup">
+   <div class="mockup__device">
+    <div class="mockup__notch"></div>
+    <div class="review-star-card">
+     <p class="review-star-card__label">Rate your visit</p>
+     <div class="review-star-card__stars" aria-hidden="true">
+      <span class="star">&#9733;</span>
+      <span class="star">&#9733;</span>
+      <span class="star">&#9733;</span>
+      <span class="star">&#9733;</span>
+      <span class="star star--last">&#9733;</span>
+     </div>
+     <p class="review-star-card__thanks">Thanks. That helps more than you'd think</p>
+    </div>
+   </div>
+   <p class="utility mockup__caption">What your customer sees</p>
+  </div>
+ </div>
+</section>
+
+<main>
+
+ <!-- 2. THE PROBLEM -->
+ <section class="section">
+  <div class="wrap">
+   <p class="utility section__eyebrow">The problem</p>
+   <h2>You're getting a fraction of the reviews you've earned.</h2>
+   <p>Think about last week. How many people left genuinely pleased? Now check how many reviews you got. That gap isn't a service problem; it's a timing problem.</p>
+   <p>People will happily leave a review. They just won't remember later, and they won't go hunting for where. Ask them while they're stood in front of you, with the link already open, and most will.</p>
+  </div>
+ </section>
+
+ <!-- 3. WHAT YOU GET -->
+ <section class="section section--bottle">
+  <div class="wrap">
+   <p class="utility section__eyebrow">What you get</p>
+   <ul style="list-style:none;">
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>A QR that opens your review page</strong>; Straight to the review box. No searching, no menus.</li>
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>A link you can text</strong>; For anyone you finish with off-site.</li>
+    <li style="padding:14px 0;"><strong>A printable version</strong>; Counter, table, receipt, mirror.</li>
+   </ul>
+   <p style="margin-top:14px">Nothing to install, nothing for your customer to download.</p>
+  </div>
+ </section>
+
+ <!-- Owner builder lives on build/. This page keeps marketing + customer #r= mode. -->
+
+ <!-- 5. WHERE TO USE IT -->
+ <section class="section" id="where-to-use-it">
+  <div class="wrap">
+   <p class="utility section__eyebrow">Where to use it</p>
+   <h2>Six places, and when to ask.</h2>
+   <p>Placement matters less than timing. The rule underneath all of it; ask when they're happiest, which is almost always at the end, in person.</p>
+   <ol class="place-list">
+    <li>
+     <h3>The counter or reception desk</h3>
+     <p><em>Where the transaction ends is where they're most pleased.</em></p>
+     <ol>
+      <li>Print at A6 and stand it where they pay.</li>
+      <li>Add one line; "Enjoyed your visit? Two taps, thank you."</li>
+      <li>Have staff mention it as they hand over the card machine. This alone tends to double results.</li>
+     </ol>
+    </li>
+    <li>
+     <h3>The receipt or invoice</h3>
+     <p><em>The one piece of paper they definitely take home.</em></p>
+     <ol>
+      <li>Add the QR to your receipt footer.</li>
+      <li>Keep it 20mm square or larger so it scans reliably.</li>
+     </ol>
+    </li>
+    <li>
+     <h3>By text, straight after</h3>
+     <p><em>For anyone you don't finish with face to face.</em></p>
+     <ol>
+      <li>Save the link as a shortcut on the business phone.</li>
+      <li>Send within the hour, not the next day.</li>
+      <li>Keep it short; "Thanks again. If you've a spare minute, a review really helps us."</li>
+     </ol>
+    </li>
+    <li>
+     <h3>The table or the treatment room</h3>
+     <p><em>A relaxed, captive moment.</em></p>
+     <ol>
+      <li>Restaurants; a small card per table, or on the bill folder.</li>
+      <li>Salons and clinics; on the mirror, or the wall opposite the chair.</li>
+     </ol>
+    </li>
+    <li>
+     <h3>Your window</h3>
+     <p><em>Signals confidence, catches regulars walking past.</em></p>
+     <ol>
+      <li>Print at A5, eye height.</li>
+      <li>Pair it with your star rating if it's good.</li>
+     </ol>
+    </li>
+    <li>
+     <h3>Your email signature</h3>
+     <p><em>Free, permanent, two minutes.</em></p>
+     <ol>
+      <li>One line; "Happy with our work? Leave us a review," with the link behind it.</li>
+     </ol>
+    </li>
+   </ol>
+
+   <p class="utility section__eyebrow" style="margin-top:32px">Ask the happy ones, and ask them today</p>
+   <blockquote class="pull-quote">You're allowed to ask. Most owners feel awkward about it and never do, which is exactly why their review count doesn't match their quality. &ldquo;If you've got a minute, it really does help us&rdquo; is enough. The one thing you mustn't do is offer anything in return; discounts or freebies for reviews break Google's rules and can get the reviews stripped out.</blockquote>
+
+   <div class="teach-panel">
+    <h3>Why timing decides your rating</h3>
+    <p>Here's something most owners never work out. The customers who leave reviews unprompted are overwhelmingly the annoyed ones. Frustration is a much stronger motivator than satisfaction. Meanwhile the fifty people who were perfectly happy say nothing, because nothing happened worth telling anyone about.</p>
+    <p>So a listing left to its own devices doesn't show what your business is like. It shows what your worst weeks were like.</p>
+    <p>The fix isn't filtering anybody or hiding anything. It's simply asking everyone, while the visit is still fresh. Do that consistently and your rating drifts towards the truth, because the quiet majority finally gets counted.</p>
+    <p><strong>What that means in practice;</strong></p>
+    <ul>
+     <li>Ask on the day, not the week after. After about 24 hours, response rates fall off a cliff.</li>
+     <li>Ask everyone, every time, not just the ones you're confident about.</li>
+     <li>A steady trickle beats a burst. Ten reviews over ten weeks is worth more to Google, and looks more credible to a reader, than ten in an afternoon.</li>
+     <li>One poor review inside forty recent good ones barely registers. The same review inside six does real damage. Volume is your protection.</li>
+    </ul>
+    <p>And if someone's unhappy, ask them anyway. A fair, calm reply underneath a critical review persuades more readers than a spotless listing does, because a listing with nothing but five stars is the one people quietly assume is fake.</p>
+   </div>
+  </div>
+ </section>
+
+ <!-- 6. COMMON MISTAKES -->
+ <section class="section section--bottle">
+  <div class="wrap">
+   <p class="utility section__eyebrow">Common mistakes</p>
+   <h2>Four things worth avoiding.</h2>
+   <ul style="list-style:none;">
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Asking days later, by email.</strong> The feeling's faded and the email is one of forty. The same request, in person, at the end of a visit, performs many times better.</li>
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Sending people to your website instead of the review box.</strong> Every extra click loses people. The link should open the stars, ready to tap.</li>
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Having the QR but never mentioning it.</strong> A code nobody points at gets almost no scans. The words do the work; the QR just removes the friction.</li>
+    <li style="padding:14px 0;"><strong>Offering a discount for a review.</strong> Against Google's rules, and those reviews can be removed. Asking plainly works better anyway.</li>
+   </ul>
+  </div>
+ </section>
+
+ <!-- 7. WHAT TO EXPECT -->
+ <section class="section">
+  <div class="wrap">
+   <p class="utility section__eyebrow">What to expect</p>
+   <p>Reviews build slowly. What changes quickly is the rate. Businesses that ask properly, at the right moment, tend to go from a handful a year to a handful a month.</p>
+   <p>That matters because Google's local results weigh how many reviews you have and how recent they are. And because a business with sixty recent reviews gets chosen more often than one with nine from 2021. It's rarely the reason someone picks you. It's very often the reason they don't.</p>
+  </div>
+ </section>
+
+ <!-- 8. NEED A HAND -->
+ <div class="wrap" id="needHandWrap"></div>
+
+ <!-- 9. RELATED -->
+ <section class="related">
+  <div class="wrap">
+   <h2>Related tools</h2>
+   <ul class="related__list">
+    <li><a href="../scorecard/">Google Listing Scorecard</a></li>
+    <li><a href="../reply/">Review Reply Writer</a></li>
+    <li><a href="../quote/">Instant Quote Form</a></li>
+   </ul>
+  </div>
+ </section>
+
+</main>
+
+<footer class="site-footer">
+ <div class="wrap">
+  <p style="font-family: var(--gl-font-display); font-size: 1.25rem; font-weight: 500;">Grow Local</p>
+  <div style="height: 1px; width: 6rem; background: var(--gl-gold); margin: 8px 0 16px;"></div>
+  <p>Grow Local · a growth agency for local business.</p>
+  <p><a href="../index.html#tools">See the free tools</a></p>
+  <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+ <p class="small" style="margin-top:16px;color:var(--gl-slate);font-size:0.75rem;line-height:1.4">Google Listing Scorecard is an independent tool and is not affiliated with or endorsed by Google.</p>
+</div>
+</footer>
+
+</div><!-- /siteChrome -->
+
+<!-- CUSTOMER DISPLAY MODE (via #r=...) -->
+<section class="customer-page" id="step-customer">
+ <a class="customer-page__brand" href="../index.html">Grow Local</a>
+ <h1 class="customer-page__biz" id="custBizName"></h1>
+ <div class="customer-page__qr" id="custQR"></div>
+ <p class="customer-page__label">Scan to leave a Google review</p>
+</section>
+
+<script src="../assets/shared.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+
+function decodeReview(s) {
+ s = s.replace(/-/g, "+").replace(/_/g, "/");
+ return JSON.parse(decodeURIComponent(escape(atob(s))));
+}
+
+function enterCustomerMode(data) {
+ $("siteChrome").style.display = "none";
+ $("custBizName").textContent = data.n;
+ $("custQR").innerHTML = "";
+ new QRCode($("custQR"), {
+  text: data.u,
+  width: 220,
+  height: 220,
+  colorDark: "#0E1613",
+  colorLight: "#ffffff",
+  correctLevel: QRCode.CorrectLevel.M
+ });
+ $("step-customer").classList.add("active");
+}
+
+(function heroMockupObserver() {
+ const mockup = $("heroMockup");
+ if (!mockup) return;
+ if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver((entries) => {
+   entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+     mockup.classList.add("in-view");
+     io.unobserve(mockup);
+    }
+   });
+  }, { threshold: 0.4 });
+  io.observe(mockup);
+ } else {
+  mockup.classList.add("in-view");
+ }
+})();
+
+(function boot() {
+ if (window.TBA && typeof window.TBA.needAHandHtml === "function") {
+  $("needHandWrap").innerHTML = window.TBA.needAHandHtml(
+   "If your Google listing isn't verified, or you're not sure it's showing the right details, that's usually a fifteen-minute fix and we're glad to point you at it."
+  );
+ }
+
+ const hashMatch = location.hash.match(/#r=(.+)/);
+ if (hashMatch) {
+  try {
+   const data = decodeReview(hashMatch[1]);
+   if (data.n && data.u) {
+    enterCustomerMode(data);
+   }
+  } catch (e) {
+   console.warn("Invalid review hash", e);
+  }
+ }
+})();
+</script>
+</body>
+</html>

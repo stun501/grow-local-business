@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your review QR is ready · Grow Local</title>
+<link rel="icon" href="../../assets/monogram-gl.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="../../assets/tokens-shopfront.css">
+<link rel="stylesheet" href="../../assets/product-shell.css">
+<style>
+ .qr-panel {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  background: var(--gl-bone); border: 1px solid var(--gl-gold);
+  padding: 24px; margin: 18px 0;
+ }
+ .qr-panel__biz { font-family: var(--gl-font-display); font-weight: 500; font-size: 1.125rem; margin-bottom: 10px; }
+ .qr-panel__cta { font-size: 0.875rem; color: var(--gl-slate); margin-top: 12px; }
+ .linkbox {
+  font-family: ui-monospace, monospace; font-size: 12px;
+  border: 1.5px solid var(--gl-gold-40); padding: 10px; word-break: break-all; margin-bottom: 10px;
+  background: var(--gl-bone);
+ }
+ .link-label { font-size: 0.8125rem; font-weight: 600; color: var(--gl-slate); margin: 16px 0 6px; }
+ .gen-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+ .msg { margin-top: 12px; font-size: .875rem; font-weight: 600; display: none; }
+ .msg.ok { display: block; color: var(--gl-bottle); }
+ .soft-help { font-size: .875rem; color: var(--gl-slate); margin-top: 16px; }
+ .place-list { list-style: none; counter-reset: pl; margin-top: 20px; }
+ .place-list li {
+  counter-increment: pl; padding: 14px 0; border-bottom: var(--gl-rule);
+ }
+ .place-list li:last-child { border-bottom: none; }
+ .place-list h3 {
+  font-family: var(--gl-font-display); font-size: 1.125rem; font-weight: 500; margin-bottom: 4px;
+ }
+ .place-list h3::before {
+  content: counter(pl, decimal-leading-zero) " ";
+  font-family: var(--gl-font-utility); font-size: var(--gl-fs-11); font-weight: 600;
+  letter-spacing: var(--gl-track-utility); color: var(--gl-gold);
+ }
+ .place-list p { color: var(--gl-slate); font-size: 0.9375rem; }
+</style>
+</head>
+<body>
+<header class="sticky-bar">
+ <a class="sticky-bar__mark" href="../../index.html">Grow Local</a>
+ <a class="sticky-bar__link" href="/review/build/">Start again</a>
+</header>
+<main>
+<section class="generator"><div class="wrap" style="max-width:640px">
+ <p class="utility section__eyebrow">Done</p>
+ <h1 style="font-family:var(--gl-font-display);font-size:clamp(1.75rem,4vw,2.25rem);font-weight:500;margin:8px 0 10px">Your review QR is ready.</h1>
+ <div id="resultBody"></div>
+ <p class="soft-help">Stuck on any of it? <a href="sms:07379028832">Text 07379 028832</a> and we'll talk you through it.</p>
+</div></section>
+
+<section class="section" id="where-to-use-it"><div class="wrap" style="max-width:640px">
+  <p class="utility section__eyebrow">Where to use it</p>
+  <h2>Ask while they're still smiling.</h2>
+  <ol class="place-list">
+   <li><h3>The counter or reception desk</h3><p>Print at A5 or A6, eye height, with one line above; "Scan to leave a review."</p></li>
+   <li><h3>After a good job, by text</h3><p>Send the shareable link the same day while they're happy.</p></li>
+   <li><h3>Your Google Business Profile</h3><p>Add the link in a post or as a button where Google allows it.</p></li>
+   <li><h3>Invoices and follow-up emails</h3><p>One line and the link at the bottom.</p></li>
+  </ol>
+</div></section>
+
+<section class="related"><div class="wrap">
+ <h2>Related tools</h2>
+ <ul class="related__list">
+  <li><a href="../../scorecard/">Google Listing Scorecard</a></li>
+  <li><a href="../../reply/">Review Reply Writer</a></li>
+  <li><a href="../../quote/">Instant Quote Form</a></li>
+ </ul>
+</div></section>
+</main>
+<footer class="site-footer"><div class="wrap">
+ <p style="font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:8px">Grow Local</p>
+ <p><a href="sms:07379028832">Text 07379 028832</a> · <a href="mailto:hello@growlocalbusiness.co.uk">hello@growlocalbusiness.co.uk</a></p>
+ <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+<p class="small" style="margin-top:16px;color:var(--gl-slate);font-size:0.75rem;line-height:1.4">Google Listing Scorecard is an independent tool and is not affiliated with or endorsed by Google.</p>
+</div></footer>
+<script src="../../assets/tool-flow.js"></script>
+<script>
+(function(){
+ var data = window.GLFlow && window.GLFlow.loadResult("review");
+ if (!data) { window.location.replace("../build/"); return; }
+
+ var body = document.getElementById("resultBody");
+ var bizName = data.bizName || "";
+ var shareURL = data.shareURL || "";
+ var googleReviewUrl = data.googleReviewUrl || data.url || "";
+ var qrText = data.qrText || googleReviewUrl || shareURL;
+
+ var html = "";
+ if (bizName) {
+  html += '<p class="qr-panel__biz" style="text-align:left;margin-bottom:0">' + esc(bizName) + "</p>";
+ }
+ if (qrText) {
+  html += '<div class="qr-panel"><div id="qrcode"></div><p class="qr-panel__cta">Scan to leave a Google review</p></div>';
+  html += '<div class="gen-actions"><button class="btn-brass" id="dlQR" type="button">Download QR as image</button></div>';
+ }
+ if (shareURL) {
+  html += '<p class="link-label">Shareable Grow Local link</p>';
+  html += '<div class="linkbox" id="shareLink"></div>';
+  html += '<div class="gen-actions"><button class="btn-brass" id="copyShare" type="button">Copy shareable link</button></div>';
+ }
+ if (googleReviewUrl && googleReviewUrl !== shareURL) {
+  html += '<p class="link-label">Google review URL</p>';
+  html += '<div class="linkbox" id="googleLink"></div>';
+  html += '<div class="gen-actions"><button class="btn-outline" id="copyGoogle" type="button">Copy Google review URL</button></div>';
+ }
+ html += '<p class="msg ok" id="copied">Copied.</p>';
+ body.innerHTML = html;
+
+ if (shareURL && document.getElementById("shareLink")) {
+  document.getElementById("shareLink").textContent = shareURL;
+ }
+ if (googleReviewUrl && document.getElementById("googleLink")) {
+  document.getElementById("googleLink").textContent = googleReviewUrl;
+ }
+
+ if (qrText) {
+  new QRCode(document.getElementById("qrcode"), {
+   text: qrText, width: 200, height: 200,
+   colorDark: "#12291F", colorLight: "#ffffff",
+   correctLevel: QRCode.CorrectLevel.M
+  });
+  document.getElementById("dlQR").addEventListener("click", function(){
+   var img = document.querySelector("#qrcode img") || document.querySelector("#qrcode canvas");
+   if (!img) return;
+   var dataURL = img.tagName === "CANVAS" ? img.toDataURL("image/png") : img.src;
+   var a = document.createElement("a");
+   a.href = dataURL;
+   a.download = (bizName || "review-qr").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-qr.png";
+   a.click();
+  });
+ }
+
+ function flashCopied() {
+  var el = document.getElementById("copied");
+  el.style.display = "block";
+  setTimeout(function () { el.style.display = "none"; }, 2000);
+ }
+
+ async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+   var t = document.createElement("textarea");
+   t.value = text;
+   document.body.appendChild(t);
+   t.select();
+   document.execCommand("copy");
+   t.remove();
+  }
+  flashCopied();
+ }
+
+ var copyShare = document.getElementById("copyShare");
+ if (copyShare) copyShare.addEventListener("click", function () { copyText(shareURL); });
+ var copyGoogle = document.getElementById("copyGoogle");
+ if (copyGoogle) copyGoogle.addEventListener("click", function () { copyText(googleReviewUrl); });
+
+ function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+ }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your scorecard result.; Grow Local</title>
+<link rel="icon" href="../../assets/monogram-gl.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/tokens-shopfront.css">
+<link rel="stylesheet" href="../../assets/product-shell.css">
+<style>
+ .soft-help{font-size:.875rem;color:var(--gl-slate);margin-top:16px}
+ .score-hero{font-family:var(--gl-font-display);font-size:clamp(2.5rem,10vw,3.5rem);font-weight:500;color:var(--gl-brass);margin:8px 0}
+ .capture-card{margin-top:22px;padding:20px;border:1px solid var(--gl-gold);background:var(--gl-bone-warm)}
+ .capture-card h3{font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:6px}
+ .capture-card p{color:var(--gl-slate);font-size:0.9375rem;margin-bottom:12px}
+ .field-grid{display:grid;gap:14px}
+ @media(min-width:560px){.field-grid{grid-template-columns:1.5fr 1fr}}
+ .msg{padding:10px 14px;font-size:0.875rem;margin-top:10px;display:none}
+ .msg.show{display:block}
+ .msg--err{background:var(--err-bg,#fbe9e7);color:var(--err,#b3261e)}
+ .msg--ok{background:rgba(198,161,91,0.16);color:var(--gl-ink)}
+ .again-link{display:inline-block;margin-top:22px;color:var(--gl-brass);font-weight:600}
+ .again-link:hover{color:var(--gl-brass-hover)}
+</style>
+</head>
+<body>
+<header class="sticky-bar">
+ <a class="sticky-bar__mark" href="../../index.html">Grow Local</a>
+ <a class="sticky-bar__link" href="/scorecard/build/">Start again</a>
+</header>
+<main>
+<section class="generator"><div class="wrap" style="max-width:640px">
+ <p class="utility section__eyebrow">Done</p>
+ <h1 style="font-family:var(--gl-font-display);font-size:clamp(1.75rem,4vw,2.25rem);font-weight:500;margin:8px 0 10px">Your scorecard result.</h1>
+ <div id="resultBody"></div>
+
+ <div class="capture-card" id="doneCaptureCard">
+  <h3>Unlock the full scorecard</h3>
+  <p>See all nine categories, detailed recommendations and your score; handy to keep on file or share with your team.</p>
+  <div class="field-grid">
+   <div class="field">
+    <label for="doneName">Name</label>
+    <input type="text" id="doneName" autocomplete="name" required>
+   </div>
+   <div class="field">
+    <label for="doneEmail">Email</label>
+    <input type="email" id="doneEmail" autocomplete="email" placeholder="you@business.co.uk" required>
+   </div>
+  </div>
+  <p class="msg msg--err" id="doneCaptureErr" style="margin-bottom:8px"></p>
+  <div style="margin-top:14px">
+   <button class="btn-brass" id="btnDoneSend" type="button" style="width:100%">Unlock the full report</button>
+  </div>
+  <p class="msg msg--ok" id="doneCaptureOk" style="margin-bottom:0"></p>
+ </div>
+
+ <a class="again-link" href="/scorecard/build/" id="btnCheckAnother">&larr; Check another listing</a>
+ <p class="soft-help">Stuck on any of it? <a href="sms:07379028832">Text 07379 028832</a> and we'll talk you through it.</p>
+</div></section>
+<section class="section" id="placements"><div class="wrap" style="max-width:640px">
+
+  <p class="utility section__eyebrow">Where to use it</p>
+  <h2>What to do with the three fixes.</h2>
+  <ol class="place-list">
+   <li><h3>Fix the easy wins this morning</h3><p>Hours, category and a fresh photo are usually the fastest lifts.</p></li>
+   <li><h3>Reply to every review</h3><p>Use the Review Reply Writer if you want a draft in your own words.</p></li>
+   <li><h3>Re-check in a month</h3><p>Scores move when you keep the listing alive.</p></li>
+  </ol>
+</div></section>
+<section class="related"><div class="wrap">
+ <h2>Related tools</h2>
+ <ul class="related__list"><li><a href="../../review/">Google Review QR</a></li><li><a href="../../reply/">Review Reply Writer</a></li></ul>
+</div></section>
+</main>
+<footer class="site-footer"><div class="wrap">
+ <p style="font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:8px">Grow Local</p>
+ <p><a href="sms:07379028832">Text 07379 028832</a> · <a href="mailto:hello@growlocalbusiness.co.uk">hello@growlocalbusiness.co.uk</a></p>
+ <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+ <p class="small" style="margin-top:16px;color:var(--gl-slate);font-size:0.75rem;line-height:1.4">Google Listing Scorecard is an independent tool and is not affiliated with or endorsed by Google.</p>
+</div></footer>
+<script src="../../assets/shared.js"></script>
+<script src="../../assets/tool-flow.js"></script>
+<script>
+(function(){
+ var BASEROW_CONFIG = {
+  BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+  OWNER_LEADS_TABLE_ID: "1092861",
+  BASEROW_URL: "https://api.baserow.io"
+ };
+
+ var data = window.GLFlow && window.GLFlow.loadResult("scorecard");
+ if (!data) { window.location.replace("../build/"); return; }
+
+ var body = document.getElementById("resultBody");
+ if (data.html) {
+  body.innerHTML = data.html;
+ } else if (typeof data.score === "number") {
+  var html = '<p class="small" style="margin-bottom:8px">Most listings we check score under 50. That is not a reflection on the business; it is that nobody ever tells owners this stuff exists.</p>';
+  html += '<p class="score-hero">' + data.score + '<span style="font-size:1.25rem"> / 100</span></p>';
+  if (data.summaryHtml) html += data.summaryHtml;
+  body.innerHTML = html;
+ }
+
+ /* Remove any "See where to use this" / "Use This" buttons injected from build page HTML */
+ var useBtn = document.getElementById("glScoreToDone");
+ if (useBtn) useBtn.remove();
+
+ /* Fix all "Check another listing" links inside injected HTML */
+ var injectedAgain = body.querySelector("#btnAgain") || body.querySelector(".again-link");
+ if (injectedAgain) injectedAgain.remove();
+
+ /* Strip injected build capture form (unlock happens once) */
+ var injectedCapture = body.querySelector("#captureCard");
+ if (injectedCapture) injectedCapture.remove();
+ var emptyPhoto = body.querySelector("#resultPhoto");
+ if (emptyPhoto && (emptyPhoto.hidden || !emptyPhoto.querySelector("img"))) emptyPhoto.remove();
+
+ var alreadyUnlocked = !!(data.emailed || data.unlocked);
+ var doneCapture = document.getElementById("doneCaptureCard");
+ if (alreadyUnlocked && doneCapture) {
+  doneCapture.style.display = "none";
+ }
+
+ /* "Check another listing" button */
+ document.getElementById("btnCheckAnother").addEventListener("click", function(e) {
+  e.preventDefault();
+  window.GLFlow.clearResult("scorecard");
+  window.location.href = "/scorecard/build/";
+ });
+
+ /* Second unlock only if they have not already unlocked on the build step */
+ if (alreadyUnlocked) return;
+
+ document.getElementById("btnDoneSend").addEventListener("click", async function() {
+  var name = document.getElementById("doneName").value.trim();
+  var email = document.getElementById("doneEmail").value.trim();
+  var err = document.getElementById("doneCaptureErr");
+  var ok = document.getElementById("doneCaptureOk");
+  err.classList.remove("show");
+  ok.classList.remove("show");
+
+  if (!name || !email) {
+   err.textContent = "Please enter your name and email so we can unlock the full report.";
+   err.classList.add("show");
+   return;
+  }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+   err.textContent = "That email doesn't look quite right. Please check and try again.";
+   err.classList.add("show");
+   return;
+  }
+
+  var btn = document.getElementById("btnDoneSend");
+  btn.disabled = true;
+  btn.textContent = "One moment\u2026";
+
+  if (window.TBA && window.TBA.baserowReady(BASEROW_CONFIG, BASEROW_CONFIG.OWNER_LEADS_TABLE_ID)) {
+   try {
+    await window.TBA.baserowAdd(BASEROW_CONFIG, BASEROW_CONFIG.OWNER_LEADS_TABLE_ID, {
+     "Name": name,
+     "Email": email,
+     "Business": (data && data.businessName) || "",
+     "Tool": "Google Listing Scorecard",
+     "Consent": "Yes",
+     "Date": (window.TBA && window.TBA.baserowDateToday)
+      ? window.TBA.baserowDateToday()
+      : new Date().toISOString().slice(0, 10)
+    });
+
+   } catch (e) {
+    console.warn("Owner lead not saved:", e);
+   }
+  }
+
+  btn.disabled = false;
+  btn.textContent = "Unlock the full report";
+  document.getElementById("doneCaptureCard").style.display = "none";
+  ok.textContent = "Unlocked. Scroll down to see the full report.";
+  ok.classList.add("show");
+ });
+})();
+</script>
+</body>
+</html>

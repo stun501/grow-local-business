@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build your quote form; Grow Local</title>
+<meta name="description" content="Catch them before they ring your competitor. Build a quote form with your prices in about a minute. Free, no sign-up.">
+<link rel="icon" href="../../assets/monogram-gl.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="../../assets/tokens-shopfront.css">
+<link rel="stylesheet" href="../../assets/product-shell.css">
+<style>
+ .step{display:none}.step.active{display:block}
+ .card{background:var(--gl-bone);border:1.5px solid var(--gl-gold-40);padding:18px;margin-top:14px}
+ .msg{margin-top:12px;font-size:.875rem;font-weight:600;display:none}
+ .msg.ok{display:block;color:var(--gl-bottle)}.msg.err{color:var(--gl-oxblood)}
+ .btn{display:block;width:100%;font:inherit;font-size:1rem;font-weight:600;background:var(--gl-ink);color:var(--gl-bone);border:none;padding:14px 16px;cursor:pointer}
+ .btn.hazard,.btn.btn-brass{background:var(--gl-brass);color:var(--gl-bone)}
+ .btn.secondary{background:transparent;color:var(--gl-ink);border:1.5px solid var(--gl-ink);margin-top:10px}
+ .trade-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+ .trade-btn{font:inherit;font-size:.875rem;font-weight:600;background:var(--gl-bone);border:1.5px solid var(--gl-gold-40);padding:12px 10px;cursor:pointer}
+ .trade-btn.selected{border-color:var(--gl-gold);box-shadow:inset 3px 0 0 var(--gl-gold)}
+ .board-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--gl-gold);padding-bottom:8px;margin-bottom:4px}
+ .board-head h2{font-family:var(--gl-font-display);font-size:1rem;font-weight:500}
+ .col-labels{display:grid;grid-template-columns:1fr 74px 74px 30px;gap:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gl-slate);padding:8px 0 2px}
+ .col-labels span:nth-child(2),.col-labels span:nth-child(3){text-align:right}
+ .job-row{display:grid;grid-template-columns:1fr 74px 74px 30px;gap:8px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--gl-gold-40)}
+ .job-row.quote-only{grid-template-columns:1fr 148px 30px}
+ .job-row input{padding:8px;font-size:14px;width:100%;border:1.5px solid var(--gl-gold-40);background:var(--gl-bone);font:inherit}
+ .job-row input.price{font-family:ui-monospace,monospace;text-align:right}
+ .job-row .del{font:inherit;background:none;border:none;color:var(--gl-slate);font-size:18px;cursor:pointer}
+ .addjob{margin-top:12px;background:none;border:1.5px dashed var(--gl-slate);color:var(--gl-ink);font:inherit;font-size:14px;font-weight:600;width:100%;padding:10px;cursor:pointer}
+ .pick{width:100%;text-align:left;font:inherit;background:var(--gl-bone);border:1.5px solid var(--gl-gold-40);padding:13px 14px;margin-bottom:9px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+ .pick[aria-pressed=true]{border-color:var(--gl-brass);box-shadow:inset 3px 0 0 var(--gl-gold)}
+ .chip{font-family:ui-monospace,monospace;font-size:14px;font-weight:700;background:var(--gl-gold);color:var(--gl-ink);padding:4px 9px;white-space:nowrap}
+ .chip.visit{background:var(--gl-bone-warm);font-family:inherit;font-size:12px}
+ .ballpark{background:var(--gl-bottle);color:var(--gl-bone);padding:18px;margin:16px 0;text-align:center}
+ .ballpark .b-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--gl-gold);font-weight:700}
+ .ballpark .b-price{font-family:ui-monospace,monospace;font-size:clamp(28px,8vw,38px);font-weight:700;margin-top:6px}
+ .ballpark .b-note{font-size:12px;color:var(--gl-slate-on-bottle);margin-top:6px}
+ .callback-box{border:1.5px solid var(--gl-gold);padding:16px;margin:16px 0;text-align:center}
+ .small{font-size:.8125rem;color:var(--gl-slate)}
+ .qrbox{display:flex;justify-content:center;padding:16px;border:1px solid var(--gl-gold);margin:14px 0;background:var(--gl-bone)}
+ .linkbox{font-family:ui-monospace,monospace;font-size:12px;border:1.5px solid var(--gl-gold-40);padding:10px;word-break:break-all;margin-bottom:10px}
+ .consent{display:flex;gap:9px;align-items:flex-start;margin:4px 0 14px}
+ .consent span{font-size:.8125rem;color:var(--gl-slate)}
+ .success-tick{font-size:40px;text-align:center;margin-bottom:6px}
+ .cta-soft{border:1px solid var(--gl-gold);padding:14px;margin-top:14px;font-size:.875rem}
+ .site-visit-tag{display:inline-block;font-size:11px;font-weight:700;background:var(--gl-bone-warm);padding:3px 8px;color:var(--gl-slate)}
+ /* Landing-page phone mockup (garage → salon → dental) */
+ .quote-phone-wrap { width: 100%; max-width: 280px; margin: 0 auto; }
+ .phone {
+  width: 100%;
+  background: #1a1f1c;
+  border: 1px solid var(--gl-gold-40);
+  border-radius: 28px;
+  padding: 10px;
+  box-sizing: border-box;
+ }
+ .phone__screen {
+  position: relative;
+  background: var(--gl-bone);
+  border-radius: 20px;
+  overflow: hidden;
+  color: var(--gl-ink);
+  padding: 16px 14px 18px;
+  min-height: 340px;
+  box-sizing: border-box;
+ }
+ .phone__notch {
+  width: 72px;
+  height: 6px;
+  background: #2a322e;
+  border-radius: 999px;
+  margin: 0 auto 14px;
+ }
+ .phone__label {
+  color: var(--gl-gold);
+  margin-bottom: 8px;
+  display: block;
+ }
+ .phone__stages { position: relative; min-height: 250px; }
+ .phone__stage {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.7s var(--gl-ease);
+  pointer-events: none;
+ }
+ .phone__stage.is-active {
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
+ }
+ @media (prefers-reduced-motion: reduce) {
+  .phone__stage { transition: none; }
+ }
+ .phone__title {
+  font-family: var(--gl-font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: var(--gl-track-display);
+  line-height: 1.15;
+  margin-bottom: 4px;
+ }
+ .phone__meta {
+  font-size: 0.75rem;
+  color: var(--gl-slate);
+  margin-bottom: 14px;
+ }
+ .phone__jobs { list-style: none; border-top: var(--gl-rule); margin: 0; padding: 0; }
+ .phone__jobs li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 0;
+  border-bottom: var(--gl-rule);
+  font-size: 0.78rem;
+ }
+ .phone__jobs strong { font-weight: 600; color: var(--gl-ink); }
+ .phone__jobs span { color: var(--gl-slate); white-space: nowrap; }
+ .phone__cta {
+  margin-top: 14px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.7em;
+  background: var(--gl-brass);
+  color: var(--gl-bone);
+ }
+ .phone__caption {
+  color: var(--gl-gold);
+  margin-top: 14px;
+  text-align: center;
+ }
+ @media (max-width:400px){.trade-grid{grid-template-columns:1fr}.job-row,.col-labels{grid-template-columns:1fr 60px 60px 28px}}
+</style>
+</head>
+<body>
+<header class="sticky-bar">
+ <a class="sticky-bar__mark" href="../../index.html">Grow Local</a>
+ <a class="sticky-bar__link" href="../">Back to overview</a>
+</header>
+<div class="wrap" style="max-width:640px;padding-top:20px">
+ <p class="utility" style="color:var(--gl-gold)">Instant Quote Form</p>
+ <h1 style="font-family:var(--gl-font-display);font-size:1.75rem;font-weight:500;margin:8px 0 4px">Build your quote form</h1>
+</div>
+<!-- IDs used by customer-mode JS when opened via #q= -->
+<div class="wrap" id="custHeader" hidden>
+ <p class="utility" id="eyebrow" style="color:var(--gl-gold);margin-top:20px"></p>
+ <h1 id="title" style="font-family:var(--gl-font-display);font-size:1.75rem;font-weight:500;margin:8px 0"></h1>
+ <p class="small" id="subtitle"></p>
+</div>
+<p id="pageFooter" class="wrap small" style="padding-bottom:24px" hidden></p>
+
+<main>
+<section class="generator" id="generator"><div class="wrap" style="max-width:640px">
+
+<section class="step active" id="step-name">
+  <div class="card">
+   <h2 style="font-size:17px;font-weight:800;margin-bottom:10px">Your business details</h2>
+   <div class="field">
+    <label for="bizname">Business name</label>
+    <input type="text" id="bizname" placeholder="e.g. Smith's Autos" autocomplete="organization">
+   </div>
+   <div class="field">
+    <label>What trade are you in?</label>
+    <div class="trade-grid" id="tradeGrid"></div>
+   </div>
+   <button class="btn" id="toPrices">See my price board</button>
+   <p class="msg" id="nameErr" style="display:none;color:var(--gl-oxblood)">Enter your business name and pick a trade.</p>
+  </div>
+ </section>
+
+ <!-- STEP 2; Price board (editable) + phone -->
+ <section class="step" id="step-prices">
+  <div class="card">
+   <h2 style="font-size:17px;font-weight:800;margin-bottom:4px">Your draft prices</h2>
+   <p class="small" style="margin-bottom:12px">Review the suggested prices below and change anything that is not right. Nothing is fixed; you can update or rebuild this any time. You can also add jobs that are not listed.</p>
+   <div class="board-head">
+    <h2 id="boardTitle">Price board</h2>
+    <span class="hint">Tweak to your numbers</span>
+   </div>
+   <div class="col-labels"><span>Job</span><span>From &pound;</span><span>To &pound;</span><span></span></div>
+   <div id="jobList"></div>
+   <button class="addjob" id="addJob">+ Add a job</button>
+   <div class="field" style="margin-top:18px">
+    <label for="bizphone">Business phone <span class="hint">(shown on your form so customers can call you)</span></label>
+    <input type="tel" id="bizphone" placeholder="e.g. 07700 900123" autocomplete="tel">
+   </div>
+   <button class="btn hazard" id="buildForm" style="margin-top:14px">Create my quote form</button>
+  </div>
+ </section>
+
+ <!-- STEP 3; Live preview + email unlock -->
+ <section class="step" id="step-preview">
+  <div class="card">
+   <h2 style="font-size:17px;font-weight:800;margin-bottom:4px">Your live quote form</h2>
+   <p class="small" style="margin-bottom:12px">This is exactly what your customers will see. You can keep customising before sharing.</p>
+   <div id="previewArea" style="border:1.5px dashed var(--line);border-radius:10px;padding:12px"></div>
+   <button class="btn secondary" id="backToPrices" style="margin-top:14px">Edit prices</button>
+  </div>
+  <div class="card" style="margin-top:14px">
+   <h2 style="font-size:17px;font-weight:800;margin-bottom:4px">Unlock your QR code and link</h2>
+   <p class="small" style="margin-bottom:12px">Unlock the downloadable QR code, shareable link, and download options by entering your name and email.</p>
+   <div class="field">
+    <label for="leadName">Your name</label>
+    <input type="text" id="leadName" autocomplete="name">
+   </div>
+   <div class="field">
+    <label for="leadEmail">Email</label>
+    <input type="email" id="leadEmail" autocomplete="email" placeholder="you@business.co.uk">
+   </div>
+   <p class="utility" style="color:var(--gl-gold);margin-bottom:10px">Your details unlock the download. We won't ring you.</p>
+   <div class="consent">
+    <input type="checkbox" id="consent" checked>
+    <span id="consentText">It's fine to email me about this tool and other free ideas for my business. Unsubscribe any time.</span>
+   </div>
+   <button class="btn hazard" id="unlock">Unlock my QR code</button>
+   <p class="msg err" id="capErr"></p>
+  </div>
+ </section>
+
+ <!-- STEP 6; Result: QR, link, download, consultant contact, soft CTA -->
+ <section class="step" id="step-result">
+  <div class="card">
+   <h2 style="font-size:17px;font-weight:800;margin-bottom:4px">Your quote form is ready</h2>
+   <p class="small">Three ways to use it, starting today;</p>
+   <ul class="small" style="margin:8px 0 4px 18px;line-height:1.7">
+    <li><strong>On your counter or window</strong>; print the QR below.</li>
+    <li><strong>Mid-call</strong>; text the link while the customer's on the phone.</li>
+    <li><strong>Online</strong>; add the link to your website and Google Business Profile.</li>
+   </ul>
+   <div class="qrbox"><div id="qrcode" role="img" aria-label="QR code linking to your quote form"></div></div>
+   <div class="linkbox" id="shareLink"></div>
+   <button class="btn" id="copyLink">Copy link</button>
+   <button class="btn secondary" id="dlQR">Download QR as image</button>
+   <p class="msg ok" id="copied">Link copied.</p>
+  </div>
+  <div id="consultantBlock"></div>
+ </section>
+
+ <!-- CUSTOMER MODE -->
+ <section class="step" id="step-customer">
+  <div class="card">
+   <div id="custJobs"></div>
+   <div class="ballpark" id="ballpark" style="display:none">
+    <div class="b-label">Ballpark price</div>
+    <div class="b-price" id="bpPrice">&pound;0&ndash;&pound;0</div>
+    <div class="b-note" id="bpNote">Final price confirmed after a quick look.</div>
+   </div>
+   <div class="callback-box" id="callbackBox" style="display:none">
+    <div class="cb-label">This one needs a site visit</div>
+    <div class="cb-note">Leave your details below and we'll call you back to arrange it.</div>
+   </div>
+   <div id="custCapture" style="display:none">
+    <div class="field">
+     <label for="custName">Your name</label>
+     <input type="text" id="custName" autocomplete="name">
+    </div>
+    <div class="field">
+     <label for="custPhone">Mobile number <span class="hint">; we'll call you back</span></label>
+     <input type="tel" id="custPhone" autocomplete="tel">
+    </div>
+    <div class="field" id="custExtraField">
+     <label for="custReg" id="custRegLabel">Vehicle reg or make/model <span class="hint">(optional)</span></label>
+     <input type="text" id="custReg" placeholder="e.g. AB12 CDE or Ford Focus 2018">
+    </div>
+    <button class="btn hazard" id="custSend">Request my exact quote</button>
+    <p class="msg err" id="custErr"></p>
+   </div>
+   <div id="custDone" style="display:none">
+    <div class="success-tick">&#10003;</div>
+    <h2 style="font-size:18px;font-weight:800;text-align:center">Request sent</h2>
+    <p class="small" style="text-align:center;margin-top:6px" id="custDoneMsg"></p>
+   </div>
+  </div>
+ </section>
+</div>
+
+
+</div></section>
+
+<footer class="site-footer"><div class="wrap">
+ <p style="font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:8px">Grow Local</p>
+ <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+</div></footer>
+
+<script src="../../assets/shared.js"></script>
+<script src="../../assets/tool-flow.js"></script>
+<script>
+
+/* ================================================================
+  CONFIG; fill these in once (see SETUP-GUIDE for Baserow setup)
+  ================================================================ */
+const CONFIG = {
+ BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ OWNER_LEADS_TABLE_ID: "1092861",
+ CUSTOMER_LEADS_TABLE_ID: "1092866",
+ BASEROW_URL: "https://api.baserow.io"
+};
+
+/* ================================================================
+  TRADE TEMPLATES; 9 trades
+  ================================================================ */
+const CALLOUT_JOBS = [
+ {name:"Standard call-out / assessment", lo:50, hi:90},
+ {name:"Out-of-hours / emergency call-out", lo:90, hi:150},
+ {name:"Same-day call-out", lo:70, hi:120}
+];
+
+const TRADE_TEMPLATES = {
+ salon: [
+  {name:"Cut & finish", lo:35, hi:65},
+  {name:"Colour", lo:55, hi:120},
+  {name:"Blow dry", lo:20, hi:40},
+  {name:"Highlights", lo:70, hi:150},
+  {name:"Men's cut", lo:15, hi:30}
+ ],
+ garage: [
+  {name:"Front brake pads", lo:90, hi:160},
+  {name:"Full service", lo:150, hi:260},
+  {name:"Interim service", lo:90, hi:150},
+  {name:"MOT test", lo:40, hi:55},
+  {name:"Clutch replacement", lo:450, hi:900},
+  {name:"Timing belt", lo:280, hi:550},
+  {name:"Battery supply & fit", lo:110, hi:190},
+  {name:"Diagnostics check", lo:45, hi:80}
+ ],
+ plumber: [
+  {name:"Leak / tap repair", lo:70, hi:140},
+  {name:"Blocked drain / toilet", lo:80, hi:150},
+  {name:"Boiler service", lo:70, hi:110},
+  {name:"Boiler repair (no parts)", lo:120, hi:250},
+  {name:"New toilet / tap install", lo:100, hi:200},
+  {name:"Emergency burst pipe", lo:120, hi:220}
+ ],
+ electrician: [
+  {name:"Fault finding", lo:70, hi:150},
+  {name:"Socket / switch install", lo:50, hi:90},
+  {name:"Consumer unit upgrade", lo:350, hi:650},
+  {name:"Full rewire (per room)", lo:600, hi:1200},
+  {name:"PAT / safety check", lo:80, hi:150},
+  {name:"EV charger install", lo:600, hi:1000}
+ ],
+ locksmith: [
+  {name:"Lockout (standard)", lo:60, hi:100},
+  {name:"Emergency lockout", lo:90, hi:150},
+  {name:"Lock change", lo:70, hi:130},
+  {name:"Lock upgrade (BS3621)", lo:120, hi:220}
+ ],
+ roofer: [
+  {name:"Roof inspection", lo:60, hi:100},
+  {name:"Minor repair", lo:150, hi:350},
+  {name:"Gutter repair / clean", lo:80, hi:180},
+  {name:"Full re-roof", quoteOnly:true}
+ ],
+ painter: [
+  {name:"Single room", lo:250, hi:450},
+  {name:"Interior (per room)", lo:200, hi:400},
+  {name:"Exterior", lo:400, hi:900}
+ ],
+ gardener: [
+  {name:"Standard visit", lo:40, hi:70},
+  {name:"Full clearance", lo:150, hi:350},
+  {name:"Hedge trimming", lo:60, hi:120}
+ ],
+ pest: [
+  {name:"Standard treatment", lo:80, hi:150},
+  {name:"Wasp nest removal", lo:70, hi:100},
+  {name:"Rodent treatment", lo:150, hi:300}
+ ],
+ custom: []
+};
+
+const TRADE_LABELS = {
+ salon:"Salon", garage:"Garage", plumber:"Plumber", electrician:"Electrician",
+ locksmith:"Locksmith", roofer:"Roofer", painter:"Painter", gardener:"Gardener",
+ pest:"Pest Control", custom:"Create Custom Quote Form"
+};
+
+const $ = id => document.getElementById(id);
+const allSteps = ["step-name","step-prices","step-preview","step-result","step-customer"];
+function applyStep(step){
+ allSteps.forEach(s=>{ var el=$(s); if(el) el.classList.toggle("active", s===step); });
+ var el=$(step); if(el){ var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches; el.scrollIntoView({behavior:r?"auto":"smooth",block:"start"}); }
+}
+function show(step){
+ applyStep(step);
+ if (window.GLFlow && typeof window.GLFlow.pushStep === "function") {
+  window.GLFlow.pushStep("quote", step);
+ }
+}
+if (window.GLFlow && typeof window.GLFlow.bindStepHistory === "function") {
+ window.GLFlow.bindStepHistory("quote", function (stepId) {
+  if (allSteps.indexOf(stepId) !== -1) applyStep(stepId);
+ }, "step-name");
+}
+
+/* ---------------- Helpers ---------------- */
+function escAttr(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}
+function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+/* ---------------- Baserow ---------------- */
+function baserowReady(tableId){
+ return CONFIG.BASEROW_TOKEN && !CONFIG.BASEROW_TOKEN.startsWith("PASTE") &&
+     tableId && !String(tableId).startsWith("PASTE");
+}
+async function baserowAdd(tableId, row){
+ if(window.TBA && typeof window.TBA.baserowAdd === "function"){
+  return window.TBA.baserowAdd(CONFIG, tableId, row);
+ }
+ const res = await fetch(`${CONFIG.BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true`,{
+  method:"POST",
+  headers:{"Authorization":"Token "+CONFIG.BASEROW_TOKEN,"Content-Type":"application/json"},
+  body:JSON.stringify(row)
+ });
+ if(!res.ok) throw new Error("Baserow "+res.status);
+ return res.json();
+}
+
+/* ================================================================
+  BUILDER STATE
+  ================================================================ */
+let jobs = [];
+let biz = {name:"", phone:"", trade:""};
+let selectedTrade = "";
+
+/* --- Trade picker grid --- */
+(function renderTradeGrid(){
+ const grid = $("tradeGrid");
+ Object.keys(TRADE_LABELS).forEach(key=>{
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "trade-btn";
+  btn.textContent = TRADE_LABELS[key];
+  btn.dataset.trade = key;
+  btn.addEventListener("click", ()=>{
+   grid.querySelectorAll(".trade-btn").forEach(b=>b.classList.remove("selected"));
+   btn.classList.add("selected");
+   selectedTrade = key;
+  });
+  grid.appendChild(btn);
+ });
+})();
+
+/* --- Step 1 → 2 --- */
+$("toPrices").addEventListener("click", ()=>{
+ const n = $("bizname").value.trim();
+ const err = $("nameErr");
+ if(!n && !selectedTrade){
+  err.textContent = "Enter your business name and pick a trade.";
+  err.style.display = "block";
+  return;
+ }
+ if(!n){
+  err.textContent = "Enter your business name.";
+  err.style.display = "block";
+  return;
+ }
+ if(!selectedTrade){
+  err.textContent = "Pick the trade that best fits your business.";
+  err.style.display = "block";
+  return;
+ }
+ err.style.display = "none";
+ biz.name = n;
+ biz.trade = selectedTrade;
+
+ if (selectedTrade === "custom") {
+  jobs = [{name:"", lo:0, hi:0}];
+ } else {
+  const template = TRADE_TEMPLATES[selectedTrade] || [];
+  const callouts = (selectedTrade === "garage" || selectedTrade === "salon") ? [] : CALLOUT_JOBS;
+  jobs = [...callouts, ...template].map(j=>({...j}));
+ }
+
+ $("boardTitle").textContent = n + " - price board";
+ renderJobRows();
+ show("step-prices");
+});
+
+/* --- Price board rendering --- */
+function renderJobRows(){
+ const list = $("jobList");
+ list.innerHTML = "";
+ jobs.forEach((j,i)=>{
+  const row = document.createElement("div");
+  if(j.quoteOnly){
+   row.className = "job-row quote-only";
+   row.innerHTML = `
+    <input type="text" value="${escAttr(j.name)}" aria-label="Job name" data-i="${i}" data-k="name">
+    <span class="site-visit-tag">Site visit required</span>
+    <button class="del" aria-label="Remove ${escAttr(j.name)}" data-del="${i}">&times;</button>`;
+  } else {
+   row.className = "job-row";
+   row.innerHTML = `
+    <input type="text" value="${escAttr(j.name)}" aria-label="Job name" data-i="${i}" data-k="name">
+    <input type="text" inputmode="numeric" class="price" value="${j.lo}" aria-label="Price from" data-i="${i}" data-k="lo">
+    <input type="text" inputmode="numeric" class="price" value="${j.hi}" aria-label="Price to" data-i="${i}" data-k="hi">
+    <button class="del" aria-label="Remove ${escAttr(j.name)}" data-del="${i}">&times;</button>`;
+  }
+  list.appendChild(row);
+ });
+}
+
+$("jobList").addEventListener("input", e=>{
+ const i = e.target.dataset.i, k = e.target.dataset.k;
+ if(i===undefined) return;
+ jobs[i][k] = k==="name" ? e.target.value : (parseInt(e.target.value.replace(/\D/g,""),10)||0);
+});
+$("jobList").addEventListener("click", e=>{
+ const d = e.target.dataset.del;
+ if(d!==undefined){ jobs.splice(+d,1); renderJobRows(); }
+});
+$("addJob").addEventListener("click", ()=>{
+ jobs.push({name:"", lo:0, hi:0});
+ renderJobRows();
+ const rows = $("jobList").querySelectorAll(".job-row");
+ rows[rows.length-1].querySelector("input").focus();
+});
+
+/* --- Step 2 → 3 (generate preview) --- */
+$("buildForm").addEventListener("click", ()=>{
+ jobs = jobs.filter(j=> j.name.trim() && (j.quoteOnly || j.hi > 0));
+ if(jobs.length===0){ alert("Add at least one job with a price."); renderJobRows(); return; }
+ biz.phone = ($("bizphone") && $("bizphone").value) ? $("bizphone").value.trim() : "";
+ renderCustomerForm($("previewArea"), true);
+ show("step-preview");
+});
+$("backToPrices").addEventListener("click", ()=>{ renderJobRows(); show("step-prices"); });
+
+/* --- Step 3 unlock → result --- */
+$("unlock").addEventListener("click", async ()=>{
+ const name = ($("leadName") && $("leadName").value) ? $("leadName").value.trim() : "";
+ const email = ($("leadEmail") && $("leadEmail").value) ? $("leadEmail").value.trim() : "";
+ const err = $("capErr");
+ if(err){ err.className="msg"; err.style.display="none"; }
+ if(!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+  if(err){ err.textContent = "Add your name and a valid email to unlock."; err.className="msg err"; }
+  return;
+ }
+ $("unlock").disabled = true; $("unlock").textContent = "One second\u2026";
+ if(baserowReady(CONFIG.OWNER_LEADS_TABLE_ID)){
+  try{
+   await baserowAdd(CONFIG.OWNER_LEADS_TABLE_ID,{
+    "Name": name, "Email": email, "Business": biz.name, "Phone": biz.phone,
+    "Tool": "Instant Quote Form", "Consent": ($("consent") && $("consent").checked) ? "Yes":"No",
+    "Date": new Date().toISOString()
+   });
+  }catch(e){ console.warn("Lead not saved:", e); }
+ } else {
+  console.warn("Baserow not configured; owner lead not saved:", {name,email,biz});
+ }
+ buildShareables();
+ renderConsultantBlock();
+ $("unlock").disabled = false; $("unlock").textContent = "Unlock my QR code";
+ if (window.GLFlow) {
+  window.GLFlow.goToDone("quote", {
+   shareURL: shareURL,
+   bizName: biz.name || "",
+   phone: biz.phone || ""
+  }, "../done/");
+  return;
+ }
+ show("step-result");
+});
+
+/* ================================================================
+  ENCODE / DECODE; supports quoteOnly via "q" sentinel
+  ================================================================ */
+function encodeConfig(){
+ const payload = {
+  n: biz.name,
+  p: biz.phone,
+  t: biz.trade,
+  j: jobs.map(j=> j.quoteOnly ? [j.name,"q"] : [j.name, j.lo, j.hi])
+ };
+ return btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+     .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function decodeConfig(s){
+ s = s.replace(/-/g,"+").replace(/_/g,"/");
+ const json = decodeURIComponent(escape(atob(s)));
+ const p = JSON.parse(json);
+ return {
+  name: p.n,
+  phone: p.p,
+  trade: p.t || "garage",
+  jobs: p.j.map(a=> a[1]==="q" ? {name:a[0], quoteOnly:true} : {name:a[0], lo:a[1], hi:a[2]})
+ };
+}
+
+/* ================================================================
+  SHARE LINK + QR
+  ================================================================ */
+let shareURL = "";
+function buildShareables(){
+ shareURL = location.origin + location.pathname.replace(/\/build(?:\/index\.html)?\/?$/i, "/").replace(/build\.html$/i, "index.html") + "#q=" + encodeConfig();
+ $("shareLink").textContent = shareURL;
+ $("qrcode").innerHTML = "";
+ new QRCode($("qrcode"), {text:shareURL, width:200, height:200,
+  colorDark:"#171a1e", colorLight:"#ffffff", correctLevel:QRCode.CorrectLevel.M});
+}
+$("copyLink").addEventListener("click", async ()=>{
+ try{ await navigator.clipboard.writeText(shareURL); }
+ catch(e){
+  const t=document.createElement("textarea");t.value=shareURL;document.body.appendChild(t);
+  t.select();document.execCommand("copy");t.remove();
+ }
+ $("copied").className="msg ok";
+ setTimeout(()=> $("copied").className="msg",1800);
+});
+$("dlQR").addEventListener("click", ()=>{
+ const img = $("qrcode").querySelector("img") || $("qrcode").querySelector("canvas");
+ let dataURL;
+ if(img.tagName==="CANVAS") dataURL = img.toDataURL("image/png");
+ else dataURL = img.src;
+ const a = document.createElement("a");
+ a.href = dataURL;
+ a.download = (biz.name||"quote-form").replace(/[^a-z0-9]+/gi,"-").toLowerCase()+"-qr.png";
+ a.click();
+});
+
+/* ================================================================
+  CONSULTANT CONTACT BLOCK
+  ================================================================ */
+function renderConsultantBlock(){
+ const el = $("consultantBlock");
+ if(window.TBA && typeof window.TBA.renderContactBlock === "function"){
+  window.TBA.renderContactBlock(el);
+  const cta = document.createElement("div");
+  cta.className = "cta-soft";
+  cta.innerHTML = "<strong>Want more tools like this?</strong> " +
+   (window.TBA.CONSULT_CTA || "Text 07379 028832 and we'll talk you through it, no obligations.");
+  el.appendChild(cta);
+  return;
+ }
+ el.innerHTML = `
+  <div class="contact-block">
+   <p class="contact-block__heading">The tool is provided to you by</p>
+   <div class="cb-name">Grow Local</div>
+   <div class="cb-detail">Craig &mdash; <a href="sms:07379028832">Text 07379 028832</a></div>
+   <div class="cb-detail"><a href="mailto:hello@growlocalbusiness.co.uk">hello@growlocalbusiness.co.uk</a></div>
+  </div>
+  <div class="cta-soft">
+   <strong>Want more tools like this?</strong>
+   Text 07379 028832 and we'll talk you through it &mdash, no obligations, just ideas for your business.
+  </div>`;
+}
+
+/* ================================================================
+  CUSTOMER MODE
+  ================================================================ */
+let custCfg = null, chosen = null;
+
+function renderCustomerForm(container, isPreview){
+ const cfg = isPreview ? {name:biz.name, phone:biz.phone, trade:biz.trade, jobs} : custCfg;
+ container.innerHTML = "";
+ cfg.jobs.forEach((j,i)=>{
+  const b = document.createElement("button");
+  b.className = "pick";
+  b.setAttribute("aria-pressed","false");
+  b.dataset.i = i;
+  if(j.quoteOnly){
+   b.innerHTML = `<span class="jname">${escHtml(j.name)}</span><span class="chip visit">Site visit</span>`;
+  } else {
+   b.innerHTML = `<span class="jname">${escHtml(j.name)}</span><span class="chip">&pound;${j.lo}&ndash;&pound;${j.hi}</span>`;
+  }
+  b.addEventListener("click", ()=>{
+   container.querySelectorAll(".pick").forEach(p=>p.setAttribute("aria-pressed","false"));
+   b.setAttribute("aria-pressed","true");
+   if(isPreview) return;
+   chosen = j;
+   if(j.quoteOnly){
+    $("ballpark").style.display = "none";
+    $("callbackBox").style.display = "block";
+   } else {
+    $("callbackBox").style.display = "none";
+    $("ballpark").style.display = "block";
+    $("bpPrice").textContent = "\u00A3"+j.lo+"\u2013\u00A3"+j.hi;
+   }
+   $("custCapture").style.display = "block";
+   $("custCapture").scrollIntoView({behavior:"smooth",block:"center"});
+  });
+  container.appendChild(b);
+ });
+}
+
+function enterCustomerMode(cfgStr){
+ try{ custCfg = decodeConfig(cfgStr); }
+ catch(e){ return; }
+ $("custHeader").hidden = false;
+ $("pageFooter").hidden = false;
+ Array.prototype.forEach.call(document.querySelectorAll(".tool-hero, main > .section, main > .related, #needHandSlot, .sticky-bar__link"), function(el){ el.style.display = "none"; });
+ var genIntro = document.querySelectorAll("#generator > .wrap > .utility, #generator > .wrap > h2, #generator > .wrap > .small");
+ Array.prototype.forEach.call(genIntro, function(el){ el.style.display = "none"; });
+ $("eyebrow").textContent = custCfg.name;
+ $("title").textContent = "Get an instant ballpark price";
+ $("subtitle").textContent = "Tap the job you need. We\u2019ll show a rough price straight away, then call you back with an exact quote.";
+ $("pageFooter").textContent = custCfg.phone ? ("Prefer to talk? Call " + custCfg.phone) : "";
+
+ if(custCfg.trade === "garage"){
+  $("custRegLabel").innerHTML = 'Vehicle reg or make/model <span class="hint">(optional)</span>';
+  $("custReg").placeholder = "e.g. AB12 CDE or Ford Focus 2018";
+ } else {
+  $("custRegLabel").innerHTML = 'Extra details <span class="hint">(optional)</span>';
+  $("custReg").placeholder = "e.g. address, photos, anything helpful";
+ }
+
+ renderCustomerForm($("custJobs"), false);
+ show("step-customer");
+}
+
+$("custSend").addEventListener("click", async ()=>{
+ const name = $("custName").value.trim();
+ const phone = $("custPhone").value.trim();
+ const err = $("custErr");
+ err.className="msg"; err.style.display="none";
+ if(!name || phone.replace(/\D/g,"").length < 10){
+  err.textContent = "Add your name and a valid mobile number."; err.className="msg err"; return;
+ }
+ $("custSend").disabled = true; $("custSend").textContent = "Sending\u2026";
+ let saved = false;
+ const priceRange = chosen.quoteOnly ? "Site visit" : ("\u00A3"+chosen.lo+"\u2013\u00A3"+chosen.hi);
+ if(baserowReady(CONFIG.CUSTOMER_LEADS_TABLE_ID)){
+  try{
+   await baserowAdd(CONFIG.CUSTOMER_LEADS_TABLE_ID,{
+    "Customer name": name, "Phone": phone,
+    "Vehicle": $("custReg").value.trim(),
+    "Job": chosen.name, "Price range": priceRange,
+    "Business": custCfg.name, "Date": new Date().toISOString()
+   });
+   saved = true;
+  }catch(e){ console.warn("Customer lead not saved:", e); }
+ }
+ $("custCapture").style.display="none";
+ $("ballpark").style.display="none";
+ $("callbackBox").style.display="none";
+ $("custDone").style.display="block";
+ $("custDoneMsg").textContent = saved
+  ? `${custCfg.name} has your request for "${chosen.name}" and will call you back on ${phone}.`
+  : (custCfg.phone
+    ? `Please call ${custCfg.name} on ${custCfg.phone} to confirm your quote for "${chosen.name}".`
+    : `Please contact ${custCfg.name} to confirm your quote for "${chosen.name}".`);
+ $("custSend").disabled = false; $("custSend").textContent = "Request my exact quote";
+});
+
+/* ================================================================
+  BOOT
+  ================================================================ */
+(function boot(){
+ if(window.TBA && typeof window.TBA.consentText === "function"){
+  $("consentText").textContent = window.TBA.consentText();
+ }
+ const m = location.hash.match(/#q=(.+)/);
+ if(m){ location.replace("index.html" + location.hash); return; }
+})();
+
+
+(function(){
+ var needHandSlot = document.getElementById('needHandSlot');
+ if (needHandSlot && window.TBA && window.TBA.needAHandHtml) {
+  needHandSlot.innerHTML = window.TBA.needAHandHtml(
+   "If you'd rather not fiddle about with your Google profile or your website, we'll talk you through it."
+  );
+ }
+ var stages = document.querySelectorAll("#quote-phone-stages .phone__stage");
+ if (!stages || !stages.length) return;
+ var stageIndex = 0;
+ var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ function showStage(i) {
+  for (var n = 0; n < stages.length; n++) {
+   stages[n].classList.toggle("is-active", n === i);
+  }
+ }
+ if (stages.length > 1 && !reduceMotion) {
+  window.setInterval(function () {
+   stageIndex = (stageIndex + 1) % stages.length;
+   showStage(stageIndex);
+  }, 4000);
+ }
+})();
+</script>
+</body>
+</html>

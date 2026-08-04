@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Booking Link · Grow Local</title>
+<meta name="description" content="One link that ends the back-and-forth. Customers pick a slot from your usual hours, you confirm. Free, no sign-up." />
+<link rel="icon" href="../assets/monogram-gl.svg" type="image/svg+xml" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="../assets/tokens-shopfront.css" />
+<link rel="stylesheet" href="../assets/product-shell.css" />
+
+<style>
+ /* ---------- Hero mockup: week strip ---------- */
+ .weekmock-row { font-size: 0.875rem; margin-bottom: 12px; }
+ .weekmock-row b {
+  display: block;
+  font-family: var(--gl-font-display);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  margin-bottom: 6px;
+ }
+ .weekmock-slot {
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1px solid var(--gl-gold-40);
+  background: var(--gl-bone);
+  color: var(--gl-ink);
+  padding: 4px 9px;
+  margin: 0 6px 6px 0;
+  transition: background .3s ease, border-color .3s ease, color .3s ease;
+ }
+ .mockup.in-view .weekmock-slot.pick-target { background: var(--gl-gold); border-color: var(--gl-gold); color: var(--gl-ink); }
+ .weekmock-confirm {
+  font-size: 0.8125rem;
+  color: var(--gl-gold);
+  margin-top: 4px;
+  opacity: 0;
+  transition: opacity .35s ease .3s;
+ }
+ .mockup.in-view .weekmock-confirm { opacity: 1; }
+
+ /* ---------- Generator ---------- */
+ .hint { font-weight: 400; color: var(--gl-slate); }
+ .day-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+ .day-toggle {
+  font: inherit; font-size: 0.875rem; font-weight: 600;
+  padding: 9px 15px; border: 1.5px solid var(--gl-gold-40);
+  background: var(--gl-bone); color: var(--gl-ink); cursor: pointer;
+ }
+ .day-toggle:hover { border-color: var(--gl-gold); }
+ .day-toggle.on { background: var(--gl-bottle); color: var(--gl-bone); border-color: var(--gl-bottle); }
+ .day-toggle:focus-visible { outline: 2px solid var(--gl-gold); outline-offset: 2px; }
+
+ .same-toggle { display: flex; align-items: center; gap: 9px; margin: 16px 0 6px; }
+ .same-toggle input { accent-color: var(--gl-brass); width: 18px; height: 18px; }
+ .same-toggle label { font-size: 0.875rem; font-weight: 600; margin: 0; }
+
+ .hours-row {
+  display: grid; grid-template-columns: 72px 1fr 1fr; gap: 10px;
+  align-items: center; padding: 8px 0; font-size: 0.875rem;
+ }
+ .hours-row .day-name { font-weight: 600; }
+ .hours-row input[type="time"] { padding: 8px; font-size: 0.875rem; }
+
+ .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+ .pill-btn {
+  font: inherit; font-size: 0.875rem; font-weight: 600;
+  background: var(--gl-bone); color: var(--gl-ink);
+  border: 1.5px solid var(--gl-gold-40); padding: 10px 16px; cursor: pointer;
+ }
+ .pill-btn:hover { border-color: var(--gl-gold); }
+ .pill-btn.selected { background: var(--gl-brass); color: var(--gl-bone); border-color: var(--gl-brass); }
+ .pill-btn:focus-visible { outline: 2px solid var(--gl-gold); outline-offset: 2px; }
+
+ .svc-row { display: grid; grid-template-columns: 1fr 100px 34px; gap: 8px; margin-bottom: 8px; align-items: center; }
+ .svc-row input[type="number"] { text-align: right; }
+ .svc-del {
+  font: inherit; background: none; border: 1.5px solid var(--gl-gold-40);
+  color: var(--gl-slate); font-size: 16px; cursor: pointer; line-height: 1; padding: 8px 0;
+ }
+ .svc-del:hover { border-color: var(--gl-oxblood); color: var(--gl-oxblood); }
+ .svc-add {
+  background: none; border: 1.5px dashed var(--gl-slate); color: var(--gl-ink);
+  font: inherit; font-size: 0.875rem; font-weight: 700; width: 100%;
+  padding: 10px; cursor: pointer; margin-top: 2px;
+ }
+ .svc-add:hover { border-color: var(--gl-brass); color: var(--gl-brass); }
+
+ .preview-panel {
+  border: 1px dashed var(--gl-gold-40); background: #fffef9;
+  padding: 16px; margin: 18px 0;
+ }
+ .preview-panel__label {
+  font-family: var(--gl-font-utility); font-size: 0.625rem; font-weight: 600;
+  letter-spacing: var(--gl-track-utility); text-transform: uppercase;
+  color: var(--gl-slate); margin-bottom: 10px;
+ }
+ .preview-day { font-size: 0.875rem; margin-bottom: 10px; }
+ .preview-day b { display: block; font-family: var(--gl-font-display); font-weight: 500; margin-bottom: 4px; }
+ .preview-chip {
+  display: inline-block; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem; font-weight: 600; background: var(--gl-bone-warm);
+  border: 1px solid var(--gl-gold-40); padding: 3px 8px; margin: 0 5px 5px 0;
+ }
+ .preview-empty { font-size: 0.875rem; color: var(--gl-slate); }
+
+ .warn-panel {
+  border: 1px solid var(--gl-gold); background: var(--gl-bone-warm);
+  padding: 16px 18px; margin: 18px 0; font-size: 0.875rem; line-height: 1.55;
+ }
+ .warn-panel strong { display: block; font-family: var(--gl-font-display); font-size: 1rem; font-weight: 500; margin-bottom: 6px; }
+
+ .consent { display: flex; gap: 9px; align-items: flex-start; margin: 4px 0 14px; }
+ .consent input { margin-top: 3px; accent-color: var(--gl-brass); }
+ .consent span { font-size: 0.8125rem; color: var(--gl-slate); }
+
+ .gen-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+ .gen-actions .btn-brass, .gen-actions .btn-outline { flex: 1 1 200px; }
+
+ .msg { padding: 12px 14px; font-size: 0.875rem; margin-top: 14px; display: none; border: 1px solid var(--gl-gold-40); }
+ .msg.show { display: block; }
+ .msg--err { background: rgba(122, 46, 46, 0.08); color: var(--gl-oxblood); border-color: var(--gl-oxblood); }
+ .msg--ok { background: rgba(198, 161, 91, 0.16); color: var(--gl-ink); }
+
+ .result-panel { display: none; margin-top: 24px; padding: 20px; border: 1px solid var(--gl-gold); background: var(--gl-bone); }
+ .result-panel.show { display: block; }
+ .result-panel h3 { font-family: var(--gl-font-display); font-size: 1.375rem; font-weight: 500; margin-bottom: 6px; }
+ .qrbox { display: flex; justify-content: center; padding: 16px; background: #fff; border: 1px solid var(--gl-gold-40); margin: 14px 0; }
+ .linkbox {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem;
+  background: #fff; border: 1px solid var(--gl-gold-40); padding: 10px; word-break: break-all; margin-bottom: 10px;
+ }
+
+ .utility-banner {
+  background: var(--gl-bone-warm); border: 1px solid var(--gl-gold);
+  padding: 10px 14px; font-family: var(--gl-font-utility); font-size: 0.6875rem;
+  font-weight: 600; letter-spacing: var(--gl-track-utility); text-transform: uppercase;
+  color: var(--gl-brass); text-align: center; margin: 14px 0;
+ }
+</style>
+</head>
+<body>
+
+<header class="sticky-bar">
+ <a class="sticky-bar__mark" href="../index.html">Grow Local</a>
+ <a class="sticky-bar__link" href="../index.html#tools">See the tools</a>
+</header>
+
+<main>
+
+ <!-- 1. HERO -->
+ <section class="tool-hero">
+  <div class="wrap">
+   <div>
+    <p class="utility tool-hero__eyebrow">Salons · Clinics · Trades · Anyone with a diary</p>
+    <h1>One link. No more back-and-forth.</h1>
+    <p class="tool-hero__sub">Most owners lose two or three hours a week to arranging; the texts back and forth, the missed calls, the "what about Tuesday?" This hands that time back.</p>
+    <div class="tool-hero__cta">
+     <a class="btn-brass" href="/booking/build/">Create my booking link</a>
+     <p class="utility tool-hero__meta">Free · No sign-up</p>
+    </div>
+   </div>
+   <div class="mockup" id="heroMockup">
+    <div class="mockup__device">
+     <div class="mockup__notch"></div>
+     <div class="weekmock-row">
+      <b>Tue 12</b>
+      <span class="weekmock-slot">9:00</span>
+      <span class="weekmock-slot">11:30</span>
+      <span class="weekmock-slot">2:00</span>
+     </div>
+     <div class="weekmock-row">
+      <b>Wed 13</b>
+      <span class="weekmock-slot pick-target">10:00</span>
+      <span class="weekmock-slot">1:30</span>
+     </div>
+     <div class="weekmock-row">
+      <b>Thu 14</b>
+      <span class="weekmock-slot">9:30</span>
+      <span class="weekmock-slot">12:00</span>
+      <span class="weekmock-slot">3:00</span>
+     </div>
+     <p class="weekmock-confirm">Request sent. Ashford Motors will confirm shortly.</p>
+    </div>
+    <p class="mockup__caption">What your customer sees</p>
+   </div>
+  </div>
+ </section>
+
+ <section class="section">
+  <div class="wrap" style="max-width:640px">
+   <div style="border:1px solid var(--gl-gold);padding:18px 16px;background:var(--gl-bone)">
+    <p style="font-family:var(--gl-font-display);font-weight:500;font-size:1.15rem;margin-bottom:10px"><strong>It doesn't touch your calendar. That's deliberate.</strong></p>
+    <p>Nothing gets booked without you saying yes. You see the request, you confirm it, and nobody ends up double-booked because a computer thought you were free. If you'd rather it synced properly with your calendar and confirmed automatically, that's something we can set up, but most people find they prefer having the final say.</p>
+   </div>
+  </div>
+ </section>
+
+ <!-- 2. THE PROBLEM -->
+ <section class="section">
+  <div class="wrap">
+   <p class="utility section__eyebrow">The problem</p>
+   <h2>The arranging costs more than the appointment.</h2>
+   <p>Someone rings while you're mid-job. You ring back, they're busy. They text a time you can't do. Four messages later you've got a booking that took ten minutes of a day you didn't have.</p>
+   <p>Multiply that across a week and it's most of an afternoon spent arranging rather than working.</p>
+  </div>
+ </section>
+
+ <!-- 3. WHAT YOU GET -->
+ <section class="section section--bottle">
+  <div class="wrap">
+   <p class="utility section__eyebrow">What you get</p>
+   <ul style="list-style:none;">
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>A booking page with your hours on it</strong>; Your days, your slots, your business name.</li>
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>A link and a QR</strong>; Text it, print it, put it on your website.</li>
+    <li style="padding:14px 0;"><strong>Details captured up front</strong>; Name, number, and what they're booking for.</li>
+   </ul>
+  </div>
+ </section>
+
+ <!-- 4. THE GENERATOR -->
+ <section class="generator" id="generator" style="display:none">
+  <div class="wrap">
+   <p class="utility section__eyebrow">The generator</p>
+   <h2>Takes about a minute.</h2>
+   <p class="lede" style="margin-bottom:20px;">Add your business name, the days and hours you take bookings, and how long a typical slot runs.</p>
+
+   <div class="field">
+    <label for="bizName">Business name</label>
+    <input type="text" id="bizName" placeholder="e.g. Ashford Motors" autocomplete="organization">
+   </div>
+
+   <div class="field">
+    <label for="ownerName">Your name <span class="hint">(optional)</span></label>
+    <input type="text" id="ownerName" autocomplete="name">
+   </div>
+
+   <div class="field">
+    <label for="notifyEmail">Where should requests go? <span class="hint">; email</span></label>
+    <input type="email" id="notifyEmail" placeholder="you@business.co.uk" autocomplete="email">
+   </div>
+
+   <div class="field">
+    <label>Days you take bookings</label>
+    <div class="day-grid" id="dayGrid" role="group" aria-label="Days you take bookings"></div>
+   </div>
+
+   <div class="same-toggle">
+    <input type="checkbox" id="sameHours" checked>
+    <label for="sameHours">Same hours every day</label>
+   </div>
+   <div id="hoursArea"></div>
+
+   <div class="field" style="margin-top:18px;">
+    <label>Typical slot length</label>
+    <div class="pill-group" id="lenGroup" role="group" aria-label="Slot length">
+     <button type="button" class="pill-btn" data-len="30">30 min</button>
+     <button type="button" class="pill-btn selected" data-len="60">60 min</button>
+     <button type="button" class="pill-btn" data-len="45">45 min</button>
+     <button type="button" class="pill-btn" data-len="90">90 min</button>
+     <button type="button" class="pill-btn" data-len="custom">Custom</button>
+    </div>
+    <input type="number" id="customLen" min="5" max="480" placeholder="Minutes" style="display:none;margin-top:8px;max-width:160px;">
+   </div>
+
+   <div class="field">
+    <label>Buffer between slots <span class="hint">; most owners under-allow</span></label>
+    <div class="pill-group" id="bufGroup" role="group" aria-label="Buffer between slots">
+     <button type="button" class="pill-btn" data-buf="0">None</button>
+     <button type="button" class="pill-btn selected" data-buf="15">15 min</button>
+     <button type="button" class="pill-btn" data-buf="30">30 min</button>
+    </div>
+   </div>
+
+   <div class="field">
+    <label>Services <span class="hint">(optional; shown to customers when they request a slot)</span></label>
+    <div id="svcList"></div>
+    <button type="button" class="svc-add" id="svcAdd">+ Add a service</button>
+   </div>
+
+   <div class="preview-panel" id="livePreview">
+    <p class="preview-panel__label">Live preview; what customers will see</p>
+    <div id="livePreviewBody"></div>
+   </div>
+
+   <div class="warn-panel">
+    <strong>Before you generate</strong>
+    This shows the hours you've told us you're usually free. It doesn't check your calendar. Always confirm a request before you treat it as booked. If two people ask for the same slot, we'll tell you, and you decide.
+   </div>
+
+   <div class="consent">
+    <input type="checkbox" id="consent" checked>
+    <span id="consentText"></span>
+   </div>
+
+   <div class="gen-actions">
+    <button class="btn-brass" id="btnGenerate">Create my booking link</button>
+   </div>
+   <p class="msg msg--err" id="genErr"></p>
+
+   <div class="result-panel" id="resultPanel">
+    <h3>Done. It's yours.</h3>
+    <p class="small">Here's your link and QR. Below, what your customers will see when they open it.</p>
+    <div class="qrbox"><div id="qrcode" role="img" aria-label="QR code linking to your booking page"></div></div>
+    <div class="linkbox" id="shareLink"></div>
+    <div class="gen-actions">
+     <button class="btn-brass" id="btnCopyLink">Copy link</button>
+     <button class="btn-outline" id="btnDownloadQR">Download QR as image</button>
+    </div>
+    <p class="msg msg--ok" id="copiedMsg">Link copied.</p>
+
+    <div class="preview-panel" id="resultPreview" style="margin-top:20px;">
+     <p class="preview-panel__label">What your customers will see</p>
+     <div id="resultPreviewBody"></div>
+    </div>
+
+    <p class="small" style="margin-top:16px;">Three places to put this today; save it as a text shortcut for when someone asks about availability, paste it into your Google profile's Appointment link field, and set it as your voicemail or out-of-hours reply.</p>
+   </div>
+  </div>
+ </section>
+
+ <!-- 5. WHERE TO USE IT -->
+ <section class="section">
+  <div class="wrap">
+   <p class="utility section__eyebrow">Where to use it</p>
+   <ol class="place-list">
+    <li>
+     <h3>In your text replies</h3>
+     <p><em>The single highest-value placement.</em></p>
+     <ol>
+      <li>Save the link as a shortcut on your phone.</li>
+      <li>When someone asks about availability, send the link instead of a time.</li>
+      <li>Add; "Pick whatever suits and I'll confirm it."</li>
+     </ol>
+    </li>
+    <li>
+     <h3>On your Google profile</h3>
+     <p><em>Lets people book without ringing.</em></p>
+     <ol>
+      <li>Paste it into the <strong>Appointment link</strong> field.</li>
+      <li>Mention it in a post so it shows in search.</li>
+     </ol>
+    </li>
+    <li>
+     <h3>On your voicemail and out-of-hours reply</h3>
+     <p><em>Catches people when you're shut.</em></p>
+     <ol>
+      <li>Change your voicemail; "If it's a booking, text me and I'll send a link."</li>
+      <li>Set the same as an auto-reply on the business mobile.</li>
+     </ol>
+    </li>
+   </ol>
+  </div>
+ </section>
+
+ <!-- 6. COMMON MISTAKES -->
+ <section class="section section--bottle">
+  <div class="wrap">
+   <p class="utility section__eyebrow">Common mistakes</p>
+   <ul style="list-style:none;">
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Opening the whole diary.</strong> Leave yourself gaps. A calendar with no slack is how you end up working late.</li>
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Slots too long, or too short.</strong> Base it on a typical job plus ten minutes, not the best case.</li>
+    <li style="padding:14px 0;"><strong>No reminder.</strong> Most no-shows are forgetfulness, not rudeness. A message the day before catches most of them.</li>
+   </ul>
+  </div>
+ </section>
+
+ <!-- 7. WHAT TO EXPECT -->
+ <section class="section">
+  <div class="wrap">
+   <p class="utility section__eyebrow">What to expect</p>
+   <p>This won't fill an empty diary. Nothing does that on its own. What it saves is the arranging, which for most people is a couple of hours a week they were never paid for.</p>
+  </div>
+ </section>
+
+ <!-- 8. NEED A HAND -->
+ <div class="wrap" id="needHandWrap"></div>
+
+ <!-- 9. RELATED -->
+ <section class="related">
+  <div class="wrap">
+   <h2>Related tools</h2>
+   <ul class="related__list">
+    <li><a href="../review/">Google Review QR</a></li>
+    <li><a href="../quote/">Instant Quote Form</a></li>
+   </ul>
+  </div>
+ </section>
+
+</main>
+
+<footer class="site-footer">
+ <div class="wrap">
+  <p style="font-family: var(--gl-font-display); font-size: 1.25rem; font-weight: 500;">Grow Local</p>
+  <div style="height: 1px; width: 6rem; background: var(--gl-gold); margin: 8px 0 16px;"></div>
+  <p>Grow Local · a growth agency for local business.</p>
+  <p><a href="../index.html#tools">See the free tools</a></p>
+  <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+ </div>
+</footer>
+
+<script src="../assets/shared.js"></script>
+<script>
+/* ================================================================
+  CONFIG
+  ================================================================ */
+const CONFIG = {
+ BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ OWNER_LEADS_TABLE_ID: "1092861",
+ BOOKING_REQUESTS_TABLE_ID: "1098285",
+ BASEROW_URL: "https://api.baserow.io"
+};
+
+const $ = (id) => document.getElementById(id);
+const DAY_LABELS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const DOW_ABBR  = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const MONTH_ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+/* ================================================================
+  STATE
+  ================================================================ */
+let days = [
+ { o: true, s: "09:00", e: "17:00" }, // Mon
+ { o: true, s: "09:00", e: "17:00" }, // Tue
+ { o: true, s: "09:00", e: "17:00" }, // Wed
+ { o: true, s: "09:00", e: "17:00" }, // Thu
+ { o: true, s: "09:00", e: "17:00" }, // Fri
+ { o: false, s: "09:00", e: "17:00" }, // Sat
+ { o: false, s: "09:00", e: "17:00" } // Sun
+];
+let slotLen = 60;
+let buffer = 15;
+let services = []; // [{n, len}]
+let shareURL = "";
+
+/* ================================================================
+  ENCODE / DECODE; availability lives entirely in the URL
+  ================================================================ */
+function encodeConfig(cfg) {
+ return btoa(unescape(encodeURIComponent(JSON.stringify(cfg))))
+  .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+/* ================================================================
+  SLOT GENERATION; Europe/London, no past, no <2h, max 14 days
+  (mirrored in request.html)
+  ================================================================ */
+function londonNow() {
+ const fmt = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit",
+  hour: "2-digit", minute: "2-digit", hour12: false
+ });
+ const parts = fmt.formatToParts(new Date());
+ const get = (t) => parseInt(parts.find((p) => p.type === t).value, 10);
+ return { y: get("year"), mo: get("month"), d: get("day"), h: get("hour"), mi: get("minute") };
+}
+function pad2(n) { return String(n).padStart(2, "0"); }
+function timeToMinutes(t) { const [h, m] = t.split(":").map(Number); return h * 60 + m; }
+function minutesToLabel(mins) {
+ let h = Math.floor(mins / 60), m = mins % 60;
+ const ampm = h < 12 ? "am" : "pm";
+ let h12 = h % 12; if (h12 === 0) h12 = 12;
+ return h12 + (m ? ":" + pad2(m) : "") + ampm;
+}
+function generateSlots(cfg, opts) {
+ opts = opts || {};
+ const maxDays = opts.maxDays || 14;
+ const now = londonNow();
+ const cursor = new Date(Date.UTC(now.y, now.mo - 1, now.d));
+ const todayKey = now.y * 10000 + now.mo * 100 + now.d;
+ const cutoff = now.h * 60 + now.mi + 120; // no slots within next 2 hours
+ const out = [];
+ for (let i = 0; i < maxDays; i++) {
+  const y = cursor.getUTCFullYear(), mo = cursor.getUTCMonth() + 1, d = cursor.getUTCDate();
+  const dow = (cursor.getUTCDay() + 6) % 7; // 0=Mon..6=Sun
+  const dayCfg = cfg.d[dow];
+  const dayKey = y * 10000 + mo * 100 + d;
+  if (dayCfg && dayCfg.o) {
+   const startM = timeToMinutes(dayCfg.s), endM = timeToMinutes(dayCfg.e);
+   const step = cfg.len + cfg.buf;
+   const slots = [];
+   if (step > 0 && endM > startM) {
+    for (let t = startM; t + cfg.len <= endM; t += step) {
+     if (dayKey === todayKey && t < cutoff) continue;
+     slots.push({ mins: t, label: minutesToLabel(t) });
+    }
+   }
+   if (slots.length) {
+    out.push({
+     dayKey, y, mo, d,
+     dateLabel: DOW_ABBR[dow] + " " + d + " " + MONTH_ABBR[mo - 1],
+     slots
+    });
+   }
+  }
+  cursor.setUTCDate(cursor.getUTCDate() + 1);
+  if (out.length >= (opts.maxDaysWithSlots || 999)) break;
+ }
+ return out;
+}
+
+/* ================================================================
+  DAY TOGGLES
+  ================================================================ */
+function renderDayGrid() {
+ const grid = $("dayGrid");
+ grid.innerHTML = "";
+ DAY_LABELS.forEach((label, i) => {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "day-toggle" + (days[i].o ? " on" : "");
+  btn.textContent = label;
+  btn.setAttribute("aria-pressed", days[i].o ? "true" : "false");
+  btn.addEventListener("click", () => {
+   days[i].o = !days[i].o;
+   if (days[i].o && $("sameHours").checked) {
+    const ref = days.find((d, j) => j !== i && d.o) || days[i];
+    days[i].s = ref.s; days[i].e = ref.e;
+   }
+   renderDayGrid();
+   renderHoursArea();
+   updateLivePreview();
+  });
+  grid.appendChild(btn);
+ });
+}
+
+/* ================================================================
+  HOURS; "same every day" vs per-day
+  ================================================================ */
+function renderHoursArea() {
+ const area = $("hoursArea");
+ area.innerHTML = "";
+ const same = $("sameHours").checked;
+
+ if (same) {
+  const ref = days.find((d) => d.o) || days[0];
+  const row = document.createElement("div");
+  row.className = "hours-row";
+  row.innerHTML =
+   '<span class="day-name">All days</span>' +
+   '<input type="time" value="' + ref.s + '" data-role="start">' +
+   '<input type="time" value="' + ref.e + '" data-role="end">';
+  row.querySelector('[data-role="start"]').addEventListener("input", (e) => {
+   days.forEach((d) => { if (d.o) d.s = e.target.value; });
+   updateLivePreview();
+  });
+  row.querySelector('[data-role="end"]').addEventListener("input", (e) => {
+   days.forEach((d) => { if (d.o) d.e = e.target.value; });
+   updateLivePreview();
+  });
+  area.appendChild(row);
+ } else {
+  days.forEach((d, i) => {
+   if (!d.o) return;
+   const row = document.createElement("div");
+   row.className = "hours-row";
+   row.innerHTML =
+    '<span class="day-name">' + DAY_LABELS[i] + '</span>' +
+    '<input type="time" value="' + d.s + '" data-i="' + i + '" data-role="start">' +
+    '<input type="time" value="' + d.e + '" data-i="' + i + '" data-role="end">';
+   row.querySelector('[data-role="start"]').addEventListener("input", (e) => {
+    days[i].s = e.target.value; updateLivePreview();
+   });
+   row.querySelector('[data-role="end"]').addEventListener("input", (e) => {
+    days[i].e = e.target.value; updateLivePreview();
+   });
+   area.appendChild(row);
+  });
+ }
+}
+$("sameHours").addEventListener("change", () => {
+ if ($("sameHours").checked) {
+  const ref = days.find((d) => d.o) || days[0];
+  days.forEach((d) => { if (d.o) { d.s = ref.s; d.e = ref.e; } });
+ }
+ renderHoursArea();
+ updateLivePreview();
+});
+
+/* ================================================================
+  SLOT LENGTH / BUFFER PICKERS
+  ================================================================ */
+$("lenGroup").addEventListener("click", (e) => {
+ const btn = e.target.closest(".pill-btn");
+ if (!btn) return;
+ $("lenGroup").querySelectorAll(".pill-btn").forEach((b) => b.classList.remove("selected"));
+ btn.classList.add("selected");
+ if (btn.dataset.len === "custom") {
+  $("customLen").style.display = "block";
+  slotLen = parseInt($("customLen").value, 10) || 60;
+ } else {
+  $("customLen").style.display = "none";
+  slotLen = parseInt(btn.dataset.len, 10);
+ }
+ updateLivePreview();
+});
+$("customLen").addEventListener("input", () => {
+ slotLen = parseInt($("customLen").value, 10) || 0;
+ updateLivePreview();
+});
+$("bufGroup").addEventListener("click", (e) => {
+ const btn = e.target.closest(".pill-btn");
+ if (!btn) return;
+ $("bufGroup").querySelectorAll(".pill-btn").forEach((b) => b.classList.remove("selected"));
+ btn.classList.add("selected");
+ buffer = parseInt(btn.dataset.buf, 10);
+ updateLivePreview();
+});
+
+/* ================================================================
+  OPTIONAL SERVICES
+  ================================================================ */
+function renderServices() {
+ const list = $("svcList");
+ list.innerHTML = "";
+ services.forEach((s, i) => {
+  const row = document.createElement("div");
+  row.className = "svc-row";
+  row.innerHTML =
+   '<input type="text" placeholder="e.g. Cut & finish" value="' + escAttr(s.n) + '" data-i="' + i + '" data-role="name">' +
+   '<input type="number" min="5" max="480" placeholder="Mins" value="' + (s.len || "") + '" data-i="' + i + '" data-role="len">' +
+   '<button type="button" class="svc-del" aria-label="Remove service" data-del="' + i + '">&times;</button>';
+  list.appendChild(row);
+ });
+}
+$("svcAdd").addEventListener("click", () => {
+ services.push({ n: "", len: slotLen });
+ renderServices();
+ const rows = $("svcList").querySelectorAll(".svc-row input");
+ if (rows.length) rows[rows.length - 2].focus();
+});
+$("svcList").addEventListener("input", (e) => {
+ const i = e.target.dataset.i, role = e.target.dataset.role;
+ if (i === undefined) return;
+ if (role === "name") services[i].n = e.target.value;
+ if (role === "len") services[i].len = parseInt(e.target.value, 10) || 0;
+});
+$("svcList").addEventListener("click", (e) => {
+ const d = e.target.dataset.del;
+ if (d !== undefined) { services.splice(+d, 1); renderServices(); }
+});
+
+/* ================================================================
+  LIVE PREVIEW
+  ================================================================ */
+function currentCfg() {
+ return { n: $("bizName").value.trim() || "Your business", d: days, len: slotLen || 60, buf: buffer };
+}
+function renderSlotDays(container, cfg, maxDaysWithSlots) {
+ const dayList = generateSlots(cfg, { maxDays: 14, maxDaysWithSlots: maxDaysWithSlots || 3 });
+ container.innerHTML = "";
+ if (!dayList.length) {
+  const p = document.createElement("p");
+  p.className = "preview-empty";
+  p.textContent = "No days are switched on yet. Turn on at least one day above.";
+  container.appendChild(p);
+  return;
+ }
+ dayList.slice(0, maxDaysWithSlots || 3).forEach((day) => {
+  const row = document.createElement("div");
+  row.className = "preview-day";
+  const chips = day.slots.slice(0, 8).map((s) => '<span class="preview-chip">' + s.label + '</span>').join("");
+  row.innerHTML = "<b>" + day.dateLabel + "</b>" + chips;
+  container.appendChild(row);
+ });
+}
+function updateLivePreview() {
+ renderSlotDays($("livePreviewBody"), currentCfg(), 3);
+}
+
+/* ================================================================
+  GENERATE
+  ================================================================ */
+function escAttr(s) { return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
+
+function baseDir() {
+ let p = location.pathname;
+ if (!p.endsWith("/")) p = p.substring(0, p.lastIndexOf("/") + 1);
+ return location.origin + p;
+}
+
+$("btnGenerate").addEventListener("click", async () => {
+ const bizName = $("bizName").value.trim();
+ const ownerName = $("ownerName").value.trim();
+ const notifyEmail = $("notifyEmail").value.trim();
+ const err = $("genErr");
+ err.classList.remove("show");
+
+ const anyDayOn = days.some((d) => d.o);
+ const hoursOk = days.every((d) => !d.o || timeToMinutes(d.e) > timeToMinutes(d.s));
+
+ if (!bizName || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(notifyEmail) || !anyDayOn || !slotLen || !hoursOk) {
+  err.textContent = "Add your business name, a valid email for requests, at least one open day with a valid start/end time, and a slot length.";
+  err.classList.add("show");
+  return;
+ }
+
+ const cleanServices = services
+  .filter((s) => s.n && s.n.trim())
+  .map((s) => ({ n: s.n.trim(), len: s.len || slotLen }));
+
+ const cfg = {
+  n: bizName,
+  em: notifyEmail,
+  d: days.map((d) => ({ o: d.o, s: d.s, e: d.e })),
+  len: slotLen,
+  buf: buffer,
+  sv: cleanServices
+ };
+
+ const btn = $("btnGenerate");
+ btn.disabled = true;
+ btn.textContent = "One moment\u2026";
+
+ if (window.TBA && window.TBA.baserowReady(CONFIG, CONFIG.OWNER_LEADS_TABLE_ID)) {
+  try {
+   await window.TBA.baserowAdd(CONFIG, CONFIG.OWNER_LEADS_TABLE_ID, {
+    "Name": ownerName,
+    "Email": notifyEmail,
+    "Business": bizName,
+    "Tool": "Booking Link",
+    "Consent": $("consent").checked ? "Yes" : "No",
+    "Date": new Date().toISOString()
+   });
+  } catch (e) { console.warn("Lead not saved:", e); }
+ } else {
+  console.warn("Baserow not configured: owner lead not saved:", { bizName, notifyEmail });
+ }
+
+ shareURL = baseDir() + "request.html#bk=" + encodeConfig(cfg);
+ $("shareLink").textContent = shareURL;
+ $("qrcode").innerHTML = "";
+ new QRCode($("qrcode"), {
+  text: shareURL, width: 200, height: 200,
+  colorDark: "#0E1613", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
+ });
+ renderSlotDays($("resultPreviewBody"), cfg, 3);
+
+ btn.disabled = false;
+ btn.textContent = "Create my booking link";
+ $("resultPanel").classList.add("show");
+ $("resultPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+$("btnCopyLink").addEventListener("click", async () => {
+ try { await navigator.clipboard.writeText(shareURL); }
+ catch {
+  const t = document.createElement("textarea");
+  t.value = shareURL; document.body.appendChild(t); t.select();
+  document.execCommand("copy"); t.remove();
+ }
+ $("copiedMsg").classList.add("show");
+ setTimeout(() => $("copiedMsg").classList.remove("show"), 2000);
+});
+
+$("btnDownloadQR").addEventListener("click", () => {
+ const el = $("qrcode").querySelector("img") || $("qrcode").querySelector("canvas");
+ if (!el) return;
+ const dataURL = el.tagName === "CANVAS" ? el.toDataURL("image/png") : el.src;
+ const a = document.createElement("a");
+ a.href = dataURL;
+ a.download = (($("bizName").value.trim() || "booking-link").replace(/[^a-z0-9]+/gi, "-").toLowerCase()) + "-qr.png";
+ a.click();
+});
+
+/* ================================================================
+  BOOT
+  ================================================================ */
+(function boot() {
+ if (window.TBA) {
+  $("consentText").textContent = window.TBA.consentText();
+  $("needHandWrap").innerHTML = window.TBA.needAHandHtml(
+   "If you'd like it linked to a calendar you already use, or reminders going out automatically, we'll get it set up."
+  );
+ } else {
+  $("consentText").textContent = "It's fine to email me about this tool and other free ideas for my business. Unsubscribe any time.";
+ }
+
+ renderDayGrid();
+ renderHoursArea();
+ renderServices();
+ updateLivePreview();
+
+ const mockup = $("heroMockup");
+ if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver((entries) => {
+   entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+     setTimeout(() => mockup.classList.add("in-view"), 350);
+     io.unobserve(mockup);
+    }
+   });
+  }, { threshold: 0.4 });
+  io.observe(mockup);
+ } else {
+  mockup.classList.add("in-view");
+ }
+})();
+</script>
+</body>
+</html>

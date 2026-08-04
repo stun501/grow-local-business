@@ -1,0 +1,506 @@
+<!--
+  ORIGINAL PROTOTYPE: kept for reference.
+  The production version now lives at:  quote/index.html
+  All new development should happen there.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instant Quote Form; Free tool for garages &amp; trades</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --ink:#171a1e;
+    --ink-soft:#4a5058;
+    --paper:#f7f6f2;
+    --card:#ffffff;
+    --hazard:#ffc61a;
+    --hazard-deep:#e0a800;
+    --steel:#2b3a4a;
+    --line:#e2e0d8;
+    --ok:#1e7f4f;
+    --err:#b3261e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--paper);color:var(--ink);
+    min-height:100vh;line-height:1.45;
+  }
+  .stripe{
+    height:10px;
+    background:repeating-linear-gradient(-45deg,var(--hazard) 0 14px,var(--ink) 14px 28px);
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:20px 18px 56px}
+  header.tool{padding:22px 0 6px}
+  .eyebrow{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink);
+    background:var(--hazard);padding:4px 9px;border-radius:3px;margin-bottom:12px;
+  }
+  h1{font-size:clamp(26px,7vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.08}
+  .sub{color:var(--ink-soft);margin-top:10px;font-size:15px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px;margin-top:18px;box-shadow:0 1px 2px rgba(23,26,30,.05);
+  }
+  label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+  .hint{font-weight:400;color:var(--ink-soft)}
+  input[type=text],input[type=email],input[type=tel],select,textarea{
+    width:100%;font:inherit;font-size:16px;color:var(--ink);
+    background:#fff;border:1.5px solid var(--line);border-radius:8px;
+    padding:11px 12px;
+  }
+  input:focus,select:focus,textarea:focus{outline:3px solid var(--hazard);outline-offset:1px;border-color:var(--ink)}
+  .field{margin-bottom:14px}
+  .btn{
+    display:block;width:100%;font:inherit;font-size:16px;font-weight:800;
+    background:var(--ink);color:#fff;border:none;border-radius:8px;
+    padding:14px 16px;cursor:pointer;letter-spacing:.01em;
+  }
+  .btn:focus-visible{outline:3px solid var(--hazard);outline-offset:2px}
+  .btn:active{transform:translateY(1px)}
+  .btn.secondary{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+  .btn.hazard{background:var(--hazard);color:var(--ink)}
+  .btn+.btn{margin-top:10px}
+  /* Price board */
+  .board-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:4px;
+  }
+  .board-head h2{font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+  .board-head .hint{font-size:12px}
+  .job-row{
+    display:grid;grid-template-columns:1fr 74px 74px 30px;gap:8px;
+    align-items:center;padding:9px 0;border-bottom:1px dashed var(--line);
+  }
+  .job-row input{padding:8px 8px;font-size:14px}
+  .job-row input.price{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;text-align:right}
+  .job-row .del{
+    font:inherit;background:none;border:none;color:var(--ink-soft);
+    font-size:18px;cursor:pointer;line-height:1;padding:6px 4px;border-radius:6px;
+  }
+  .job-row .del:hover{color:var(--err)}
+  .col-labels{
+    display:grid;grid-template-columns:1fr 74px 74px 30px;gap:8px;
+    font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--ink-soft);padding:8px 0 2px;
+  }
+  .col-labels span:nth-child(2),.col-labels span:nth-child(3){text-align:right}
+  .addjob{margin-top:12px;background:none;border:1.5px dashed var(--ink-soft);
+    color:var(--ink);font:inherit;font-size:14px;font-weight:700;width:100%;
+    border-radius:8px;padding:10px;cursor:pointer}
+  /* Customer quote list */
+  .pick{width:100%;text-align:left;font:inherit;background:#fff;border:1.5px solid var(--line);
+    border-radius:10px;padding:13px 14px;margin-bottom:9px;cursor:pointer;
+    display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .pick:hover,.pick[aria-pressed=true]{border-color:var(--ink)}
+  .pick[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--hazard)}
+  .pick .jname{font-weight:700;font-size:15px}
+  .chip{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:14px;font-weight:700;background:var(--hazard);color:var(--ink);
+    padding:4px 9px;border-radius:5px;white-space:nowrap;
+  }
+  .ballpark{
+    background:var(--ink);color:#fff;border-radius:12px;padding:18px;
+    margin:16px 0;text-align:center;
+  }
+  .ballpark .b-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--hazard);font-weight:700}
+  .ballpark .b-price{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:clamp(28px,8vw,38px);font-weight:700;margin-top:6px;
+  }
+  .ballpark .b-note{font-size:12px;color:#b9c0c9;margin-top:6px}
+  .small{font-size:12.5px;color:var(--ink-soft)}
+  .msg{margin-top:12px;font-size:14px;font-weight:600;display:none}
+  .msg.ok{color:var(--ok);display:block}
+  .msg.err{color:var(--err);display:block}
+  /* QR result */
+  .qrbox{display:flex;justify-content:center;padding:16px;background:#fff;
+    border:1px solid var(--line);border-radius:12px;margin:14px 0}
+  .linkbox{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;
+    background:#fff;border:1.5px solid var(--line);border-radius:8px;
+    padding:10px;word-break:break-all;margin-bottom:10px;
+  }
+  .step{display:none}
+  .step.active{display:block}
+  .success-tick{font-size:40px;text-align:center;margin-bottom:6px}
+  .consent{display:flex;gap:9px;align-items:flex-start;margin:4px 0 14px}
+  .consent input{margin-top:3px;accent-color:var(--ink)}
+  .consent span{font-size:12.5px;color:var(--ink-soft)}
+  footer{max-width:520px;margin:0 auto;padding:0 18px 40px;font-size:12px;color:var(--ink-soft)}
+  @media (prefers-reduced-motion:no-preference){
+    .step.active{animation:rise .25s ease}
+    @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  }
+</style>
+</head>
+<body>
+<div class="stripe" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="tool" id="hdr">
+    <span class="eyebrow" id="eyebrow">Free tool</span>
+    <h1 id="title">Instant quotes for your garage</h1>
+    <p class="sub" id="subtitle">Catch the customers who look you up but never call. Set your prices once, customers get a ballpark in seconds and leave their number.</p>
+  </header>
+
+  <!-- ============ BUILDER: STEP 1 — business name ============ -->
+  <section class="step active" id="step-name">
+    <div class="card">
+      <div class="field">
+        <label for="bizname">Business name</label>
+        <input type="text" id="bizname" placeholder="e.g. Smith's Autos" autocomplete="organization">
+      </div>
+      <div class="field">
+        <label for="bizphone">Business phone <span class="hint">(shown to customers on the form)</span></label>
+        <input type="tel" id="bizphone" placeholder="e.g. 07700 900123" autocomplete="tel">
+      </div>
+      <button class="btn" id="toPrices">See my price board</button>
+      <p class="msg err" id="nameErr">Enter your business name to continue.</p>
+    </div>
+  </section>
+
+  <!-- ============ BUILDER: STEP 2 — price board ============ -->
+  <section class="step" id="step-prices">
+    <div class="card">
+      <div class="board-head">
+        <h2 id="boardTitle">Price board</h2>
+        <span class="hint">Rough ranges: tweak to your numbers</span>
+      </div>
+      <div class="col-labels"><span>Job</span><span>From £</span><span>To £</span><span></span></div>
+      <div id="jobList"></div>
+      <button class="addjob" id="addJob">+ Add a job</button>
+      <button class="btn hazard" id="buildForm" style="margin-top:14px">Create my quote form</button>
+    </div>
+  </section>
+
+  <!-- ============ BUILDER: STEP 3 — preview ============ -->
+  <section class="step" id="step-preview">
+    <div class="card">
+      <h2 style="font-size:17px;font-weight:800;margin-bottom:4px">Done: here's your live quote form</h2>
+      <p class="small" style="margin-bottom:12px">This is exactly what your customers will see. Try tapping a job.</p>
+      <div id="previewArea" style="border:1.5px dashed var(--line);border-radius:10px;padding:12px"></div>
+      <button class="btn" id="toCapture" style="margin-top:14px">Get my QR code &amp; link</button>
+      <button class="btn secondary" id="backToPrices">Edit prices</button>
+    </div>
+  </section>
+
+  <!-- ============ BUILDER: STEP 4 — lead capture gate ============ -->
+  <section class="step" id="step-capture">
+    <div class="card">
+      <h2 style="font-size:17px;font-weight:800;margin-bottom:4px">Unlock your QR code and link</h2>
+      <p class="small" style="margin-bottom:12px">Pop in your name and email to unlock the QR code, shareable link and download.</p>
+      <div class="field">
+        <label for="leadName">Your name</label>
+        <input type="text" id="leadName" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="leadEmail">Email</label>
+        <input type="email" id="leadEmail" autocomplete="email" placeholder="you@business.co.uk">
+      </div>
+      <div class="consent">
+        <input type="checkbox" id="consent" checked>
+        <span id="consentText">It's fine to email me about this tool and other free ideas for my business. Unsubscribe any time.</span>
+      </div>
+      <button class="btn hazard" id="unlock">Unlock my QR code</button>
+      <p class="msg err" id="capErr"></p>
+    </div>
+  </section>
+
+  <!-- ============ BUILDER: STEP 5 — QR + link ============ -->
+  <section class="step" id="step-result">
+    <div class="card">
+      <h2 style="font-size:17px;font-weight:800;margin-bottom:4px">Your quote form is ready</h2>
+      <p class="small">Three ways to use it, starting today:</p>
+      <ul class="small" style="margin:8px 0 4px 18px;line-height:1.7">
+        <li><strong>On your counter or window</strong>: print the QR below.</li>
+        <li><strong>Mid-call</strong>: text the link while the customer's on the phone.</li>
+        <li><strong>Online</strong>: add the link to your website and Google Business Profile.</li>
+      </ul>
+      <div class="qrbox"><div id="qrcode" role="img" aria-label="QR code linking to your quote form"></div></div>
+      <div class="linkbox" id="shareLink"></div>
+      <button class="btn" id="copyLink">Copy link</button>
+      <button class="btn secondary" id="dlQR">Download QR as image</button>
+      <p class="msg ok" id="copied">Link copied.</p>
+    </div>
+  </section>
+
+  <!-- ============ CUSTOMER MODE ============ -->
+  <section class="step" id="step-customer">
+    <div class="card">
+      <div id="custJobs"></div>
+      <div class="ballpark" id="ballpark" style="display:none">
+        <div class="b-label">Ballpark price</div>
+        <div class="b-price" id="bpPrice">£0–£0</div>
+        <div class="b-note" id="bpNote">Final price confirmed after a quick look at your vehicle.</div>
+      </div>
+      <div id="custCapture" style="display:none">
+        <div class="field">
+          <label for="custName">Your name</label>
+          <input type="text" id="custName" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="custPhone">Mobile number <span class="hint">(we'll call you back) with an exact price</span></label>
+          <input type="tel" id="custPhone" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label for="custReg">Vehicle reg or make/model <span class="hint">(optional)</span></label>
+          <input type="text" id="custReg" placeholder="e.g. AB12 CDE or Ford Focus 2018">
+        </div>
+        <button class="btn hazard" id="custSend">Request my exact quote</button>
+        <p class="msg err" id="custErr"></p>
+      </div>
+      <div id="custDone" style="display:none">
+        <div class="success-tick">✓</div>
+        <h2 style="font-size:18px;font-weight:800;text-align:center">Request sent</h2>
+        <p class="small" style="text-align:center;margin-top:6px" id="custDoneMsg"></p>
+      </div>
+    </div>
+  </section>
+</div>
+<footer id="pageFooter">Free tool. No app, no sign-up for your customers.</footer>
+
+<script>
+/* ================================================================
+   CONFIG: fill these in once (see README for Baserow setup)
+   ================================================================ */
+const CONFIG = {
+  // Baserow personal API token (Settings → API tokens in Baserow)
+  BASEROW_TOKEN: "PASTE_YOUR_BASEROW_TOKEN_HERE",
+  // Table that captures BUSINESS OWNER leads (your prospects)
+  OWNER_LEADS_TABLE_ID: "PASTE_TABLE_ID",
+  // Table that captures END-CUSTOMER quote requests (the garage's leads)
+  CUSTOMER_LEADS_TABLE_ID: "PASTE_TABLE_ID",
+  BASEROW_URL: "https://api.baserow.io"
+};
+
+/* Default job template for garages & trades — edit freely */
+const DEFAULT_JOBS = [
+  {name:"Front brake pads", lo:90,  hi:160},
+  {name:"Full service",     lo:150, hi:260},
+  {name:"Interim service",  lo:90,  hi:150},
+  {name:"MOT test",         lo:40,  hi:55},
+  {name:"Clutch replacement",lo:450,hi:900},
+  {name:"Timing belt",      lo:280, hi:550},
+  {name:"Battery supply & fit",lo:110,hi:190},
+  {name:"Diagnostics check",lo:45,  hi:80}
+];
+
+const $ = id => document.getElementById(id);
+const steps = ["step-name","step-prices","step-preview","step-capture","step-result","step-customer"];
+function show(step){
+  steps.forEach(s=>$(s).classList.toggle("active", s===step));
+  window.scrollTo({top:0});
+}
+
+/* ---------------- Baserow ---------------- */
+function baserowReady(tableId){
+  return CONFIG.BASEROW_TOKEN && !CONFIG.BASEROW_TOKEN.startsWith("PASTE") &&
+         tableId && !String(tableId).startsWith("PASTE");
+}
+async function baserowAdd(tableId, row){
+  const res = await fetch(`${CONFIG.BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true`,{
+    method:"POST",
+    headers:{ "Authorization":"Token "+CONFIG.BASEROW_TOKEN, "Content-Type":"application/json" },
+    body: JSON.stringify(row)
+  });
+  if(!res.ok) throw new Error("Baserow "+res.status);
+  return res.json();
+}
+
+/* ---------------- Builder state ---------------- */
+let jobs = DEFAULT_JOBS.map(j=>({...j}));
+let biz = {name:"", phone:""};
+
+function renderJobRows(){
+  const list = $("jobList");
+  list.innerHTML = "";
+  jobs.forEach((j,i)=>{
+    const row = document.createElement("div");
+    row.className = "job-row";
+    row.innerHTML = `
+      <input type="text" value="${escAttr(j.name)}" aria-label="Job name" data-i="${i}" data-k="name">
+      <input type="text" inputmode="numeric" class="price" value="${j.lo}" aria-label="Price from" data-i="${i}" data-k="lo">
+      <input type="text" inputmode="numeric" class="price" value="${j.hi}" aria-label="Price to" data-i="${i}" data-k="hi">
+      <button class="del" aria-label="Remove ${escAttr(j.name)}" data-del="${i}">×</button>`;
+    list.appendChild(row);
+  });
+}
+function escAttr(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}
+function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+$("jobList").addEventListener("input", e=>{
+  const i = e.target.dataset.i, k = e.target.dataset.k;
+  if(i===undefined) return;
+  jobs[i][k] = k==="name" ? e.target.value : (parseInt(e.target.value.replace(/\D/g,""),10)||0);
+});
+$("jobList").addEventListener("click", e=>{
+  const d = e.target.dataset.del;
+  if(d!==undefined){ jobs.splice(+d,1); renderJobRows(); }
+});
+$("addJob").addEventListener("click", ()=>{
+  jobs.push({name:"", lo:0, hi:0});
+  renderJobRows();
+  const rows = $("jobList").querySelectorAll(".job-row");
+  rows[rows.length-1].querySelector("input").focus();
+});
+
+$("toPrices").addEventListener("click", ()=>{
+  const n = $("bizname").value.trim();
+  if(!n){ $("nameErr").classList.add("err"); $("nameErr").style.display="block"; return; }
+  biz.name = n; biz.phone = $("bizphone").value.trim();
+  $("boardTitle").textContent = n + ": price board";
+  renderJobRows();
+  show("step-prices");
+});
+
+$("buildForm").addEventListener("click", ()=>{
+  jobs = jobs.filter(j=>j.name.trim() && j.hi>0);
+  if(jobs.length===0){ alert("Add at least one job with a price."); renderJobRows(); return; }
+  renderCustomerForm($("previewArea"), true);
+  show("step-preview");
+});
+$("backToPrices").addEventListener("click", ()=>{ renderJobRows(); show("step-prices"); });
+$("toCapture").addEventListener("click", ()=> show("step-capture"));
+
+/* ---------------- Lead capture gate ---------------- */
+$("unlock").addEventListener("click", async ()=>{
+  const name = $("leadName").value.trim();
+  const email = $("leadEmail").value.trim();
+  const err = $("capErr");
+  err.className = "msg"; err.style.display="none";
+  if(!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+    err.textContent = "Add your name and a valid email to unlock."; err.className="msg err"; return;
+  }
+  $("unlock").disabled = true; $("unlock").textContent = "One second…";
+  if(baserowReady(CONFIG.OWNER_LEADS_TABLE_ID)){
+    try{
+      await baserowAdd(CONFIG.OWNER_LEADS_TABLE_ID,{
+        "Name": name, "Email": email, "Business": biz.name, "Phone": biz.phone,
+        "Tool": "Instant Quote Form", "Consent": $("consent").checked ? "Yes":"No",
+        "Date": new Date().toISOString()
+      });
+    }catch(e){ console.warn("Lead not saved:", e); }
+  }else{
+    console.warn("Baserow not configured: owner lead not saved:", {name,email,biz});
+  }
+  buildShareables();
+  $("unlock").disabled = false; $("unlock").textContent = "Unlock my QR code";
+  show("step-result");
+});
+
+/* ---------------- Share link + QR ---------------- */
+function encodeConfig(){
+  const payload = { n: biz.name, p: biz.phone, j: jobs.map(j=>[j.name,j.lo,j.hi]) };
+  return btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+         .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function decodeConfig(s){
+  s = s.replace(/-/g,"+").replace(/_/g,"/");
+  const json = decodeURIComponent(escape(atob(s)));
+  const p = JSON.parse(json);
+  return { name:p.n, phone:p.p, jobs:p.j.map(a=>({name:a[0],lo:a[1],hi:a[2]})) };
+}
+let shareURL = "";
+function buildShareables(){
+  shareURL = location.origin + location.pathname + "#q=" + encodeConfig();
+  $("shareLink").textContent = shareURL;
+  $("qrcode").innerHTML = "";
+  new QRCode($("qrcode"), { text: shareURL, width:200, height:200,
+    colorDark:"#171a1e", colorLight:"#ffffff", correctLevel: QRCode.CorrectLevel.M });
+}
+$("copyLink").addEventListener("click", async ()=>{
+  try{ await navigator.clipboard.writeText(shareURL); }
+  catch(e){
+    const t=document.createElement("textarea");t.value=shareURL;document.body.appendChild(t);
+    t.select();document.execCommand("copy");t.remove();
+  }
+  $("copied").className="msg ok";
+  setTimeout(()=> $("copied").className="msg",1800);
+});
+$("dlQR").addEventListener("click", ()=>{
+  const img = $("qrcode").querySelector("img") || $("qrcode").querySelector("canvas");
+  let dataURL;
+  if(img.tagName==="CANVAS") dataURL = img.toDataURL("image/png");
+  else dataURL = img.src;
+  const a = document.createElement("a");
+  a.href = dataURL;
+  a.download = (biz.name||"quote-form").replace(/[^a-z0-9]+/gi,"-").toLowerCase()+"-qr.png";
+  a.click();
+});
+
+/* ---------------- Customer mode ---------------- */
+let custCfg = null, chosen = null;
+function renderCustomerForm(container, isPreview){
+  const cfg = isPreview ? {name:biz.name, phone:biz.phone, jobs} : custCfg;
+  container.innerHTML = "";
+  cfg.jobs.forEach((j,i)=>{
+    const b = document.createElement("button");
+    b.className = "pick"; b.setAttribute("aria-pressed","false"); b.dataset.i = i;
+    b.innerHTML = `<span class="jname">${escHtml(j.name)}</span><span class="chip">£${j.lo}–£${j.hi}</span>`;
+    b.addEventListener("click", ()=>{
+      container.querySelectorAll(".pick").forEach(p=>p.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");
+      if(isPreview){ return; }
+      chosen = j;
+      $("bpPrice").textContent = `£${j.lo}–£${j.hi}`;
+      $("ballpark").style.display = "block";
+      $("custCapture").style.display = "block";
+      $("custCapture").scrollIntoView({behavior:"smooth",block:"center"});
+    });
+    container.appendChild(b);
+  });
+}
+function enterCustomerMode(cfgStr){
+  try{ custCfg = decodeConfig(cfgStr); }
+  catch(e){ return; }
+  $("eyebrow").textContent = escHtml(custCfg.name);
+  $("title").textContent = "Get an instant ballpark price";
+  $("subtitle").textContent = "Tap the job you need. We'll show a rough price straight away, then call you back with an exact quote.";
+  $("pageFooter").textContent = custCfg.phone ? ("Prefer to talk? Call " + custCfg.phone) : "";
+  renderCustomerForm($("custJobs"), false);
+  show("step-customer");
+}
+$("custSend").addEventListener("click", async ()=>{
+  const name = $("custName").value.trim();
+  const phone = $("custPhone").value.trim();
+  const err = $("custErr");
+  err.className="msg"; err.style.display="none";
+  if(!name || phone.replace(/\D/g,"").length < 10){
+    err.textContent = "Add your name and a valid mobile number."; err.className="msg err"; return;
+  }
+  $("custSend").disabled = true; $("custSend").textContent = "Sending…";
+  let saved = false;
+  if(baserowReady(CONFIG.CUSTOMER_LEADS_TABLE_ID)){
+    try{
+      await baserowAdd(CONFIG.CUSTOMER_LEADS_TABLE_ID,{
+        "Customer name": name, "Phone": phone, "Vehicle": $("custReg").value.trim(),
+        "Job": chosen.name, "Price range": `£${chosen.lo}–£${chosen.hi}`,
+        "Business": custCfg.name, "Date": new Date().toISOString()
+      });
+      saved = true;
+    }catch(e){ console.warn("Customer lead not saved:", e); }
+  }
+  $("custCapture").style.display="none";
+  $("custDone").style.display="block";
+  $("custDoneMsg").textContent = saved
+    ? `${custCfg.name} has your request for "${chosen.name}" and will call you back on ${phone}.`
+    : (custCfg.phone
+        ? `Please call ${custCfg.name} on ${custCfg.phone} to confirm your quote for "${chosen.name}".`
+        : `Please contact ${custCfg.name} to confirm your quote for "${chosen.name}".`);
+  $("custSend").disabled = false; $("custSend").textContent = "Request my exact quote";
+});
+
+/* ---------------- Boot ---------------- */
+(function boot(){
+  const m = location.hash.match(/#q=(.+)/);
+  if(m){ enterCustomerMode(m[1]); }
+})();
+</script>
+</body>
+</html>

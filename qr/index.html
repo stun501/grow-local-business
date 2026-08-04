@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Grow Local · Hub QR code</title>
+ <meta name="description" content="Downloadable QR code linking to the Grow Local landing page." />
+ <link rel="icon" href="../assets/monogram-gl.svg" type="image/svg+xml" />
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500&display=swap" rel="stylesheet" />
+ <link rel="stylesheet" href="../assets/tokens-shopfront.css" />
+ <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+   min-height: 100dvh;
+   font-family: var(--gl-font-body);
+   background: var(--gl-bone);
+   color: var(--gl-ink);
+   padding: 32px 20px 48px;
+   -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+   max-width: 28rem;
+   margin: 0 auto;
+   text-align: center;
+  }
+  .brand {
+   display: inline-block;
+   font-family: var(--gl-font-display);
+   font-size: 1.5rem;
+   font-weight: 500;
+   color: var(--gl-bottle);
+   text-decoration: none;
+   margin-bottom: 8px;
+  }
+  .brand:hover { color: var(--gl-brass); }
+  .rule {
+   width: 3.5rem;
+   height: 1px;
+   background: var(--gl-gold);
+   margin: 0 auto 20px;
+  }
+  h1 {
+   font-family: var(--gl-font-display);
+   font-size: 1.75rem;
+   font-weight: 500;
+   letter-spacing: -0.02em;
+   margin-bottom: 10px;
+  }
+  .lead {
+   color: var(--gl-slate);
+   font-size: 0.95rem;
+   line-height: 1.5;
+   margin-bottom: 28px;
+  }
+  .qr-panel {
+   display: inline-block;
+   padding: 16px;
+   border: 0.5px solid var(--gl-gold);
+   background: #fff;
+   margin-bottom: 20px;
+  }
+  .qr-panel img {
+   display: block;
+   width: min(280px, 72vw);
+   height: auto;
+  }
+  .url {
+   font-size: 0.8rem;
+   color: var(--gl-slate);
+   word-break: break-all;
+   margin-bottom: 24px;
+  }
+  .url a { color: var(--gl-brass); }
+  .actions {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   align-items: center;
+  }
+  .btn {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   min-width: 14rem;
+   padding: 0.85em 1.4em;
+   font-family: var(--gl-font-body);
+   font-size: 1rem;
+   font-weight: 600;
+   text-decoration: none;
+   border: none;
+   cursor: pointer;
+   background: var(--gl-brass);
+   color: var(--gl-bone);
+  }
+  .btn:hover { background: var(--gl-brass-hover); color: var(--gl-bone); }
+  .btn--ghost {
+   background: transparent;
+   color: var(--gl-brass);
+   border: 1px solid var(--gl-gold);
+  }
+  .btn--ghost:hover {
+   background: rgba(198, 161, 91, 0.12);
+   color: var(--gl-brass);
+  }
+  .hint {
+   margin-top: 28px;
+   font-size: 0.8rem;
+   color: var(--gl-slate);
+   line-height: 1.45;
+  }
+ </style>
+</head>
+<body>
+ <div class="wrap">
+  <a class="brand" href="../index.html">GROW LOCAL</a>
+  <div class="rule" aria-hidden="true"></div>
+  <h1>Landing page QR</h1>
+  <p class="lead">Scan this to open the Grow Local hub. Save the image to your phone for cold visits.</p>
+
+  <div class="qr-panel">
+   <img
+    id="hub-qr"
+    src="../assets/hub-qr.png"
+    width="720"
+    height="720"
+    alt="QR code linking to the Grow Local landing page"
+   />
+  </div>
+
+  <p class="url">
+   Opens<br />
+   <a href="https://grow-local-business.netlify.app/">https://grow-local-business.netlify.app/</a>
+  </p>
+
+  <div class="actions">
+   <a class="btn" id="download-png" href="../assets/hub-qr.png" download="grow-local-hub-qr.png">Download PNG</a>
+   <a class="btn btn--ghost" href="../assets/hub-qr.svg" download="grow-local-hub-qr.svg">Download SVG</a>
+   <a class="btn btn--ghost" href="../index.html">Back to hub</a>
+  </div>
+
+  <p class="hint">
+   Bookmark this page for meetings:<br />
+   <strong>https://grow-local-business.netlify.app/qr/</strong>
+  </p>
+ </div>
+</body>
+</html>

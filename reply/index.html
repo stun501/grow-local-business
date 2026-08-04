@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Review Reply Writer · Grow Local</title>
+<meta name="description" content="Every review deserves an answer. Paste it in, pick a tone, and get a reply you can actually send. Free, no sign-up." />
+<link rel="icon" href="../assets/monogram-gl.svg" type="image/svg+xml" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="../assets/tokens-shopfront.css" />
+<link rel="stylesheet" href="../assets/product-shell.css" />
+
+<style>
+ /* ---------- Hero mockup: review card + composing reply ---------- */
+ .review-card {
+  background: var(--gl-bone);
+  border: 1px solid var(--gl-gold-40);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+ }
+ .review-card__stars {
+  color: var(--gl-oxblood);
+  letter-spacing: 2px;
+  font-size: 1rem;
+  margin-bottom: 6px;
+ }
+ .review-card__name {
+  font-family: var(--gl-font-display);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  margin-bottom: 4px;
+ }
+ .review-card__text {
+  font-size: 0.8125rem;
+  color: var(--gl-slate);
+  line-height: 1.5;
+  font-style: italic;
+ }
+ .reply-compose {
+  background: var(--gl-bone-warm);
+  border: 1px solid var(--gl-gold-40);
+  padding: 12px 14px;
+ }
+ .reply-compose__label {
+  font-family: var(--gl-font-utility);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: var(--gl-track-utility);
+  text-transform: uppercase;
+  color: var(--gl-slate);
+  margin-bottom: 6px;
+ }
+ .reply-compose__text {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+ }
+ .rline {
+  display: block;
+  opacity: 0;
+  transform: translateY(4px);
+ }
+ .mockup.in-view .rline {
+  animation: rlineIn 0.4s ease forwards;
+  animation-delay: calc(var(--d) * 0.16s + 0.2s);
+ }
+ @keyframes rlineIn {
+  to { opacity: 1; transform: none; }
+ }
+
+ /* ---------- Generator ---------- */
+ .utility-banner {
+  background: var(--gl-bone-warm);
+  border: 1px solid var(--gl-gold);
+  padding: 10px 14px;
+  font-family: var(--gl-font-utility);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: var(--gl-track-utility);
+  text-transform: uppercase;
+  color: var(--gl-brass);
+  text-align: center;
+  margin-bottom: 20px;
+ }
+ .pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+ }
+ .pill-btn {
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: var(--gl-bone);
+  color: var(--gl-ink);
+  border: 1.5px solid var(--gl-gold-40);
+  padding: 10px 16px;
+  cursor: pointer;
+ }
+ .pill-btn:hover { border-color: var(--gl-gold); }
+ .pill-btn.selected {
+  background: var(--gl-brass);
+  color: var(--gl-bone);
+  border-color: var(--gl-brass);
+ }
+ .pill-btn:focus-visible { outline: 2px solid var(--gl-gold); outline-offset: 2px; }
+ .star-group { display: flex; gap: 6px; margin-bottom: 4px; }
+ .star-btn {
+  font: inherit;
+  font-size: 1.375rem;
+  line-height: 1;
+  background: var(--gl-bone);
+  color: var(--gl-gold-40);
+  border: 1.5px solid var(--gl-gold-40);
+  padding: 8px 14px;
+  cursor: pointer;
+ }
+ .star-btn:hover { border-color: var(--gl-gold); }
+ .star-btn.selected {
+  background: var(--gl-bone-warm);
+  color: var(--gl-oxblood);
+  border-color: var(--gl-gold);
+ }
+ .star-btn:focus-visible { outline: 2px solid var(--gl-gold); outline-offset: 2px; }
+
+ .gen-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+ .gen-actions .btn-brass, .gen-actions .btn-outline { flex: 1 1 200px; }
+
+ .msg {
+  padding: 12px 14px;
+  font-size: 0.875rem;
+  margin-top: 14px;
+  display: none;
+  border: 1px solid var(--gl-gold-40);
+ }
+ .msg.show { display: block; }
+ .msg--err { background: rgba(122, 46, 46, 0.08); color: var(--gl-oxblood); border-color: var(--gl-oxblood); }
+ .msg--ok { background: rgba(198, 161, 91, 0.16); color: var(--gl-ink); }
+
+ .draft-panel {
+  display: none;
+  margin-top: 22px;
+  padding: 20px;
+  border: 1px solid var(--gl-gold);
+  background: var(--gl-bone);
+ }
+ .draft-panel.show { display: block; }
+ .draft-panel h3 {
+  font-family: var(--gl-font-display);
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+ }
+ .draft-panel textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--gl-ink);
+  background: #fffef9;
+  border: 1.5px solid var(--gl-gold-40);
+  padding: 12px;
+  min-height: 130px;
+  resize: vertical;
+ }
+ .draft-panel textarea:focus {
+  outline: 2px solid var(--gl-gold);
+  outline-offset: 1px;
+  border-color: var(--gl-ink);
+ }
+ .streak-line {
+  font-family: var(--gl-font-utility);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: var(--gl-track-utility);
+  text-transform: uppercase;
+  color: var(--gl-gold);
+  margin-top: 6px;
+ }
+ .soft-help {
+  margin-top: 16px;
+  font-size: 0.875rem;
+  color: var(--gl-slate);
+  text-align: center;
+ }
+ .soft-help a { color: var(--gl-brass); font-weight: 600; text-decoration: underline; }
+
+ .save-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 18px;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gl-brass);
+  text-decoration: underline;
+  cursor: pointer;
+ }
+ .save-form {
+  display: none;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: var(--gl-rule);
+ }
+ .save-form.show { display: block; }
+ .consent { display: flex; gap: 9px; align-items: flex-start; margin: 4px 0 14px; }
+ .consent input { margin-top: 3px; accent-color: var(--gl-brass); }
+ .consent span { font-size: 0.8125rem; color: var(--gl-slate); }
+
+ @media (min-width: 860px) {
+  .tool-hero .wrap { align-items: flex-start; }
+ }
+</style>
+</head>
+<body>
+
+<header class="sticky-bar">
+ <a class="sticky-bar__mark" href="../index.html">Grow Local</a>
+ <a class="sticky-bar__link" href="../index.html#tools">See the tools</a>
+</header>
+
+<main>
+
+ <!-- 1. HERO -->
+ <section class="tool-hero">
+  <div class="wrap">
+   <div>
+    <p class="utility tool-hero__eyebrow">Any business with reviews</p>
+    <h1>Every review deserves an answer.</h1>
+    <p class="tool-hero__sub">Ten minutes a week, once a week, and every review on your listing has a proper reply under it. That's the whole commitment.</p>
+    <div class="tool-hero__cta">
+     <a class="btn-brass" href="/reply/build/">Write a reply</a>
+     <p class="utility tool-hero__meta">Free · No sign-up</p>
+    </div>
+   </div>
+   <div class="mockup" id="heroMockup">
+    <div class="mockup__device">
+     <div class="mockup__notch"></div>
+     <div class="review-card">
+      <div class="review-card__stars" aria-hidden="true">★☆☆☆☆</div>
+      <div class="review-card__name">Danielle W.</div>
+      <div class="review-card__text">"Waited three weeks for a part and had to keep chasing for updates. Work itself was fine but the communication was poor."</div>
+     </div>
+     <div class="reply-compose">
+      <p class="reply-compose__label">Your reply</p>
+      <p class="reply-compose__text">
+       <span class="rline" style="--d:0">Thanks for being straight with us, Danielle ; </span>
+       <span class="rline" style="--d:1">you're right, we should have kept you updated</span>
+       <span class="rline" style="--d:2">rather than leaving you to chase. Glad the work</span>
+       <span class="rline" style="--d:3">itself was up to scratch. We've changed how we</span>
+       <span class="rline" style="--d:4">handle parts delays because of this. Give us a</span>
+       <span class="rline" style="--d:5">ring on 01234 567890 if there's anything outstanding.</span>
+      </p>
+     </div>
+    </div>
+    <p class="mockup__caption">From a hard review to a good reply</p>
+   </div>
+  </div>
+ </section>
+
+ <!-- 2. THE PROBLEM -->
+ <section class="section">
+  <div class="wrap">
+   <p class="utility section__eyebrow">The problem</p>
+   <h2>The reply matters more than the review.</h2>
+   <p>Anyone reading your reviews is really asking one question; what are these people like to deal with? A warm reply to a good review answers it. A calm, fair reply to a bad one answers it even better.</p>
+   <p>Most owners know this. They just don't reply, because sitting down to write something to an unhappy customer at nine at night is the last thing anyone wants to do.</p>
+  </div>
+ </section>
+
+ <!-- 3. WHAT YOU GET -->
+ <section class="section section--bottle">
+  <div class="wrap">
+   <p class="utility section__eyebrow">What you get</p>
+   <ul style="list-style:none;">
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>A draft you can actually send</strong>; In your tone, not corporate boilerplate.</li>
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Help with the difficult ones</strong>; Calm, fair, and not defensive.</li>
+    <li style="padding:14px 0;"><strong>Edit before you post</strong>; It's a starting point, never the final word.</li>
+   </ul>
+  </div>
+ </section>
+
+ <!-- 4. THE GENERATOR -->
+ <section class="generator" id="generator" style="display:none">
+  <div class="wrap">
+   <p class="utility section__eyebrow">The generator</p>
+   <h2>Paste the review, pick a tone.</h2>
+   <p class="lede" style="margin-bottom:20px;">Add your business name, paste in the review, choose warm, brief or formal. Edit whatever doesn't sound like you before you post it.</p>
+
+   <div class="field">
+    <label for="bizName">Business name</label>
+    <input type="text" id="bizName" placeholder="e.g. Ashford Motors" autocomplete="organization">
+   </div>
+
+   <div class="field">
+    <label for="bizType">Business type</label>
+    <select id="bizType"></select>
+   </div>
+
+   <div class="field">
+    <label for="reviewText">Paste the review</label>
+    <textarea id="reviewText" rows="4" placeholder="Paste the customer's review here…"></textarea>
+   </div>
+
+   <div class="field">
+    <label>Star rating</label>
+    <div class="star-group" id="starGroup" role="group" aria-label="Star rating">
+     <button type="button" class="star-btn" data-star="1">★</button>
+     <button type="button" class="star-btn" data-star="2">★★</button>
+     <button type="button" class="star-btn" data-star="3">★★★</button>
+     <button type="button" class="star-btn" data-star="4">★★★★</button>
+     <button type="button" class="star-btn" data-star="5">★★★★★</button>
+    </div>
+   </div>
+
+   <div class="field">
+    <label>Tone</label>
+    <div class="pill-group" id="toneGroup" role="group" aria-label="Tone">
+     <button type="button" class="pill-btn selected" data-tone="Warm">Warm</button>
+     <button type="button" class="pill-btn" data-tone="Brief">Brief</button>
+     <button type="button" class="pill-btn" data-tone="Formal">Formal</button>
+    </div>
+   </div>
+
+   <div class="field">
+    <label for="context">Anything we should know? <span class="hint">(optional)</span></label>
+    <textarea id="context" rows="2" placeholder="e.g. we did offer a refund, this was during the flood"></textarea>
+   </div>
+
+   <div class="utility-banner">Read it before you post it. This is a starting point, not the final word</div>
+
+   <div class="gen-actions">
+    <button class="btn-brass" id="btnGenerate">Generate my reply</button>
+   </div>
+   <p class="msg msg--err" id="genErr"></p>
+
+   <div class="draft-panel" id="draftPanel">
+    <h3>Your draft reply</h3>
+    <textarea id="draftText" aria-label="Your draft reply; edit before posting"></textarea>
+    <p class="streak-line" id="streakLine"></p>
+    <div class="gen-actions">
+     <button class="btn-brass" id="btnCopy">Copy reply</button>
+     <button class="btn-outline" id="btnTryAnother">Try another</button>
+    </div>
+    <p class="msg msg--ok" id="copiedMsg">Copied to your clipboard.</p>
+    <p class="soft-help">Stuck on any of it? <a href="sms:07379028832">Text 07379 028832</a> and we'll talk you through it.</p>
+
+    <button class="save-toggle" id="btnShowSave" type="button">Unlock saved profile →</button>
+    <div class="save-form" id="saveForm">
+     <p class="small" style="color:var(--gl-slate);margin-bottom:12px;">Enter your name and email to unlock a saved business profile for next time.</p>
+     <div class="field">
+      <label for="saveName">Your name</label>
+      <input type="text" id="saveName" autocomplete="name">
+     </div>
+     <div class="field">
+      <label for="saveEmail">Email address</label>
+      <input type="email" id="saveEmail" autocomplete="email" placeholder="you@business.co.uk">
+     </div>
+     <div class="consent">
+      <input type="checkbox" id="saveConsent" checked>
+      <span id="saveConsentText"></span>
+     </div>
+     <button class="btn-brass" id="btnSaveSubmit" type="button">Unlock saved profile</button>
+     <p class="msg msg--err" id="saveErr"></p>
+     <p class="msg msg--ok" id="savedMsg">Unlocked; your profile is ready for next time.</p>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <!-- 5. WHERE TO USE IT -->
+ <section class="section">
+  <div class="wrap">
+   <p class="utility section__eyebrow">Where to use it</p>
+   <h2>Getting replies right.</h2>
+   <ol class="place-list">
+    <li>
+     <h3>Reply to the good ones too</h3>
+     <p><em>Most businesses only answer complaints, which reads oddly.</em></p>
+     <ol>
+      <li>Keep it short and specific. Mention what they came in for.</li>
+      <li>Use their name.</li>
+      <li>Don't paste the same line under every review; readers notice.</li>
+     </ol>
+    </li>
+    <li>
+     <h3>For a bad review, wait an hour</h3>
+     <p><em>The first draft in your head is never the one to send.</em></p>
+     <ol>
+      <li>Thank them for the feedback, plainly.</li>
+      <li>Answer the specific point without arguing the detail in public.</li>
+      <li>Move it offline; "Give us a ring and we'll put it right."</li>
+     </ol>
+    </li>
+    <li>
+     <h3>Set a weekly slot</h3>
+     <p><em>Ten minutes, same time each week.</em></p>
+     <ol>
+      <li>Check for new reviews once a week rather than daily.</li>
+      <li>Clear them in one sitting.</li>
+     </ol>
+    </li>
+   </ol>
+  </div>
+ </section>
+
+ <!-- 6. COMMON MISTAKES -->
+ <section class="section section--bottle">
+  <div class="wrap">
+   <p class="utility section__eyebrow">Common mistakes</p>
+   <ul style="list-style:none;">
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Arguing the detail in public.</strong> Even when you're right, onlookers read defensiveness rather than fact. Acknowledge, then move it offline.</li>
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Identical replies under every review.</strong> It's visible, and it undoes the point of replying at all.</li>
+    <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Only replying to the bad ones.</strong> It makes your listing look like a complaints log.</li>
+    <li style="padding:14px 0;"><strong>Leaving it months.</strong> A reply eight months later reads worse than no reply.</li>
+   </ul>
+  </div>
+ </section>
+
+ <!-- 7. WHAT TO EXPECT -->
+ <section class="section">
+  <div class="wrap">
+   <p class="utility section__eyebrow">What to expect</p>
+   <p>This doesn't change your rating. What it changes is what someone thinks while reading it, and a good reply under a bad review has talked more people round than most owners realise.</p>
+  </div>
+ </section>
+
+ <!-- 8. NEED A HAND -->
+ <div class="wrap" id="needHandWrap"></div>
+
+ <!-- 9. RELATED -->
+ <section class="related">
+  <div class="wrap">
+   <h2>Related tools</h2>
+   <ul class="related__list">
+    <li><a href="../review/">Google Review QR</a></li>
+    <li><a href="../scorecard/">Google Listing Scorecard</a></li>
+   </ul>
+  </div>
+ </section>
+
+</main>
+
+<footer class="site-footer">
+ <div class="wrap">
+  <p style="font-family: var(--gl-font-display); font-size: 1.25rem; font-weight: 500;">Grow Local</p>
+  <div style="height: 1px; width: 6rem; background: var(--gl-gold); margin: 8px 0 16px;"></div>
+  <p>Grow Local · a growth agency for local business.</p>
+  <p><a href="../index.html#tools">See the free tools</a></p>
+  <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+ <p class="small" style="margin-top:16px;color:var(--gl-slate);font-size:0.75rem;line-height:1.4">Google Listing Scorecard is an independent tool and is not affiliated with or endorsed by Google.</p>
+</div>
+</footer>
+
+<script src="../assets/shared.js"></script>
+<script>
+/* ================================================================
+  CONFIG
+  ================================================================ */
+const CONFIG = {
+ BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ OWNER_LEADS_TABLE_ID: "1092861",
+ BASEROW_URL: "https://api.baserow.io"
+};
+
+const $ = (id) => document.getElementById(id);
+
+/* ================================================================
+  STATE
+  ================================================================ */
+let selectedStar = 0;
+let selectedTone = "Warm";
+const PROFILE_KEY = "gl_reply_profile";
+const STREAK_KEY = "gl_reply_streak";
+
+/* ================================================================
+  BOOT; populate business types, needAHand, consent, saved profile
+  ================================================================ */
+(function boot() {
+ if (window.TBA) {
+  $("bizType").innerHTML =
+   '<option value="">Select…</option>' + window.TBA.businessTypeOptionsHtml();
+  $("needHandWrap").innerHTML = window.TBA.needAHandHtml(
+   "If you've a backlog of reviews with no replies, or a difficult one you'd rather talk through, send it over."
+  );
+  $("saveConsentText").textContent = window.TBA.consentText();
+ } else {
+  $("bizType").innerHTML = '<option value="">Select…</option>';
+  $("saveConsentText").textContent = "It's fine to email me about this tool and other free ideas for my business. Unsubscribe any time.";
+ }
+
+ try {
+  const saved = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null");
+  if (saved) {
+   $("bizName").value = saved.name || "";
+   if (saved.type) $("bizType").value = saved.type;
+   if (saved.tone) selectTone(saved.tone);
+  }
+ } catch (e) { /* ignore corrupt storage */ }
+
+ updateStreakLine();
+
+ const mockup = $("heroMockup");
+ if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver((entries) => {
+   entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+     mockup.classList.add("in-view");
+     io.unobserve(mockup);
+    }
+   });
+  }, { threshold: 0.4 });
+  io.observe(mockup);
+ } else {
+  mockup.classList.add("in-view");
+ }
+})();
+
+function getStreak() {
+ return parseInt(localStorage.getItem(STREAK_KEY) || "0", 10) || 0;
+}
+function bumpStreak() {
+ const n = getStreak() + 1;
+ localStorage.setItem(STREAK_KEY, String(n));
+ updateStreakLine();
+}
+function updateStreakLine() {
+ const n = getStreak();
+ if (n <= 0) { $("streakLine").textContent = ""; return; }
+ $("streakLine").textContent = n === 1 ? "1 reply written" : n + " replies written";
+}
+
+/* ================================================================
+  STAR + TONE PICKERS
+  ================================================================ */
+$("starGroup").addEventListener("click", (e) => {
+ const btn = e.target.closest(".star-btn");
+ if (!btn) return;
+ selectedStar = parseInt(btn.dataset.star, 10);
+ $("starGroup").querySelectorAll(".star-btn").forEach((b) => {
+  b.classList.toggle("selected", parseInt(b.dataset.star, 10) <= selectedStar);
+ });
+});
+
+function selectTone(tone) {
+ selectedTone = tone;
+ $("toneGroup").querySelectorAll(".pill-btn").forEach((b) => {
+  b.classList.toggle("selected", b.dataset.tone === tone);
+ });
+}
+$("toneGroup").addEventListener("click", (e) => {
+ const btn = e.target.closest(".pill-btn");
+ if (!btn) return;
+ selectTone(btn.dataset.tone);
+});
+
+/* ================================================================
+  GENERATE
+  ================================================================ */
+async function callGenerate() {
+ const businessName = $("bizName").value.trim();
+ const businessType = $("bizType").value;
+ const reviewText = $("reviewText").value.trim();
+ const context = $("context").value.trim();
+ const err = $("genErr");
+ err.classList.remove("show");
+
+ if (!businessName || !reviewText || !selectedStar) {
+  err.textContent = "Please add your business name, paste the review, and pick a star rating.";
+  err.classList.add("show");
+  return;
+ }
+
+ const btn = $("btnGenerate");
+ const wasTryAnother = document.activeElement === $("btnTryAnother");
+ const activeBtn = wasTryAnother ? $("btnTryAnother") : btn;
+ const originalLabel = activeBtn.textContent;
+ activeBtn.disabled = true;
+ activeBtn.textContent = "Writing\u2026";
+
+ try {
+  const res = await fetch("/.netlify/functions/review-reply", {
+   method: "POST",
+   headers: { "Content-Type": "application/json" },
+   body: JSON.stringify({ businessName, businessType, reviewText, starRating: selectedStar, tone: selectedTone, context })
+  });
+
+  let data = null;
+  try { data = await res.json(); } catch (e) { /* non-json error body */ }
+
+  if (!res.ok || !data || !data.reply) {
+   const detail = (data && (data.message || data.detail)) || "";
+   err.textContent = "We couldn't write a reply just now" + (detail ? " (" + detail + ")" : "") + ". Text 07379 028832 and we'll sort it, or try again in a moment.";
+   err.classList.add("show");
+   return;
+  }
+
+  $("draftText").value = data.reply;
+  $("draftPanel").classList.add("show");
+  bumpStreak();
+
+  localStorage.setItem(PROFILE_KEY, JSON.stringify({ name: businessName, type: businessType, tone: selectedTone }));
+
+  $("draftPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+ } catch (e) {
+  err.textContent = "We couldn't reach the reply writer. Check your connection, or text 07379 028832 and we'll help directly.";
+  err.classList.add("show");
+ } finally {
+  activeBtn.disabled = false;
+  activeBtn.textContent = originalLabel;
+ }
+}
+
+$("btnGenerate").addEventListener("click", callGenerate);
+$("btnTryAnother").addEventListener("click", callGenerate);
+
+/* ================================================================
+  COPY REPLY
+  ================================================================ */
+$("btnCopy").addEventListener("click", async () => {
+ const text = $("draftText").value;
+ try {
+  await navigator.clipboard.writeText(text);
+ } catch {
+  const t = $("draftText");
+  t.select();
+  document.execCommand("copy");
+ }
+ $("copiedMsg").classList.add("show");
+ setTimeout(() => $("copiedMsg").classList.remove("show"), 2000);
+});
+
+/* ================================================================
+  SAVE MY REPLIES (optional email gate; never blocks first draft)
+  ================================================================ */
+$("btnShowSave").addEventListener("click", () => {
+ $("saveForm").classList.toggle("show");
+});
+
+$("btnSaveSubmit").addEventListener("click", async () => {
+ const name = $("saveName").value.trim();
+ const email = $("saveEmail").value.trim();
+ const err = $("saveErr");
+ err.classList.remove("show");
+
+ if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+  err.textContent = "Please enter your name and a valid email address.";
+  err.classList.add("show");
+  return;
+ }
+
+ const btn = $("btnSaveSubmit");
+ btn.disabled = true;
+ btn.textContent = "Unlocking\u2026";
+
+ if (window.TBA && window.TBA.baserowReady(CONFIG, CONFIG.OWNER_LEADS_TABLE_ID)) {
+  try {
+   await window.TBA.baserowAdd(CONFIG, CONFIG.OWNER_LEADS_TABLE_ID, {
+    "Name": name,
+    "Email": email,
+    "Business": $("bizName").value.trim(),
+    "Business type": $("bizType").value,
+    "Tool": "Review Reply Writer",
+    "Consent": $("saveConsent").checked ? "Yes" : "No",
+    "Date": new Date().toISOString()
+   });
+  } catch (e) {
+   console.warn("Lead not saved:", e);
+  }
+ } else {
+  console.warn("Baserow not configured: lead not saved:", { name, email });
+ }
+
+ btn.disabled = false;
+ btn.textContent = "Unlock saved profile";
+ $("savedMsg").classList.add("show");
+ $("saveName").value = "";
+ $("saveEmail").value = "";
+});
+</script>
+</body>
+</html>

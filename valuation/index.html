@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Instant Valuation · Grow Local</title>
+<meta name="description" content="Give sellers a rough guide to their home's value and capture a named lead every time it's used; free, no sign-up, ready in about a minute.">
+<link rel="icon" href="../assets/monogram-gl.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="../assets/tokens-shopfront.css">
+<link rel="stylesheet" href="../assets/product-shell.css">
+
+<style>
+ /* ============================================================
+   Instant Valuation — page-specific styles
+   (Tokens + shell come from tokens-shopfront.css / product-shell.css.
+   Everything here is hero-mockup, wizard, chip-grid and
+   customer-facing homeowner page styling only.)
+   ============================================================ */
+
+ /* ---- Hero mockup: postcode field + counting price + range ---- */
+ .valmock-field {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--gl-bone-warm); border: 1px solid var(--gl-gold-40);
+  padding: 10px 12px; margin-bottom: 20px;
+ }
+ .valmock-field__label {
+  font-family: var(--gl-font-utility); font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: var(--gl-track-utility); text-transform: uppercase; color: var(--gl-slate);
+ }
+ .valmock-field__value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 600; font-size: 0.9375rem; color: var(--gl-ink);
+ }
+ .valmock-price {
+  text-align: center; font-family: var(--gl-font-display); font-weight: 500;
+  font-size: clamp(1.875rem, 8vw, 2.5rem); color: var(--gl-ink); line-height: 1.1;
+ }
+ .valmock-range {
+  text-align: center; font-size: 0.875rem; color: var(--gl-slate);
+  margin-top: 8px; opacity: 0; transition: opacity 0.5s ease;
+ }
+ .mockup.in-view .valmock-range { opacity: 1; }
+
+ /* ---- Wizard steps (the generator) ---- */
+ .step { display: none; }
+ .step.active { display: block; }
+ @media (prefers-reduced-motion: no-preference) {
+  .step.active { animation: valStepIn 0.25s ease; }
+  @keyframes valStepIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+ }
+
+ .step-h2 { font-family: var(--gl-font-display); font-size: 1.125rem; font-weight: 500; margin-bottom: 4px; }
+ .step-p { color: var(--gl-slate); font-size: 0.9375rem; margin-bottom: 16px; }
+ .hint { font-weight: 400; color: var(--gl-slate); }
+
+ .preview-frame {
+  border: 1px dashed var(--gl-gold-40); background: #fffef9;
+  padding: 16px; margin-bottom: 16px;
+ }
+ .preview-frame .field input { background: var(--gl-bone-warm); }
+ .preview-frame__eyebrow {
+  font-family: var(--gl-font-utility); font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: var(--gl-track-utility); text-transform: uppercase; color: var(--gl-brass);
+  margin-bottom: 6px;
+ }
+ .preview-frame__title { font-family: var(--gl-font-display); font-size: 1.0625rem; font-weight: 500; margin-bottom: 12px; }
+ .preview-frame__note { font-size: 0.8125rem; color: var(--gl-slate); margin-top: 10px; }
+
+ .consent { display: flex; gap: 9px; align-items: flex-start; margin: 4px 0 14px; }
+ .consent input { margin-top: 3px; accent-color: var(--gl-brass); }
+ .consent span { font-size: 0.8125rem; color: var(--gl-slate); }
+
+ .msg { padding: 12px 14px; font-size: 0.875rem; margin-top: 14px; display: none; border: 1px solid var(--gl-gold-40); }
+ .msg.show { display: block; }
+ .msg--err { background: rgba(122, 46, 46, 0.08); color: var(--gl-oxblood); border-color: var(--gl-oxblood); }
+ .msg--ok { background: rgba(198, 161, 91, 0.16); color: var(--gl-ink); }
+
+ .gen-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+ .gen-actions .btn-brass, .gen-actions .btn-outline { flex: 1 1 200px; }
+
+ .qrbox {
+  display: flex; justify-content: center; padding: 16px;
+  background: #fff; border: 1px solid var(--gl-gold-40); margin: 14px 0;
+ }
+ .linkbox {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem;
+  background: #fff; border: 1px solid var(--gl-gold-40); padding: 10px; word-break: break-all; margin-bottom: 10px;
+ }
+
+ .result-head-line { font-family: var(--gl-font-display); font-size: 1.375rem; font-weight: 500; margin-bottom: 6px; }
+
+ .result-places { list-style: none; margin-top: 20px; }
+ .result-places li { padding: 10px 0; border-bottom: 0.5px solid rgba(198, 161, 91, 0.35); font-size: 0.9375rem; }
+ .result-places li:last-child { border-bottom: none; }
+
+ .soft-help { margin-top: 16px; font-size: 0.875rem; color: var(--gl-slate); }
+ .soft-help a { color: var(--gl-brass); font-weight: 600; text-decoration: underline; }
+
+ /* ---- Chip grids (property type / bedrooms / condition pickers) ---- */
+ .chip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+ .chip-btn {
+  font: inherit; font-size: 0.875rem; font-weight: 600;
+  background: var(--gl-bone); color: var(--gl-ink);
+  border: 1.5px solid var(--gl-gold-40); padding: 11px 10px; cursor: pointer; text-align: center;
+ }
+ .chip-btn:hover { border-color: var(--gl-gold); }
+ .chip-btn.selected { background: var(--gl-brass); color: var(--gl-bone); border-color: var(--gl-brass); }
+ .chip-btn:focus-visible { outline: 2px solid var(--gl-gold); outline-offset: 2px; }
+
+ /* ---- Customer (homeowner) facing page; entered via #v= hash ---- */
+ #customerView { min-height: 100dvh; background: var(--gl-bottle); color: var(--gl-bone); padding: 40px 20px 60px; }
+ .cv-wrap { max-width: 30rem; margin: 0 auto; text-align: center; }
+ .cv-brand {
+  display: inline-block; font-family: var(--gl-font-display); font-size: 1.25rem;
+  font-weight: 500; color: var(--gl-gold); margin-bottom: 16px;
+ }
+ .cv-brand:hover { color: var(--gl-bone); }
+ .cv-heading {
+  font-family: var(--gl-font-display); font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 500; color: var(--gl-bone); margin-bottom: 8px; line-height: 1.15;
+ }
+ .cv-sub { color: var(--gl-slate-on-bottle); margin-bottom: 26px; font-size: 0.9375rem; }
+ .cv-card { background: var(--gl-bone); color: var(--gl-ink); border: 1px solid var(--gl-gold); padding: 22px 20px; text-align: left; }
+ .cv-card__h3 { font-family: var(--gl-font-display); font-size: 1.125rem; font-weight: 500; margin: 18px 0 6px; }
+ .cv-card__h2c { font-family: var(--gl-font-display); font-size: 1.375rem; font-weight: 500; text-align: center; margin-bottom: 6px; }
+ .cv-card__p { color: var(--gl-slate); font-size: 0.9375rem; margin-bottom: 14px; }
+ .cv-footer { margin-top: 22px; font-size: 0.8125rem; color: var(--gl-slate-on-bottle); }
+
+ .vr-box { background: var(--gl-bottle); color: var(--gl-bone); border: 1px solid var(--gl-gold); padding: 20px; margin-bottom: 18px; text-align: center; }
+ .vr-box__label { color: var(--gl-gold); margin-bottom: 6px; }
+ .vr-box__range { font-family: var(--gl-font-display); font-size: clamp(1.5rem, 7vw, 2rem); font-weight: 500; color: var(--gl-bone); margin: 4px 0; }
+ .vr-box__note { font-size: 0.8125rem; color: var(--gl-slate-on-bottle); margin-top: 6px; line-height: 1.4; }
+
+ .success-tick { font-size: 2.5rem; text-align: center; margin-bottom: 8px; color: var(--gl-gold); }
+</style>
+</head>
+<body>
+
+<div id="ownerView">
+
+ <header class="sticky-bar">
+  <a class="sticky-bar__mark" href="../index.html">Grow Local</a>
+  <a class="sticky-bar__link" href="../index.html#tools">See the tools</a>
+ </header>
+
+ <main>
+  <!-- 1. HERO -->
+  <section class="tool-hero">
+   <div class="wrap">
+    <div>
+     <p class="utility tool-hero__eyebrow">Estate agents · Lettings</p>
+     <h1>Catch the sellers browsing at midnight.</h1>
+     <p class="tool-hero__sub">The people who'll instruct you in spring are looking tonight. This turns a few of them a month from anonymous browsers into named sellers with a phone number.</p>
+     <div class="tool-hero__cta">
+      <a class="btn-brass" href="/valuation/build/">Build my valuation tool</a>
+     </div>
+    </div>
+
+    <div class="mockup" id="heroMockup">
+     <div class="mockup__device">
+      <div class="mockup__notch"></div>
+      <div class="valmock-field">
+       <span class="valmock-field__label">Postcode</span>
+       <span class="valmock-field__value">TN13 2AB</span>
+      </div>
+      <div class="valmock-price" id="mockPrice">£0</div>
+      <div class="valmock-range" id="mockRange">£350,000 &ndash; £474,000</div>
+     </div>
+     <p class="utility mockup__caption">An estimate in under a minute</p>
+    </div>
+   </div>
+  </section>
+
+  <!-- 2. THE PROBLEM -->
+  <section class="section">
+   <div class="wrap" style="max-width:640px">
+    <p class="utility section__eyebrow">The problem</p>
+    <h2>The people who instruct you in spring start looking now.</h2>
+    <p>Someone checks what a neighbour's place went for. They wonder about their own. That's the beginning of a seller's journey, and it happens months before anyone books a valuation.</p>
+    <p>If there's nowhere on your site to satisfy that, they go to a portal instead. By the time they're ready to instruct, you were never in the conversation.</p>
+   </div>
+  </section>
+
+  <!-- 3. WHAT YOU GET -->
+  <section class="section section--bottle">
+   <div class="wrap" style="max-width:640px">
+    <p class="utility section__eyebrow">What you get</p>
+    <ul style="list-style:none;">
+     <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>A valuation form with your branding</strong>; Postcode, property type, bedrooms. Simple enough that people finish it.</li>
+     <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>A named lead every time it's used</strong>; Name, email, phone, and the property.</li>
+     <li style="padding:14px 0;"><strong>A link and QR for anywhere</strong>; Website, Google profile, social, leaflets, window.</li>
+    </ul>
+   </div>
+  </section>
+
+  <!-- 4. THE GENERATOR -->
+  <!-- Owner builder on build/ -->
+<section class="generator" id="generator" style="display:none">
+   <div class="wrap" style="max-width:640px">
+    <p class="utility section__eyebrow">The generator</p>
+    <h2>Takes about a minute.</h2>
+    <p class="lede" style="margin-bottom:20px;">Add your agency name and the areas you cover.</p>
+
+    <!-- AGENT STEP 1; Business name -->
+    <section class="step active" id="step-name">
+     <div class="field">
+      <label for="bizname">Agency / business name</label>
+      <input type="text" id="bizname" placeholder="e.g. Harrison &amp; Webb" autocomplete="organization">
+     </div>
+     <button class="btn-brass" id="toPreview" style="width:100%">See homeowner form preview</button>
+     <p class="msg msg--err" id="nameErr">Enter your business name.</p>
+    </section>
+
+    <!-- AGENT STEP 2; Preview + tweak -->
+    <section class="step" id="step-preview">
+     <h3 class="step-h2">Here's what homeowners will see</h3>
+     <p class="step-p">This is a live preview. Defaults work great for most agents.</p>
+     <div class="preview-frame" id="previewArea"></div>
+     <button class="btn-brass" id="toPhone" style="width:100%">Looks great. Continue</button>
+    </section>
+
+    <!-- AGENT STEP 3; Business phone -->
+    <section class="step" id="step-phone">
+     <h3 class="step-h2">Add your phone number</h3>
+     <p class="step-p">Shown to homeowners so they can call you directly.</p>
+     <div class="field">
+      <label for="bizphone">Business phone</label>
+      <input type="tel" id="bizphone" placeholder="e.g. 01732 234567" autocomplete="tel">
+     </div>
+     <button class="btn-brass" id="toCapture" style="width:100%">Continue</button>
+    </section>
+
+    <!-- AGENT STEP 4; Name + email + GDPR gate -->
+    <section class="step" id="step-capture">
+     <h3 class="step-h2">Unlock your valuation link</h3>
+     <p class="step-p">Enter your name and email to unlock your valuation link.</p>
+     <div class="field">
+      <label for="leadName">Your name</label>
+      <input type="text" id="leadName" autocomplete="name">
+     </div>
+     <div class="field">
+      <label for="leadEmail">Email</label>
+      <input type="email" id="leadEmail" autocomplete="email" placeholder="you@agency.co.uk">
+     </div>
+     <div class="consent">
+      <input type="checkbox" id="consent" checked>
+      <span id="consentText">It's fine to email me about this tool and other free ideas for my business. Unsubscribe any time.</span>
+     </div>
+     <button class="btn-brass" id="unlock" style="width:100%">Unlock my valuation link</button>
+     <p class="msg msg--err" id="capErr"></p>
+    </section>
+
+    <!-- AGENT STEP 5; Result: QR, link, download, top placements -->
+    <section class="step" id="step-result">
+     <p class="result-head-line">Done. It's yours.</p>
+     <p class="step-p">Here's your QR code and link. Below, the three placements that get the most out of it.</p>
+     <div class="qrbox"><div id="qrcode" role="img" aria-label="QR code for your valuation form"></div></div>
+     <div class="linkbox" id="shareLink"></div>
+     <div class="gen-actions">
+      <button class="btn-brass" id="copyLink">Copy link</button>
+      <button class="btn-outline" id="dlQR">Download QR as image</button>
+     </div>
+     <p class="msg msg--ok" id="copied">Link copied.</p>
+
+     <ul class="result-places">
+      <li><strong>Your website homepage</strong>; add a button above the fold; "What's my home worth?"</li>
+      <li><strong>Your Google Business Profile</strong>; add the link to Appointment link.</li>
+      <li><strong>Leaflet drops</strong>; put the QR on any door-drop, with a line asking the question.</li>
+     </ul>
+     <a class="again-link" href="#where-to-use-it">See all placements &rarr;</a>
+     <p class="soft-help">Stuck on any of it? <a href="sms:07379028832">Text 07379 028832</a> and we'll talk you through it.</p>
+    </section>
+   </div>
+  </section>
+
+  <!-- 5. WHERE TO USE IT -->
+  <section class="section" id="where-to-use-it">
+   <div class="wrap" style="max-width:640px">
+    <p class="utility section__eyebrow">Where to use it</p>
+    <h2>Four placements that generate instructions.</h2>
+    <ol class="place-list">
+     <li>
+      <h3>Your website homepage</h3>
+      <p><em>Highest-intent traffic you have, and most agency sites offer nothing but a contact form.</em></p>
+      <ol>
+       <li>Add a button above the fold; "What's my home worth?"</li>
+       <li>Repeat it in the footer sitewide.</li>
+      </ol>
+     </li>
+     <li>
+      <h3>Your Google Business Profile</h3>
+      <p><em>High-intent local searches, and your competitors' profiles are mostly empty.</em></p>
+      <ol>
+       <li>Add the link to Appointment link.</li>
+       <li>Post monthly alongside local sold prices.</li>
+      </ol>
+     </li>
+     <li>
+      <h3>Leaflet drops</h3>
+      <p><em>Turns an advert into something useful.</em></p>
+      <ol>
+       <li>Put the QR on any door-drop; "What's your home worth? Scan for an instant estimate."</li>
+       <li>Use a different QR per area so you can see which streets respond.</li>
+      </ol>
+     </li>
+     <li>
+      <h3>Your window display</h3>
+      <p><em>People stop, look, and walk on.</em></p>
+      <ol>
+       <li>Print at A5, beside the listings, eye height.</li>
+       <li>One line above; "Curious what yours is worth? Scan here."</li>
+      </ol>
+     </li>
+    </ol>
+   </div>
+  </section>
+
+  <!-- 6. COMMON MISTAKES -->
+  <section class="section section--bottle">
+   <div class="wrap" style="max-width:640px">
+    <p class="utility section__eyebrow">Common mistakes</p>
+    <ul style="list-style:none;">
+     <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Asking too much before showing a number.</strong> Every extra field loses people. Postcode and basics, show the figure, then ask who they are.</li>
+     <li style="padding:14px 0;border-bottom:0.5px solid rgba(198,161,91,0.35);"><strong>Treating the estimate as the product.</strong> It isn't. It's the reason they'll tell you their name. The conversation after is the product.</li>
+     <li style="padding:14px 0;"><strong>Following up slowly.</strong> These are warmest in the first hour. Same-day beats three days later by a distance.</li>
+    </ul>
+   </div>
+  </section>
+
+  <!-- 7. WHAT TO EXPECT -->
+  <section class="section">
+   <div class="wrap" style="max-width:640px">
+    <p class="utility section__eyebrow">What to expect</p>
+    <p>Most of these leads aren't selling this month, and treating them as if they are will lose them. What you're building is a list of people who've said they're thinking about it, months before they'd have contacted you.</p>
+    <p>Handled patiently, that's one of the more reliable sources of instructions an independent agent has.</p>
+   </div>
+  </section>
+
+  <!-- 8. NEED A HAND -->
+  <div class="wrap" id="needHandWrap"></div>
+
+  <!-- 9. RELATED -->
+  <section class="related">
+   <div class="wrap">
+    <h2>Related tools</h2>
+    <ul class="related__list">
+     <li><a href="../scorecard/">Google Listing Scorecard</a></li>
+     <li><a href="../review/">Google Review QR</a></li>
+    </ul>
+   </div>
+  </section>
+ </main>
+
+ <footer class="site-footer">
+  <div class="wrap">
+   <p style="font-family: var(--gl-font-display); font-size: 1.25rem; font-weight: 500;">Grow Local</p>
+   <div style="height: 1px; width: 6rem; background: var(--gl-gold); margin: 8px 0 16px;"></div>
+   <p>Grow Local · a growth agency for local business.</p>
+   <p><a href="../index.html#tools">See the free tools</a></p>
+   <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+  <p class="small" style="margin-top:16px;color:var(--gl-slate);font-size:0.75rem;line-height:1.4">Google Listing Scorecard is an independent tool and is not affiliated with or endorsed by Google.</p>
+</div>
+ </footer>
+
+</div>
+
+<!-- CUSTOMER (HOMEOWNER) MODE; entered via #v= hash, replaces the whole page -->
+<div id="customerView" style="display:none;">
+ <div class="cv-wrap">
+  <a class="cv-brand" href="../index.html" id="custBrandLink">Grow Local</a>
+  <h1 class="cv-heading" id="custHeading">What's your home worth?</h1>
+  <p class="cv-sub" id="custSub">Get a rough guide in 30 seconds, no sign-up, no obligation.</p>
+
+  <div class="cv-card">
+   <div id="custForm">
+    <div class="field">
+     <label for="custPostcode">Postcode</label>
+     <input type="text" id="custPostcode" placeholder="e.g. SW1A 1AA" autocomplete="postal-code">
+    </div>
+    <div class="field">
+     <label>Property type</label>
+     <div class="chip-grid" id="propTypeGrid"></div>
+    </div>
+    <div class="field">
+     <label>Bedrooms</label>
+     <div class="chip-grid" id="bedroomGrid"></div>
+    </div>
+    <div class="field">
+     <label>Condition <span class="hint">(optional)</span></label>
+     <div class="chip-grid" id="conditionGrid"></div>
+    </div>
+    <button class="btn-brass" id="custGetValue" style="width:100%">Get my rough valuation</button>
+    <p class="msg msg--err" id="custFormErr"></p>
+   </div>
+
+   <div id="custResult" style="display:none;">
+    <div class="vr-box">
+     <p class="utility vr-box__label">Rough guide value</p>
+     <p class="vr-box__range" id="vrRange">£0 &ndash; £0</p>
+     <p class="vr-box__note">Rough guide only, not a formal valuation or RICS appraisal.</p>
+    </div>
+    <h3 class="cv-card__h3">Get a proper valuation from <span id="custAgency"></span></h3>
+    <p class="cv-card__p">Leave your details and we'll be in touch to arrange a free, no-obligation home visit.</p>
+    <div class="field">
+     <label for="custName">Your name</label>
+     <input type="text" id="custName" autocomplete="name">
+    </div>
+    <div class="field">
+     <label for="custPhone">Phone number</label>
+     <input type="tel" id="custPhone" autocomplete="tel" placeholder="e.g. 07700 900123">
+    </div>
+    <div class="field">
+     <label for="custEmail">Email <span class="hint">(optional)</span></label>
+     <input type="email" id="custEmail" autocomplete="email" placeholder="you@example.com">
+    </div>
+    <button class="btn-brass" id="custSend" style="width:100%">Send my details</button>
+    <p class="msg msg--err" id="custSendErr"></p>
+   </div>
+
+   <div id="custDone" style="display:none;">
+    <div class="success-tick">&#10003;</div>
+    <h2 class="cv-card__h2c">Details sent</h2>
+    <p class="cv-card__p" style="text-align:center" id="custDoneMsg"></p>
+   </div>
+  </div>
+
+  <p class="cv-footer" id="custFooter"></p>
+ </div>
+</div>
+
+<script src="../assets/shared.js"></script>
+<script>
+/* ================================================================
+  CONFIG; Baserow (unchanged from the previous build)
+  ================================================================ */
+const CONFIG = {
+ BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ OWNER_LEADS_TABLE_ID: "1092861",
+ VALUATION_LEADS_TABLE_ID: "1092867",
+ BASEROW_URL: "https://api.baserow.io"
+};
+
+/* ================================================================
+  VALUATION HEURISTIC
+  National baseline £/bedroom by property type, multiplied by a
+  postcode area factor. Output is always a RANGE (±15%).
+  ================================================================ */
+const VALUATION_HEURISTIC = {
+ /* Calibrated toward typical UK asking prices (ballpark, not an AVM). */
+ basePerBedroom: {
+  house:   105000,
+  flat:    90000,
+  bungalow: 115000,
+  other:   95000
+ },
+ conditionMultiplier: {
+  "needs-work": 0.82,
+  "average":  1.00,
+  "good":    1.12,
+  "excellent": 1.28
+ },
+ postcodeAreaFactor: {
+  "EC": 3.10, "WC": 3.10, "W": 2.85, "SW": 2.75, "NW": 2.45,
+  "N": 2.35, "SE": 2.25, "E": 2.25, "BR": 1.70, "CR": 1.60,
+  "KT": 1.75, "TW": 1.85, "EN": 1.60, "HA": 1.70, "IG": 1.50,
+  "RM": 1.40, "DA": 1.35, "UB": 1.60, "SM": 1.65,
+  "GU": 1.65, "RG": 1.50, "SL": 1.70, "HP": 1.55,
+  "OX": 1.55, "CB": 1.50, "AL": 1.65, "WD": 1.70,
+  "CM": 1.35, "SS": 1.30, "CO": 1.15, "IP": 1.05,
+  "NR": 1.05, "PE": 1.00, "LN": 0.95, "DN": 0.95,
+  "HU": 0.85, "YO": 1.00, "HG": 1.20, "LS": 1.05,
+  "BD": 0.90, "HX": 0.90, "WF": 0.95, "HD": 0.95,
+  "S": 0.95, "DE": 0.95, "NG": 1.00, "LE": 1.00,
+  "CV": 1.05, "B": 1.00, "WS": 0.95, "WV": 0.90,
+  "DY": 0.95, "ST": 0.90, "TF": 0.90, "SY": 0.90,
+  "HR": 1.00, "WR": 1.00, "GL": 1.10, "SN": 1.10,
+  "BA": 1.20, "BS": 1.20, "EX": 1.10, "PL": 1.00,
+  "TQ": 1.05, "TR": 1.05, "TA": 1.05, "DT": 1.15,
+  "BH": 1.25, "SP": 1.20, "SO": 1.20, "PO": 1.15,
+  "BN": 1.30, "RH": 1.45, "TN": 1.40, "ME": 1.25,
+  "CT": 1.20, "MK": 1.20, "LU": 1.20, "SG": 1.30,
+  "M": 1.05, "OL": 0.90, "BL": 0.95, "WN": 0.90,
+  "WA": 1.00, "SK": 1.10, "CW": 1.00, "CH": 1.10,
+  "L": 0.90, "PR": 0.95, "FY": 0.85, "BB": 0.80,
+  "LA": 1.00, "CA": 0.85, "NE": 0.90, "SR": 0.80,
+  "DH": 0.85, "DL": 0.90, "TS": 0.80,
+  "EH": 1.20, "G": 1.00, "FK": 1.00, "KY": 0.95,
+  "DD": 0.90, "AB": 0.95, "PH": 0.95, "IV": 0.85,
+  "PA": 0.95, "KA": 0.85, "ML": 0.90, "TD": 0.95,
+  "DG": 0.80, "CF": 0.95, "SA": 0.85, "LD": 0.80,
+  "NP": 0.90, "LL": 0.85,
+  "BT": 0.80
+ },
+ defaultFactor: 1.00,
+ rangeSpread: 0.15
+};
+
+function extractPostcodeArea(postcode) {
+ const cleaned = postcode.replace(/\s+/g, "").toUpperCase();
+ const m = cleaned.match(/^([A-Z]{1,2})/);
+ return m ? m[1] : null;
+}
+
+function calculateValuation(postcode, propertyType, bedrooms, condition) {
+ const H = VALUATION_HEURISTIC;
+ const base = (H.basePerBedroom[propertyType] || H.basePerBedroom.house) * bedrooms;
+ const area = extractPostcodeArea(postcode);
+ const factor = (area && H.postcodeAreaFactor[area]) || H.defaultFactor;
+ const condMult = (condition && H.conditionMultiplier[condition]) || H.conditionMultiplier.average;
+ const mid = Math.round(base * factor * condMult);
+ const lo = Math.round(mid * (1 - H.rangeSpread));
+ const hi = Math.round(mid * (1 + H.rangeSpread));
+ return { lo, hi, mid };
+}
+
+function formatGBP(n) {
+ return "£" + n.toLocaleString("en-GB");
+}
+
+/* ================================================================
+  DOM HELPERS
+  ================================================================ */
+const $ = id => document.getElementById(id);
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const OWNER_STEPS = ["step-name", "step-preview", "step-phone", "step-capture", "step-result"];
+function show(step) {
+ OWNER_STEPS.forEach(s => $(s).classList.toggle("active", s === step));
+ var __el=typeof step!=="undefined"&&document.getElementById(step); if(__el){var __r=window.matchMedia("(prefers-reduced-motion: reduce)").matches; __el.scrollIntoView({behavior:__r?"auto":"smooth",block:"start"});} else { window.scrollTo({top:0}); }
+}
+function escHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+/* ================================================================
+  AGENT BUILDER STATE
+  ================================================================ */
+let biz = { name: "", phone: "" };
+
+/* --- Step 1 → 2 (preview) --- */
+$("toPreview").addEventListener("click", () => {
+ const n = $("bizname").value.trim();
+ if (!n) { $("nameErr").classList.add("show"); return; }
+ $("nameErr").classList.remove("show");
+ biz.name = n;
+ renderPreview();
+ show("step-preview");
+});
+
+function renderPreview() {
+ const area = $("previewArea");
+ area.innerHTML = `
+  <p class="preview-frame__eyebrow">${escHtml(biz.name)}</p>
+  <p class="preview-frame__title">What's your home worth?</p>
+  <div class="field"><label>Postcode</label><input type="text" disabled placeholder="e.g. SW1A 1AA"></div>
+  <div class="field"><label>Property type</label><input type="text" disabled placeholder="House / Flat / Bungalow"></div>
+  <div class="field"><label>Bedrooms</label><input type="text" disabled placeholder="1&ndash;5+"></div>
+  <div class="field"><label>Condition</label><input type="text" disabled placeholder="Average / Good / Excellent"></div>
+  <p class="preview-frame__note">Homeowner gets a rough £ range and leaves their details for a proper valuation.</p>
+ `;
+}
+
+/* --- Step 2 → 3 (phone) --- */
+$("toPhone").addEventListener("click", () => show("step-phone"));
+
+/* --- Step 3 → 4 (email gate) --- */
+$("toCapture").addEventListener("click", () => {
+ biz.phone = $("bizphone").value.trim();
+ show("step-capture");
+});
+
+/* --- Step 4 → 5 (unlock) --- */
+$("unlock").addEventListener("click", async () => {
+ const name = $("leadName").value.trim();
+ const email = $("leadEmail").value.trim();
+ const err = $("capErr");
+ err.classList.remove("show");
+ if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+  err.textContent = "Add your name and a valid email to unlock.";
+  err.classList.add("show");
+  return;
+ }
+ $("unlock").disabled = true; $("unlock").textContent = "One second\u2026";
+ if (window.TBA && window.TBA.baserowReady(CONFIG, CONFIG.OWNER_LEADS_TABLE_ID)) {
+  try {
+   await window.TBA.baserowAdd(CONFIG, CONFIG.OWNER_LEADS_TABLE_ID, {
+    "Name": name, "Email": email, "Business": biz.name, "Phone": biz.phone,
+    "Tool": "Instant Valuation", "Consent": $("consent").checked ? "Yes" : "No",
+    "Date": new Date().toISOString()
+   });
+  } catch (e) { console.warn("Lead not saved:", e); }
+ } else {
+  console.warn("Baserow not configured: owner lead not saved:", { name, email, biz });
+ }
+ buildShareables();
+ $("unlock").disabled = false; $("unlock").textContent = "Unlock my valuation link";
+ show("step-result");
+});
+
+/* ================================================================
+  ENCODE / DECODE; #v=base64url payload
+  ================================================================ */
+function encodeConfig() {
+ const payload = { n: biz.name, p: biz.phone };
+ return btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+  .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function decodeConfig(s) {
+ s = s.replace(/-/g, "+").replace(/_/g, "/");
+ const json = decodeURIComponent(escape(atob(s)));
+ const p = JSON.parse(json);
+ return { name: p.n, phone: p.p };
+}
+
+/* ================================================================
+  SHARE LINK + QR
+  ================================================================ */
+let shareURL = "";
+function buildShareables() {
+ shareURL = location.origin + location.pathname + "#v=" + encodeConfig();
+ $("shareLink").textContent = shareURL;
+ $("qrcode").innerHTML = "";
+ new QRCode($("qrcode"), {
+  text: shareURL, width: 200, height: 200,
+  colorDark: "#12291F", colorLight: "#ffffff",
+  correctLevel: QRCode.CorrectLevel.M
+ });
+}
+
+$("copyLink").addEventListener("click", async () => {
+ try { await navigator.clipboard.writeText(shareURL); }
+ catch (e) {
+  const t = document.createElement("textarea"); t.value = shareURL;
+  document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove();
+ }
+ $("copied").classList.add("show");
+ setTimeout(() => $("copied").classList.remove("show"), 1800);
+});
+
+$("dlQR").addEventListener("click", () => {
+ const img = $("qrcode").querySelector("img") || $("qrcode").querySelector("canvas");
+ if (!img) return;
+ const dataURL = img.tagName === "CANVAS" ? img.toDataURL("image/png") : img.src;
+ const a = document.createElement("a");
+ a.href = dataURL;
+ a.download = (biz.name || "valuation-form").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-qr.png";
+ a.click();
+});
+
+/* ================================================================
+  HOMEOWNER (CUSTOMER) MODE
+  ================================================================ */
+let custCfg = null;
+let custSelection = { postcode: "", type: "", bedrooms: 0, condition: "" };
+let valuationResult = null;
+
+const PROPERTY_TYPES = ["house", "flat", "bungalow", "other"];
+const BEDROOM_OPTIONS = ["1", "2", "3", "4", "5+"];
+const CONDITION_OPTIONS = [
+ { key: "needs-work", label: "Needs work" },
+ { key: "average", label: "Average" },
+ { key: "good", label: "Good" },
+ { key: "excellent", label: "Excellent" }
+];
+
+function renderOptionGrid(containerId, options, stateKey) {
+ const grid = $(containerId);
+ grid.innerHTML = "";
+ options.forEach(opt => {
+  const label = typeof opt === "object" ? opt.label : opt;
+  const value = typeof opt === "object" ? opt.key : opt;
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "chip-btn";
+  btn.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+  btn.dataset.value = value;
+  btn.addEventListener("click", () => {
+   grid.querySelectorAll(".chip-btn").forEach(b => b.classList.remove("selected"));
+   btn.classList.add("selected");
+   custSelection[stateKey] = value;
+  });
+  grid.appendChild(btn);
+ });
+}
+
+function initCustomerForm() {
+ renderOptionGrid("propTypeGrid", PROPERTY_TYPES, "type");
+ renderOptionGrid("bedroomGrid", BEDROOM_OPTIONS, "bedrooms");
+ renderOptionGrid("conditionGrid", CONDITION_OPTIONS, "condition");
+}
+
+function isValidUKPostcode(pc) {
+ const cleaned = pc.replace(/\s+/g, "").toUpperCase();
+ return /^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$/.test(cleaned) || /^[A-Z]{1,2}\d[A-Z\d]?$/.test(cleaned);
+}
+
+$("custGetValue").addEventListener("click", () => {
+ const pc = $("custPostcode").value.trim();
+ const err = $("custFormErr");
+ err.classList.remove("show");
+
+ if (!pc || !isValidUKPostcode(pc)) {
+  err.textContent = "Enter a valid UK postcode."; err.classList.add("show"); return;
+ }
+ if (!custSelection.type) {
+  err.textContent = "Select a property type."; err.classList.add("show"); return;
+ }
+ if (!custSelection.bedrooms) {
+  err.textContent = "Select number of bedrooms."; err.classList.add("show"); return;
+ }
+
+ custSelection.postcode = pc;
+ const beds = custSelection.bedrooms === "5+" ? 5 : parseInt(custSelection.bedrooms, 10);
+ valuationResult = calculateValuation(pc, custSelection.type, beds, custSelection.condition || "average");
+
+ $("vrRange").textContent = formatGBP(valuationResult.lo) + " \u2013 " + formatGBP(valuationResult.hi);
+ $("custAgency").textContent = custCfg ? custCfg.name : "us";
+ $("custForm").style.display = "none";
+ $("custResult").style.display = "block";
+ $("custResult").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+});
+
+$("custSend").addEventListener("click", async () => {
+ const name = $("custName").value.trim();
+ const phone = $("custPhone").value.trim();
+ const email = $("custEmail").value.trim();
+ const err = $("custSendErr");
+ err.classList.remove("show");
+
+ if (!name || phone.replace(/\D/g, "").length < 10) {
+  err.textContent = "Add your name and a valid phone number."; err.classList.add("show"); return;
+ }
+
+ $("custSend").disabled = true; $("custSend").textContent = "Sending\u2026";
+ let saved = false;
+ const rangeStr = formatGBP(valuationResult.lo) + " \u2013 " + formatGBP(valuationResult.hi);
+ const agencyName = custCfg ? custCfg.name : "Unknown";
+
+ if (window.TBA && window.TBA.baserowReady(CONFIG, CONFIG.VALUATION_LEADS_TABLE_ID)) {
+  try {
+   await window.TBA.baserowAdd(CONFIG, CONFIG.VALUATION_LEADS_TABLE_ID, {
+    "Customer name": name,
+    "Phone": phone,
+    "Email": email,
+    "Postcode": custSelection.postcode,
+    "Property type": custSelection.type,
+    "Bedrooms": custSelection.bedrooms,
+    "Condition": custSelection.condition || "not specified",
+    "Ballpark": rangeStr,
+    "Business": agencyName,
+    "Date": new Date().toISOString()
+   });
+   saved = true;
+  } catch (e) { console.warn("Valuation lead not saved:", e); }
+ } else {
+  console.warn("Baserow not configured: customer lead not saved:", { name, agencyName });
+ }
+
+ $("custResult").style.display = "none";
+ $("custDone").style.display = "block";
+
+ const agencyPhone = custCfg ? custCfg.phone : "";
+ if (saved) {
+  $("custDoneMsg").textContent = `${agencyName} has your details and will be in touch to arrange a free valuation visit.`;
+ } else if (agencyPhone) {
+  $("custDoneMsg").textContent = `Please call ${agencyName} on ${agencyPhone} to arrange your free valuation.`;
+ } else {
+  $("custDoneMsg").textContent = `Please contact ${agencyName} to arrange your free valuation.`;
+ }
+ $("custSend").disabled = false; $("custSend").textContent = "Send my details";
+});
+
+/* ================================================================
+  CUSTOMER MODE ENTRY; hides the marketing page, shows the clean form
+  ================================================================ */
+function enterCustomerMode(cfgStr) {
+ try { custCfg = decodeConfig(cfgStr); }
+ catch (e) { console.error("Invalid config:", e); return; }
+
+ $("ownerView").style.display = "none";
+ $("customerView").style.display = "block";
+
+ $("custHeading").textContent = "What\u2019s your home worth?";
+ $("custSub").textContent = "Get a rough guide in 30 seconds \u2014 no sign-up, no obligation.";
+ $("custFooter").textContent = custCfg.phone ? ("Prefer to talk? Call " + custCfg.phone) : "";
+
+ initCustomerForm();
+ var __el=typeof step!=="undefined"&&document.getElementById(step); if(__el){var __r=window.matchMedia("(prefers-reduced-motion: reduce)").matches; __el.scrollIntoView({behavior:__r?"auto":"smooth",block:"start"});} else { window.scrollTo({top:0}); }
+}
+
+/* ================================================================
+  HERO MOCKUP; fixed demo animation (£0 → £412,000), not live data
+  ================================================================ */
+function playHeroMockup() {
+ const priceEl = $("mockPrice");
+ const heroMockup = $("heroMockup");
+ if (reduceMotion) {
+  priceEl.textContent = formatGBP(412000);
+  heroMockup.classList.add("in-view");
+  return;
+ }
+ const target = 412000;
+ const duration = 1200;
+ const start = performance.now();
+ function frame(now) {
+  const t = Math.min(1, (now - start) / duration);
+  const eased = 1 - Math.pow(1 - t, 3);
+  priceEl.textContent = formatGBP(Math.round(target * eased));
+  if (t < 1) requestAnimationFrame(frame);
+  else heroMockup.classList.add("in-view");
+ }
+ requestAnimationFrame(frame);
+}
+
+let heroPlayed = false;
+const heroObserver = new IntersectionObserver((entries) => {
+ entries.forEach((entry) => {
+  if (entry.isIntersecting && !heroPlayed) {
+   heroPlayed = true;
+   playHeroMockup();
+   heroObserver.unobserve(entry.target);
+  }
+ });
+}, { threshold: 0.4 });
+
+/* ================================================================
+  BOOT
+  ================================================================ */
+(function boot() {
+ if (window.TBA && typeof window.TBA.consentText === "function") {
+  $("consentText").textContent = window.TBA.consentText();
+ }
+ if (window.TBA && typeof window.TBA.needAHandHtml === "function") {
+  $("needHandWrap").innerHTML = window.TBA.needAHandHtml(
+   "If you'd like it embedded properly on your site, or leads routed into your CRM, we'll sort it."
+  );
+ }
+
+ if ("IntersectionObserver" in window) {
+  heroObserver.observe($("heroMockup"));
+ } else {
+  playHeroMockup();
+ }
+
+ const m = location.hash.match(/#v=(.+)/);
+ if (m) {
+  enterCustomerMode(m[1]);
+ }
+})();
+</script>
+</body>
+</html>

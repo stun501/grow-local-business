@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your quote form is ready; Grow Local</title>
+<meta name="description" content="Download your QR code, copy your link, and put your quote form to work.">
+<link rel="icon" href="../../assets/monogram-gl.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="../../assets/tokens-shopfront.css">
+<link rel="stylesheet" href="../../assets/product-shell.css">
+<style>
+ .qrbox{display:flex;justify-content:center;padding:16px;border:1px solid var(--gl-gold);margin:14px 0;background:var(--gl-bone)}
+ .linkbox{font-family:ui-monospace,monospace;font-size:12px;border:1.5px solid var(--gl-gold-40);padding:10px;word-break:break-all;margin-bottom:10px}
+ .msg{margin-top:12px;font-size:.875rem;font-weight:600;display:none}
+ .msg.ok{display:block;color:var(--gl-bottle)}
+ .gen-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+ .soft-help{font-size:.875rem;color:var(--gl-slate);margin-top:16px}
+</style>
+</head>
+<body>
+<header class="sticky-bar">
+ <a class="sticky-bar__mark" href="../../index.html">Grow Local</a>
+ <a class="sticky-bar__link" href="/quote/build/">Build another</a>
+</header>
+
+<main>
+<section class="generator" id="result">
+ <div class="wrap" style="max-width:640px">
+  <p class="utility section__eyebrow">Done</p>
+  <h1 style="font-family:var(--gl-font-display);font-size:clamp(1.75rem,4vw,2.25rem);font-weight:500;margin:8px 0 10px">Your quote form is ready.</h1>
+  <p class="small" style="margin-bottom:18px">Here's your QR code and link. Below, the placements that get the most out of it.</p>
+
+  <div class="qrbox"><div id="qrcode" role="img" aria-label="QR code linking to your quote form"></div></div>
+  <div class="linkbox" id="shareLink"></div>
+  <div class="gen-actions">
+   <button class="btn-brass" id="copyLink" type="button">Copy link</button>
+   <button class="btn-outline" id="dlQR" type="button">Download QR as image</button>
+  </div>
+  <p class="msg ok" id="copied">Link copied.</p>
+  <p class="soft-help">Stuck on any of it? <a href="sms:07379028832">Text 07379 028832</a> and we'll talk you through it.</p>
+ </div>
+</section>
+
+<section class="section" id="placements">
+ <div class="wrap" style="max-width:640px">
+  <p class="utility section__eyebrow">Where to use it</p>
+  <h2>Five places this earns its keep.</h2>
+  <p>Most people put it in one spot and forget it. These are the placements that actually bring work in, roughly in order of what they're worth.</p>
+  <ol class="place-list">
+   <li>
+    <h3>Your Google Business Profile</h3>
+    <p>It's where most people find you, and most profiles have nothing to click.</p>
+    <ol>
+     <li>Sign in to your Google Business Profile and open <strong>Edit profile</strong>.</li>
+     <li>Paste your link into <strong>Appointment link</strong> (or Website, if that's empty).</li>
+     <li>Add a post saying "Get an instant price" with the same link. Posts run for seven days, so repeat monthly.</li>
+    </ol>
+   </li>
+   <li>
+    <h3>Your website</h3>
+    <p>A visitor who wanted a price and found none is a visitor you've lost.</p>
+    <ol>
+     <li>Add a homepage button reading <strong>Get an instant price</strong>.</li>
+     <li>Put the link in your footer so it's on every page.</li>
+    </ol>
+   </li>
+   <li>
+    <h3>Mid-call, by text</h3>
+    <p>Someone ringing for a price is the warmest lead of your day.</p>
+    <ol>
+     <li>Save the link as a text shortcut on your phone.</li>
+     <li>Send it while you're still talking, for anything complicated.</li>
+     <li>They get something in writing, and you get their number automatically.</li>
+    </ol>
+   </li>
+   <li>
+    <h3>The counter and the window</h3>
+    <p>Catches people who walk past when you're shut.</p>
+    <ol>
+     <li>Print at A5 for the window, at eye height.</li>
+     <li>Print smaller for the counter.</li>
+     <li>One line above it; "Scan for an instant price."</li>
+    </ol>
+   </li>
+   <li>
+    <h3>Invoices and vehicles</h3>
+    <p>Past customers are the cheapest work you'll ever win.</p>
+    <ol>
+     <li>Add the QR to your invoice footer.</li>
+     <li>Put it on the van. People photograph vans at traffic lights.</li>
+    </ol>
+   </li>
+  </ol>
+ </div>
+</section>
+
+<section class="related">
+ <div class="wrap">
+  <h2>Related tools</h2>
+  <ul class="related__list">
+   <li><a href="../../review/">Google Review QR</a></li>
+   <li><a href="../../scorecard/">Google Listing Scorecard</a></li>
+   <li><a href="../../booking/">Booking Link</a></li>
+  </ul>
+ </div>
+</section>
+</main>
+
+<footer class="site-footer"><div class="wrap">
+ <p style="font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:8px">Grow Local</p>
+ <p><a href="sms:07379028832">Text 07379 028832</a> · <a href="mailto:hello@growlocalbusiness.co.uk">hello@growlocalbusiness.co.uk</a></p>
+ <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+<p class="small" style="margin-top:16px;color:var(--gl-slate);font-size:0.75rem;line-height:1.4">Google Listing Scorecard is an independent tool and is not affiliated with or endorsed by Google.</p>
+</div></footer>
+
+<script src="../../assets/tool-flow.js"></script>
+<script>
+(function () {
+ var data = window.GLFlow && window.GLFlow.loadResult("quote");
+ if (!data || !data.shareURL) {
+  window.location.replace("../build/");
+  return;
+ }
+ var shareURL = data.shareURL;
+ document.getElementById("shareLink").textContent = shareURL;
+ new QRCode(document.getElementById("qrcode"), {
+  text: shareURL, width: 200, height: 200,
+  colorDark: "#12291F", colorLight: "#ffffff",
+  correctLevel: QRCode.CorrectLevel.M
+ });
+ document.getElementById("copyLink").addEventListener("click", async function () {
+  try { await navigator.clipboard.writeText(shareURL); }
+  catch (e) {
+   var t = document.createElement("textarea"); t.value = shareURL;
+   document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove();
+  }
+  document.getElementById("copied").style.display = "block";
+  setTimeout(function () { document.getElementById("copied").style.display = "none"; }, 1800);
+ });
+ document.getElementById("dlQR").addEventListener("click", function () {
+  var img = document.querySelector("#qrcode img") || document.querySelector("#qrcode canvas");
+  if (!img) return;
+  var dataURL = img.tagName === "CANVAS" ? img.toDataURL("image/png") : img.src;
+  var a = document.createElement("a");
+  a.href = dataURL;
+  a.download = (data.bizName || "quote-form").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-qr.png";
+  a.click();
+ });
+})();
+</script>
+</body>
+</html>

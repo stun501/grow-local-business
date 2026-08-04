@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>About Grow Local</title>
+ <meta name="description" content="Grow Local helps local businesses fix what's holding them back; more customers, a tidier week, practical systems that fit how you actually work." />
+ <link rel="icon" href="../assets/monogram-gl.svg" type="image/svg+xml" />
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet" />
+ <link rel="stylesheet" href="../assets/tokens-shopfront.css" />
+ <link rel="stylesheet" href="../assets/product-shell.css" />
+ <style>
+  .about-hero {
+   background: var(--gl-bottle);
+   color: var(--gl-bone);
+   border-bottom: 1px solid var(--gl-gold);
+   padding: 36px 0 48px;
+  }
+  .about-hero h1 {
+   font-family: var(--gl-font-display);
+   font-size: clamp(2rem, 5.5vw, 2.75rem);
+   font-weight: 500;
+   letter-spacing: var(--gl-track-display);
+   line-height: var(--gl-lead-display);
+   max-width: 18ch;
+   margin-top: 12px;
+  }
+  .about-hero__sub {
+   margin-top: 16px;
+   color: var(--gl-slate-on-bottle);
+   max-width: 38rem;
+  }
+  .back-link {
+   display: inline-flex;
+   align-items: center;
+   gap: 6px;
+   color: var(--gl-gold);
+   font-weight: 500;
+   margin-top: 20px;
+  }
+  .back-link:hover { color: var(--gl-bone); }
+  .about-section {
+   padding: 40px 0;
+   border-bottom: var(--gl-rule);
+  }
+  .about-section h2 {
+   font-family: var(--gl-font-display);
+   font-size: clamp(1.5rem, 4vw, 1.75rem);
+   font-weight: 500;
+   margin: 10px 0 14px;
+  }
+  .about-section p + p { margin-top: 14px; }
+  .about-measure { max-width: 40rem; }
+  .pull-line {
+   margin: 28px 0 0;
+   padding: 18px 0;
+   border-top: 1px solid var(--gl-gold);
+   border-bottom: 1px solid var(--gl-gold);
+   font-family: var(--gl-font-display);
+   font-size: clamp(1.15rem, 3vw, 1.35rem);
+   font-weight: 500;
+   line-height: 1.3;
+   max-width: 28ch;
+  }
+  .story-grid {
+   display: grid;
+   gap: 16px;
+   margin-top: 22px;
+  }
+  @media (min-width: 720px) {
+   .story-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .story {
+   border: 1px solid var(--gl-gold-40);
+   padding: 18px 16px 16px;
+   background: var(--gl-bone);
+  }
+  .story__label {
+   color: var(--gl-gold);
+   margin-bottom: 10px;
+  }
+  .story p { font-size: 0.975rem; }
+  .story__outcome {
+   margin-top: 14px;
+   padding-top: 12px;
+   border-top: var(--gl-rule);
+   color: var(--gl-gold);
+   line-height: 1.35;
+  }
+  .story-close {
+   margin-top: 22px;
+   max-width: 40rem;
+   color: var(--gl-slate);
+  }
+  .consult {
+   padding: 48px 0;
+   border-bottom: var(--gl-rule);
+  }
+  .consult h2 {
+   font-family: var(--gl-font-display);
+   font-size: clamp(1.75rem, 4vw, 2.25rem);
+   font-weight: 500;
+   margin: 10px 0 14px;
+  }
+  .consult__cta { margin: 22px 0 20px; }
+  .consult__reassure {
+   display: block;
+   margin-top: 18px;
+   color: var(--gl-slate);
+  }
+  .site-footer__domain { margin-top: 20px; color: var(--gl-gold); }
+ </style>
+</head>
+<body>
+ <header class="sticky-bar">
+  <a class="sticky-bar__mark" href="../index.html">Grow Local</a>
+  <a class="sticky-bar__link" href="../index.html#tools">See the tools</a>
+ </header>
+
+ <section class="about-hero">
+  <div class="wrap">
+   <p class="utility" style="color: var(--gl-gold);">About Grow Local</p>
+   <h1>We help local businesses fix what's holding them back.</h1>
+   <p class="pull-line" style="margin-top:18px">We explain everything. Even the bits you could do yourself.</p>
+   <p class="about-hero__sub">
+    Grow Local is run by Craig. We work with established local businesses from Professional practices, clinics, home-improvement firms, estate agents to specialist trades. We help grow their business. Some want more customers. Some want their week back. Usually it's both.
+   </p>
+   <a class="back-link" href="../index.html">← Back to the free tools</a>
+  </div>
+ </section>
+
+ <main>
+  <section class="about-section">
+   <div class="wrap about-measure">
+    <p class="utility section__eyebrow">What we actually do</p>
+    <p>Most people think they need "a website" or "some marketing." Sometimes that's true. More often, when we sit down and look properly, the real problem is something quieter; enquiries slipping through on a Sunday, the same admin eating three hours every week, customers who'd have come back if anyone had followed up, a phone that can't be answered because everyone's on a job.</p>
+    <p>So we don't start with a service to sell you. We start with your business, and we look for the bottlenecks, the hidden costs, and the opportunities you're too busy to notice. Then we build the thing that fixes it, whatever that turns out to be.</p>
+    <p>Sometimes that's an AI receptionist that answers every call. Sometimes it's a proper website that actually brings work in. Sometimes it's a system that quietly does the admin nobody has time for. The free tools on this site are the smallest version of that same idea; useful things, built around how a business really works.</p>
+    <p class="pull-line">Our strength isn't just SEO, or AI, or websites. It's working out what's really costing you, and building the fix.</p>
+    <p>We work with all sorts of local businesses; clinics and accountants, garages and showrooms, agents and installers. What they share is a real operation somewhere: premises, appointments, customers who turn up. If you're purely online, we're probably not the right people, and we'd rather say so.</p>
+   </div>
+  </section>
+
+  <section class="about-section">
+   <div class="wrap">
+    <p class="utility section__eyebrow">The kinds of things we fix</p>
+    <p class="about-measure" style="margin-bottom:0">Every business is different, but the problems rhyme. Here are a few we've helped with, not to show off, but because you might recognise your own week in one of them.</p>
+
+    <div class="story-grid">
+     <article class="story">
+      <p class="utility story__label">A garage that kept missing calls</p>
+      <p>A garage we worked with was losing work without knowing it. The phone rang while everyone was under a car, went to voicemail, and half those people just rang the next garage instead. We set up something that answers every call, takes the details, and texts the customer back, plus a simple system that keeps them updated on the job and tells them when the car's ready to collect.</p>
+      <p class="utility story__outcome">The owner stopped losing jobs to a ringing phone, and customers stopped chasing for updates</p>
+     </article>
+
+     <article class="story">
+      <p class="utility story__label">A GP practice drowning in admin</p>
+      <p>A practice was overwhelmed every Monday morning; the phones jammed, the same questions over and over, reception buried in forms. We built a system that sorts incoming patient enquiries, handles the routine forms, and routes the right things to the right clinician, so the team could spend their time on people rather than paperwork.</p>
+      <p class="utility story__outcome">Less time on the phones, shorter queues, and a calmer Monday</p>
+     </article>
+
+     <article class="story">
+      <p class="utility story__label">A trade firm that was invisible online</p>
+      <p>A home-improvement firm did beautiful work but barely showed up when local people searched. We built them a proper website (fast, clear, and easy to find) with landing pages aimed at the jobs they actually wanted more of. The enquiries that used to go to bigger competitors started coming to them instead.</p>
+      <p class="utility story__outcome">Found more easily, and winning the jobs they actually wanted</p>
+     </article>
+
+     <article class="story">
+      <p class="utility story__label">A business leaving leads on the table</p>
+      <p>One business was getting enquiries but losing them in the gaps; a form filled in here, an email missed there, no follow-up, no record of who'd asked what. We set up a simple system to capture every enquiry in one place and follow up automatically, so nobody fell through the cracks.</p>
+      <p class="utility story__outcome">Every enquiry captured, followed up, and nothing forgotten</p>
+     </article>
+
+     <article class="story">
+      <p class="utility story__label">A team doing work a system could do</p>
+      <p>A growing business had good people spending half their day on repetitive admin; copying details between systems, chasing paperwork, retyping the same things. We automated the dull parts, so the team could get back to the work that actually needed a person.</p>
+      <p class="utility story__outcome">Hours back every week, spent on work that matters</p>
+     </article>
+    </div>
+
+    <p class="story-close">Often people come to us for one thing and find there were two or three others worth fixing while we were at it. That's usually where the biggest wins are the things you'd stopped noticing because you'd got used to working around them.</p>
+   </div>
+  </section>
+
+  <section class="about-section">
+   <div class="wrap about-measure">
+    <p class="utility section__eyebrow">How we work</p>
+    <p>Start small. Understand the business. Fix what's actually costing you. There's no long process and no jargon; just a conversation about where things are leaking or where the week's getting eaten, and an honest view of what's worth doing.</p>
+    <p>If the free tools are all you need, keep them and we're glad they helped. If there's something bigger worth building, we'll tell you plainly what we'd do, why, and what to expect, before anything starts. And if we don't think we're the right people for it, we'll say that too.</p>
+    <img class="about-signature" src="../assets/signature-ink.png" alt="Craig's signature" width="220" height="53" style="width:220px;max-width:55%;height:auto;display:block;margin:22px 0 10px" />
+    <p class="utility" style="color:var(--gl-gold)">Craig · Grow Local</p>
+   </div>
+  </section>
+
+  <section class="consult" id="contact">
+   <div class="wrap about-measure">
+    <p class="utility section__eyebrow">If you'd like a hand</p>
+    <h2>Book a free 30-minute chat.</h2>
+    <p>If any of this sounded like your business, book a call and let's talk it through. No charge, no pressure, and no obligation to do anything afterwards. Half an hour to look at where you're losing time or customers, and whether there's a simple way to fix it. Sometimes the most useful thing we do on that call is point you at something you can sort yourself.</p>
+    <p>You don't need to know what you want. Most people book because something's been annoying them for months and they can't quite put their finger on it. Working out what the actual problem is; that's the useful half of the conversation.</p>
+    <p class="consult__cta">
+     <a class="btn-brass" id="book-cta" href="../book/">Book a 30-minute chat</a>
+    </p>
+    <p>Prefer to just message first? That's completely fine.</p>
+    <p><strong>Text us on <a href="sms:07379028832">07379 028832</a></strong>. Tell us briefly what you need and we'll come back to you.</p>
+    <p>Or email <a href="mailto:hello@growlocalbusiness.co.uk"><strong>hello@growlocalbusiness.co.uk</strong></a>.</p>
+    <p>If you'd rather call and we're with someone, leave a voicemail and we'll ring you back.</p>
+    <span class="utility consult__reassure">No charge · No pressure · No obligation</span>
+   </div>
+  </section>
+ </main>
+
+ <footer class="site-footer">
+  <div class="wrap">
+   <p style="font-family: var(--gl-font-display); font-size: 1.25rem; font-weight: 500;">Grow Local</p>
+   <div style="height: 1px; width: 6rem; background: var(--gl-gold); margin: 8px 0 16px;"></div>
+   <p>Grow Local · a growth agency for local business.</p>
+   <p><a href="../index.html#tools">See the free tools</a></p>
+   <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+  </div>
+ </footer>
+
+ <script>
+  (function () {
+   // Book page: Calendly embed when set, otherwise our Booking Link system
+   // (notify email hello@growlocalbusiness.co.uk). See book/index.html.
+   var CAL_BOOKING_URL = "../book/";
+   var btn = document.getElementById("book-cta");
+   if (CAL_BOOKING_URL) {
+    btn.href = CAL_BOOKING_URL;
+   }
+  })();
+ </script>
+</body>
+</html>

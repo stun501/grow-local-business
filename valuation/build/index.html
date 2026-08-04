@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Instant Valuation · Grow Local</title>
+<meta name="description" content="Give sellers a rough guide to their home's value and capture a named lead every time it's used; free, no sign-up, ready in about a minute.">
+<link rel="icon" href="../../assets/monogram-gl.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="../../assets/tokens-shopfront.css">
+<link rel="stylesheet" href="../../assets/product-shell.css">
+
+<style>
+ /* ============================================================
+   Instant Valuation; page-specific styles
+   (Tokens + shell come from tokens-shopfront.css / product-shell.css.
+   Everything here is hero-mockup, wizard, chip-grid and
+   customer-facing homeowner page styling only.)
+   ============================================================ */
+
+ /* ---- Hero mockup: postcode field + counting price + range ---- */
+ .valmock-field {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--gl-bone-warm); border: 1px solid var(--gl-gold-40);
+  padding: 10px 12px; margin-bottom: 20px;
+ }
+ .valmock-field__label {
+  font-family: var(--gl-font-utility); font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: var(--gl-track-utility); text-transform: uppercase; color: var(--gl-slate);
+ }
+ .valmock-field__value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 600; font-size: 0.9375rem; color: var(--gl-ink);
+ }
+ .valmock-price {
+  text-align: center; font-family: var(--gl-font-display); font-weight: 500;
+  font-size: clamp(1.875rem, 8vw, 2.5rem); color: var(--gl-ink); line-height: 1.1;
+ }
+ .valmock-range {
+  text-align: center; font-size: 0.875rem; color: var(--gl-slate);
+  margin-top: 8px; opacity: 0; transition: opacity 0.5s ease;
+ }
+ .mockup.in-view .valmock-range { opacity: 1; }
+
+ /* ---- Wizard steps (the generator) ---- */
+ .step { display: none; }
+ .step.active { display: block; }
+ @media (prefers-reduced-motion: no-preference) {
+  .step.active { animation: valStepIn 0.25s ease; }
+  @keyframes valStepIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+ }
+
+ .step-h2 { font-family: var(--gl-font-display); font-size: 1.125rem; font-weight: 500; margin-bottom: 4px; }
+ .step-p { color: var(--gl-slate); font-size: 0.9375rem; margin-bottom: 16px; }
+ .hint { font-weight: 400; color: var(--gl-slate); }
+
+ .preview-frame {
+  border: 1px dashed var(--gl-gold-40); background: #fffef9;
+  padding: 16px; margin-bottom: 16px;
+ }
+ .preview-frame .field input { background: var(--gl-bone-warm); }
+ .preview-frame__eyebrow {
+  font-family: var(--gl-font-utility); font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: var(--gl-track-utility); text-transform: uppercase; color: var(--gl-brass);
+  margin-bottom: 6px;
+ }
+ .preview-frame__title { font-family: var(--gl-font-display); font-size: 1.0625rem; font-weight: 500; margin-bottom: 12px; }
+ .preview-frame__note { font-size: 0.8125rem; color: var(--gl-slate); margin-top: 10px; }
+
+ .consent { display: flex; gap: 9px; align-items: flex-start; margin: 4px 0 14px; }
+ .consent input { margin-top: 3px; accent-color: var(--gl-brass); }
+ .consent span { font-size: 0.8125rem; color: var(--gl-slate); }
+
+ .msg { padding: 12px 14px; font-size: 0.875rem; margin-top: 14px; display: none; border: 1px solid var(--gl-gold-40); }
+ .msg.show { display: block; }
+ .msg--err { background: rgba(122, 46, 46, 0.08); color: var(--gl-oxblood); border-color: var(--gl-oxblood); }
+ .msg--ok { background: rgba(198, 161, 91, 0.16); color: var(--gl-ink); }
+
+ .gen-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+ .gen-actions .btn-brass, .gen-actions .btn-outline { flex: 1 1 200px; }
+
+ .qrbox {
+  display: flex; justify-content: center; padding: 16px;
+  background: #fff; border: 1px solid var(--gl-gold-40); margin: 14px 0;
+ }
+ .linkbox {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem;
+  background: #fff; border: 1px solid var(--gl-gold-40); padding: 10px; word-break: break-all; margin-bottom: 10px;
+ }
+
+ .result-head-line { font-family: var(--gl-font-display); font-size: 1.375rem; font-weight: 500; margin-bottom: 6px; }
+
+ .result-places { list-style: none; margin-top: 20px; }
+ .result-places li { padding: 10px 0; border-bottom: 0.5px solid rgba(198, 161, 91, 0.35); font-size: 0.9375rem; }
+ .result-places li:last-child { border-bottom: none; }
+
+ .soft-help { margin-top: 16px; font-size: 0.875rem; color: var(--gl-slate); }
+ .soft-help a { color: var(--gl-brass); font-weight: 600; text-decoration: underline; }
+
+ /* ---- Chip grids (property type / bedrooms / condition pickers) ---- */
+ .chip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+ .chip-grid--5 { grid-template-columns: repeat(5, 1fr); }
+ .chip-btn {
+  font: inherit; font-size: 0.875rem; font-weight: 600;
+  background: var(--gl-bone); color: var(--gl-ink);
+  border: 1.5px solid var(--gl-gold-40); padding: 11px 10px; cursor: pointer; text-align: center;
+ }
+ .chip-btn:hover { border-color: var(--gl-gold); }
+ .chip-btn.selected { background: var(--gl-brass); color: var(--gl-bone); border-color: var(--gl-brass); }
+ .chip-btn:focus-visible { outline: 2px solid var(--gl-gold); outline-offset: 2px; }
+
+ /* ---- Customer (homeowner) facing page; entered via #v= hash ---- */
+ #customerView { min-height: 100dvh; background: var(--gl-bottle); color: var(--gl-bone); padding: 40px 20px 60px; }
+ .cv-wrap { max-width: 30rem; margin: 0 auto; text-align: center; }
+ .cv-brand {
+  display: inline-block; font-family: var(--gl-font-display); font-size: 1.25rem;
+  font-weight: 500; color: var(--gl-gold); margin-bottom: 16px;
+ }
+ .cv-brand:hover { color: var(--gl-bone); }
+ .cv-heading {
+  font-family: var(--gl-font-display); font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 500; color: var(--gl-bone); margin-bottom: 8px; line-height: 1.15;
+ }
+ .cv-sub { color: var(--gl-slate-on-bottle); margin-bottom: 26px; font-size: 0.9375rem; }
+ .cv-card { background: var(--gl-bone); color: var(--gl-ink); border: 1px solid var(--gl-gold); padding: 22px 20px; text-align: left; }
+ .cv-card__h3 { font-family: var(--gl-font-display); font-size: 1.125rem; font-weight: 500; margin: 18px 0 6px; }
+ .cv-card__h2c { font-family: var(--gl-font-display); font-size: 1.375rem; font-weight: 500; text-align: center; margin-bottom: 6px; }
+ .cv-card__p { color: var(--gl-slate); font-size: 0.9375rem; margin-bottom: 14px; }
+ .cv-footer { margin-top: 22px; font-size: 0.8125rem; color: var(--gl-slate-on-bottle); }
+
+ .vr-box { background: var(--gl-bottle); color: var(--gl-bone); border: 1px solid var(--gl-gold); padding: 20px; margin-bottom: 18px; text-align: center; }
+ .vr-box__label { color: var(--gl-gold); margin-bottom: 6px; }
+ .vr-box__range { font-family: var(--gl-font-display); font-size: clamp(1.5rem, 7vw, 2rem); font-weight: 500; color: var(--gl-bone); margin: 4px 0; }
+ .vr-box__note { font-size: 0.8125rem; color: var(--gl-slate-on-bottle); margin-top: 6px; line-height: 1.4; }
+
+ .success-tick { font-size: 2.5rem; text-align: center; margin-bottom: 8px; color: var(--gl-gold); }
+</style>
+</head>
+<body>
+
+<div id="ownerView">
+
+ <header class="sticky-bar">
+  <a class="sticky-bar__mark" href="../../index.html">Grow Local</a>
+  <a class="sticky-bar__link" href="../">Back to overview</a>
+</header>
+<div class="wrap" style="max-width:640px;padding-top:20px">
+  <p class="utility" style="color:var(--gl-gold)">Instant Valuation</p>
+  <h1 style="font-family:var(--gl-font-display);font-size:1.75rem;font-weight:500;margin:8px 0 4px">Build your valuation tool</h1>
+</div>
+
+ <main>
+  <!-- Owner builder on build/ -->
+<section class="generator" id="generator">
+   <div class="wrap" style="max-width:640px">
+    <!-- AGENT STEP 1; Business name -->
+    <section class="step active" id="step-name">
+     <h3 class="step-h2">Start with your agency name</h3>
+     <p class="step-p">This appears at the top of the valuation page homeowners will use.</p>
+     <div class="field">
+      <label for="bizname">Agency / business name</label>
+      <input type="text" id="bizname" placeholder="e.g. Harrison &amp; Webb" autocomplete="organization">
+     </div>
+     <button class="btn-brass" id="toDemo" style="width:100%">Next: try it as a homeowner</button>
+     <p class="msg msg--err" id="nameErr">Enter your business name.</p>
+    </section>
+
+    <!-- AGENT STEP 2; Homeowner demo: postcode + property -->
+    <section class="step" id="step-demo-input">
+     <h3 class="step-h2">Try it as a homeowner would</h3>
+     <p class="step-p">This is the form homeowners fill in. Enter sample details to see what they experience.</p>
+     <div class="preview-frame" id="demoFrame">
+      <p class="preview-frame__eyebrow" id="demoBrand"></p>
+      <p class="preview-frame__title">What's your home worth?</p>
+      <div class="field">
+       <label for="demoPostcode">Postcode</label>
+       <input type="text" id="demoPostcode" placeholder="e.g. SW1A 1AA">
+      </div>
+      <div class="field">
+       <label>Property type</label>
+       <div class="chip-grid" id="demoTypeGrid">
+        <button type="button" class="chip-btn" data-val="house">House</button>
+        <button type="button" class="chip-btn" data-val="flat">Flat</button>
+        <button type="button" class="chip-btn" data-val="bungalow">Bungalow</button>
+        <button type="button" class="chip-btn" data-val="other">Other</button>
+       </div>
+      </div>
+      <div class="field">
+       <label>Bedrooms</label>
+       <div class="chip-grid chip-grid--5" id="demoBedGrid">
+        <button type="button" class="chip-btn" data-val="1">1</button>
+        <button type="button" class="chip-btn" data-val="2">2</button>
+        <button type="button" class="chip-btn" data-val="3">3</button>
+        <button type="button" class="chip-btn" data-val="4">4</button>
+        <button type="button" class="chip-btn" data-val="5">5+</button>
+       </div>
+      </div>
+      <div class="field">
+       <label>Condition</label>
+       <div class="chip-grid" id="demoCondGrid">
+        <button type="button" class="chip-btn" data-val="needs-work">Needs work</button>
+        <button type="button" class="chip-btn" data-val="average">Average</button>
+        <button type="button" class="chip-btn" data-val="good">Good</button>
+        <button type="button" class="chip-btn" data-val="excellent">Excellent</button>
+       </div>
+      </div>
+     </div>
+     <button class="btn-brass" id="toCalc" style="width:100%">Continue</button>
+     <p class="msg msg--err" id="demoErr"></p>
+    </section>
+
+    <!-- AGENT STEP 3; Business phone (before homeowner preview) -->
+    <section class="step" id="step-phone">
+     <h3 class="step-h2">Add your phone number</h3>
+     <p class="step-p">Shown on the homeowner preview so they can call you after seeing their estimate.</p>
+     <div class="field">
+      <label for="bizphone">Business phone</label>
+      <input type="tel" id="bizphone" placeholder="e.g. 01732 234567" autocomplete="tel">
+     </div>
+     <button class="btn-brass" id="toPreview" style="width:100%">See the homeowner preview</button>
+     <p class="msg msg--err" id="phoneErr"></p>
+    </section>
+
+    <!-- AGENT STEP 4; Full homeowner preview (phone shown) -->
+    <section class="step" id="step-demo-result">
+     <h3 class="step-h2">This is what your homeowner sees</h3>
+     <p class="step-p">A branded estimate with your phone on the page. Next you unlock the QR code and shareable link.</p>
+     <div class="preview-frame" id="demoResultFrame">
+      <p class="preview-frame__eyebrow" id="demoBrand2"></p>
+      <div class="vr-box" style="background:var(--gl-bottle)">
+       <p class="vr-box__label">Estimated value</p>
+       <p class="vr-box__range" id="demoRange"></p>
+       <p class="vr-box__note">Based on local averages. A proper valuation from <span id="demoAgencyInline"></span> will give you the real figure.</p>
+      </div>
+      <p class="preview-frame__phone" id="demoPhoneLine" style="margin-top:14px;font-size:0.9375rem;color:var(--gl-ink)"></p>
+     </div>
+     <p class="preview-frame__note" style="margin-bottom:16px">That is the full homeowner experience. Unlock your link when you are ready.</p>
+     <button class="btn-brass" id="toCapture" style="width:100%">Continue to unlock</button>
+    </section>
+
+    <!-- AGENT STEP 5; Name + email unlock (after full preview) -->
+    <section class="step" id="step-capture">
+     <h3 class="step-h2">Unlock your shareable link</h3>
+     <p class="step-p">Enter your name and email to unlock the downloadable QR code, shareable link, and download options.</p>
+     <div class="field">
+      <label for="leadName">Your name</label>
+      <input type="text" id="leadName" autocomplete="name">
+     </div>
+     <div class="field">
+      <label for="leadEmail">Email</label>
+      <input type="email" id="leadEmail" autocomplete="email" placeholder="you@agency.co.uk">
+     </div>
+     <div class="consent">
+      <input type="checkbox" id="consent" checked>
+      <span id="consentText">It's fine to email me about this tool and other free ideas for my business. Unsubscribe any time.</span>
+     </div>
+     <button class="btn-brass" id="unlock" style="width:100%">Unlock my valuation link</button>
+     <p class="msg msg--err" id="capErr"></p>
+    </section>
+
+    <!-- AGENT STEP 5; Result: QR, link, download, top placements -->
+    <section class="step" id="step-result">
+     <p class="result-head-line">Done. It's yours.</p>
+     <p class="step-p">Here's your QR code and link. Below, the three placements that get the most out of it.</p>
+     <div class="qrbox"><div id="qrcode" role="img" aria-label="QR code for your valuation form"></div></div>
+     <div class="linkbox" id="shareLink"></div>
+     <div class="gen-actions">
+      <button class="btn-brass" id="copyLink">Copy link</button>
+      <button class="btn-outline" id="dlQR">Download QR as image</button>
+     </div>
+     <p class="msg msg--ok" id="copied">Link copied.</p>
+
+     <ul class="result-places">
+      <li><strong>Your website homepage</strong>; add a button above the fold; "What's my home worth?"</li>
+      <li><strong>Your Google Business Profile</strong>; add the link to Appointment link.</li>
+      <li><strong>Leaflet drops</strong>; put the QR on any door-drop, with a line asking the question.</li>
+     </ul>
+     <a class="again-link" href="#where-to-use-it">See all placements &rarr;</a>
+     <p class="soft-help">Stuck on any of it? <a href="sms:07379028832">Text 07379 028832</a> and we'll talk you through it.</p>
+    </section>
+   </div>
+  </section>
+
+  <!-- 5. WHERE TO USE IT -->
+  </main>
+<footer class="site-footer"><div class="wrap">
+  <p style="font-family:var(--gl-font-display);font-size:1.25rem;font-weight:500;margin-bottom:8px">Grow Local</p>
+  <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+</div></footer>
+<script src="../../assets/shared.js"></script>
+<script src="../../assets/tool-flow.js"></script>
+<script>
+/* ================================================================
+  CONFIG; Baserow (unchanged from the previous build)
+  ================================================================ */
+const CONFIG = {
+ BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ OWNER_LEADS_TABLE_ID: "1092861",
+ VALUATION_LEADS_TABLE_ID: "1092867",
+ BASEROW_URL: "https://api.baserow.io"
+};
+
+/* ================================================================
+  VALUATION HEURISTIC
+  National baseline £/bedroom by property type, multiplied by a
+  postcode area factor. Output is always a RANGE (±15%).
+  ================================================================ */
+const VALUATION_HEURISTIC = {
+ /* Calibrated toward typical UK asking prices (ballpark, not an AVM).
+    3-bed average house ≈ £315k mid before area/condition. */
+ basePerBedroom: {
+  house:   105000,
+  flat:    90000,
+  bungalow: 115000,
+  other:   95000
+ },
+ conditionMultiplier: {
+  "needs-work": 0.82,
+  "average":  1.00,
+  "good":    1.12,
+  "excellent": 1.28
+ },
+ postcodeAreaFactor: {
+  "EC": 3.10, "WC": 3.10, "W": 2.85, "SW": 2.75, "NW": 2.45,
+  "N": 2.35, "SE": 2.25, "E": 2.25, "BR": 1.70, "CR": 1.60,
+  "KT": 1.75, "TW": 1.85, "EN": 1.60, "HA": 1.70, "IG": 1.50,
+  "RM": 1.40, "DA": 1.35, "UB": 1.60, "SM": 1.65,
+  "GU": 1.65, "RG": 1.50, "SL": 1.70, "HP": 1.55,
+  "OX": 1.55, "CB": 1.50, "AL": 1.65, "WD": 1.70,
+  "CM": 1.35, "SS": 1.30, "CO": 1.15, "IP": 1.05,
+  "NR": 1.05, "PE": 1.00, "LN": 0.95, "DN": 0.95,
+  "HU": 0.85, "YO": 1.00, "HG": 1.20, "LS": 1.05,
+  "BD": 0.90, "HX": 0.90, "WF": 0.95, "HD": 0.95,
+  "S": 0.95, "DE": 0.95, "NG": 1.00, "LE": 1.00,
+  "CV": 1.05, "B": 1.00, "WS": 0.95, "WV": 0.90,
+  "DY": 0.95, "ST": 0.90, "TF": 0.90, "SY": 0.90,
+  "HR": 1.00, "WR": 1.00, "GL": 1.10, "SN": 1.10,
+  "BA": 1.20, "BS": 1.20, "EX": 1.10, "PL": 1.00,
+  "TQ": 1.05, "TR": 1.05, "TA": 1.05, "DT": 1.15,
+  "BH": 1.25, "SP": 1.20, "SO": 1.20, "PO": 1.15,
+  "BN": 1.30, "RH": 1.45, "TN": 1.40, "ME": 1.25,
+  "CT": 1.20, "MK": 1.20, "LU": 1.20, "SG": 1.30,
+  "M": 1.05, "OL": 0.90, "BL": 0.95, "WN": 0.90,
+  "WA": 1.00, "SK": 1.10, "CW": 1.00, "CH": 1.10,
+  "L": 0.90, "PR": 0.95, "FY": 0.85, "BB": 0.80,
+  "LA": 1.00, "CA": 0.85, "NE": 0.90, "SR": 0.80,
+  "DH": 0.85, "DL": 0.90, "TS": 0.80,
+  "EH": 1.20, "G": 1.00, "FK": 1.00, "KY": 0.95,
+  "DD": 0.90, "AB": 0.95, "PH": 0.95, "IV": 0.85,
+  "PA": 0.95, "KA": 0.85, "ML": 0.90, "TD": 0.95,
+  "DG": 0.80, "CF": 0.95, "SA": 0.85, "LD": 0.80,
+  "NP": 0.90, "LL": 0.85,
+  "BT": 0.80
+ },
+ defaultFactor: 1.00,
+ rangeSpread: 0.15
+};
+
+function extractPostcodeArea(postcode) {
+ const cleaned = postcode.replace(/\s+/g, "").toUpperCase();
+ const m = cleaned.match(/^([A-Z]{1,2})/);
+ return m ? m[1] : null;
+}
+
+function calculateValuation(postcode, propertyType, bedrooms, condition) {
+ const H = VALUATION_HEURISTIC;
+ const base = (H.basePerBedroom[propertyType] || H.basePerBedroom.house) * bedrooms;
+ const area = extractPostcodeArea(postcode);
+ const factor = (area && H.postcodeAreaFactor[area]) || H.defaultFactor;
+ const condMult = (condition && H.conditionMultiplier[condition]) || H.conditionMultiplier.average;
+ const mid = Math.round(base * factor * condMult);
+ const lo = Math.round(mid * (1 - H.rangeSpread));
+ const hi = Math.round(mid * (1 + H.rangeSpread));
+ return { lo, hi, mid };
+}
+
+function formatGBP(n) {
+ return "£" + n.toLocaleString("en-GB");
+}
+
+/* ================================================================
+  DOM HELPERS
+  ================================================================ */
+const $ = id => document.getElementById(id);
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const OWNER_STEPS = ["step-name", "step-demo-input", "step-phone", "step-demo-result", "step-capture", "step-result"];
+function applyStep(step) {
+ OWNER_STEPS.forEach(s => { const el = $(s); if (el) el.classList.toggle("active", s === step); });
+ var __el = typeof step !== "undefined" && document.getElementById(step);
+ if (__el) { var __r = window.matchMedia("(prefers-reduced-motion: reduce)").matches; __el.scrollIntoView({ behavior: __r ? "auto" : "smooth", block: "start" }); }
+ else { window.scrollTo({ top: 0 }); }
+}
+function show(step) {
+ applyStep(step);
+ if (window.GLFlow && typeof window.GLFlow.pushStep === "function") {
+  window.GLFlow.pushStep("valuation", step);
+ }
+}
+if (window.GLFlow && typeof window.GLFlow.bindStepHistory === "function") {
+ window.GLFlow.bindStepHistory("valuation", function (stepId) {
+  if (OWNER_STEPS.indexOf(stepId) !== -1) applyStep(stepId);
+ }, "step-name");
+}
+function escHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+/* ================================================================
+  AGENT BUILDER STATE
+  ================================================================ */
+let biz = { name: "", phone: "" };
+let demoState = { type: "", beds: 0, condition: "", postcode: "" };
+
+/* --- Chip grid selection helper --- */
+function setupChipGrid(gridId, cb) {
+ const grid = $(gridId);
+ if (!grid) return;
+ grid.addEventListener("click", (e) => {
+  const btn = e.target.closest(".chip-btn");
+  if (!btn) return;
+  grid.querySelectorAll(".chip-btn").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+  cb(btn.dataset.val);
+ });
+}
+setupChipGrid("demoTypeGrid", v => { demoState.type = v; });
+setupChipGrid("demoBedGrid", v => { demoState.beds = parseInt(v, 10); });
+setupChipGrid("demoCondGrid", v => { demoState.condition = v; });
+
+/* --- Step 1: name → demo input --- */
+$("toDemo").addEventListener("click", () => {
+ const n = $("bizname").value.trim();
+ if (!n) { $("nameErr").classList.add("show"); return; }
+ $("nameErr").classList.remove("show");
+ biz.name = n;
+ const brandEl = $("demoBrand");
+ if (brandEl) brandEl.textContent = biz.name;
+ show("step-demo-input");
+});
+
+/* --- Step 2: demo input → phone (do not ask name/email yet) --- */
+$("toCalc").addEventListener("click", () => {
+ const pc = $("demoPostcode") ? $("demoPostcode").value.trim() : "";
+ const err = $("demoErr");
+ if (err) err.classList.remove("show");
+ if (!pc || !demoState.type || !demoState.beds || !demoState.condition) {
+  if (err) { err.textContent = "Fill in all fields before continuing."; err.classList.add("show"); }
+  return;
+ }
+ demoState.postcode = pc;
+ show("step-phone");
+});
+
+/* --- Step 3: phone → full homeowner preview (with phone) --- */
+$("toPreview").addEventListener("click", () => {
+ const phone = $("bizphone") ? $("bizphone").value.trim() : "";
+ const err = $("phoneErr");
+ if (err) err.classList.remove("show");
+ if (!phone) {
+  if (err) { err.textContent = "Add a phone number so homeowners can call you."; err.classList.add("show"); }
+  return;
+ }
+ biz.phone = phone;
+ const btn = $("toPreview");
+ btn.disabled = true; btn.textContent = "Calculating\u2026";
+ setTimeout(() => {
+  const val = calculateValuation(demoState.postcode, demoState.type, demoState.beds, demoState.condition);
+  const brand2 = $("demoBrand2");
+  if (brand2) brand2.textContent = biz.name;
+  const rangeEl = $("demoRange");
+  if (rangeEl) rangeEl.textContent = formatGBP(val.lo) + " \u2013 " + formatGBP(val.hi);
+  const inlineEl = $("demoAgencyInline");
+  if (inlineEl) inlineEl.textContent = biz.name;
+  const phoneLine = $("demoPhoneLine");
+  if (phoneLine) phoneLine.textContent = "Call " + biz.name + " on " + biz.phone;
+  btn.disabled = false; btn.textContent = "See the homeowner preview";
+  show("step-demo-result");
+ }, 900);
+});
+
+/* --- Step 4: preview → unlock capture --- */
+$("toCapture").addEventListener("click", () => show("step-capture"));
+
+/* --- Step 5: unlock → done / result --- */
+$("unlock").addEventListener("click", async () => {
+ const name = $("leadName").value.trim();
+ const email = $("leadEmail").value.trim();
+ const err = $("capErr");
+ err.classList.remove("show");
+ if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+  err.textContent = "Add your name and a valid email to unlock.";
+  err.classList.add("show");
+  return;
+ }
+ $("unlock").disabled = true; $("unlock").textContent = "One second\u2026";
+ if (window.TBA && window.TBA.baserowReady(CONFIG, CONFIG.OWNER_LEADS_TABLE_ID)) {
+  try {
+   await window.TBA.baserowAdd(CONFIG, CONFIG.OWNER_LEADS_TABLE_ID, {
+    "Name": name, "Email": email, "Business": biz.name, "Phone": biz.phone,
+    "Tool": "Instant Valuation", "Consent": $("consent").checked ? "Yes" : "No",
+    "Date": (window.TBA.baserowDateToday && window.TBA.baserowDateToday()) || new Date().toISOString().slice(0, 10)
+   });
+  } catch (e) { console.warn("Lead not saved:", e); }
+ } else {
+  console.warn("Baserow not configured: owner lead not saved:", { name, email, biz });
+ }
+ buildShareables();
+ $("unlock").disabled = false; $("unlock").textContent = "Unlock my valuation link";
+ if (window.GLFlow && typeof shareURL !== "undefined" && shareURL) {
+    window.GLFlow.goToDone("valuation", { shareURL: shareURL, bizName: (biz && biz.name) || "" }, "../done/");
+    return;
+  }
+  show("step-result");
+});
+
+/* ================================================================
+  ENCODE / DECODE; #v=base64url payload
+  ================================================================ */
+function encodeConfig() {
+ const payload = { n: biz.name, p: biz.phone };
+ return btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+  .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function decodeConfig(s) {
+ s = s.replace(/-/g, "+").replace(/_/g, "/");
+ const json = decodeURIComponent(escape(atob(s)));
+ const p = JSON.parse(json);
+ return { name: p.n, phone: p.p };
+}
+
+/* ================================================================
+  SHARE LINK + QR
+  ================================================================ */
+let shareURL = "";
+function buildShareables() {
+ shareURL = location.origin + location.pathname.replace(/\/build(?:\/index\.html)?\/?$/i, "/").replace(/build\.html$/i, "index.html") + "#v=" + encodeConfig();
+ $("shareLink").textContent = shareURL;
+ $("qrcode").innerHTML = "";
+ new QRCode($("qrcode"), {
+  text: shareURL, width: 200, height: 200,
+  colorDark: "#12291F", colorLight: "#ffffff",
+  correctLevel: QRCode.CorrectLevel.M
+ });
+}
+
+$("copyLink").addEventListener("click", async () => {
+ try { await navigator.clipboard.writeText(shareURL); }
+ catch (e) {
+  const t = document.createElement("textarea"); t.value = shareURL;
+  document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove();
+ }
+ $("copied").classList.add("show");
+ setTimeout(() => $("copied").classList.remove("show"), 1800);
+});
+
+$("dlQR").addEventListener("click", () => {
+ const img = $("qrcode").querySelector("img") || $("qrcode").querySelector("canvas");
+ if (!img) return;
+ const dataURL = img.tagName === "CANVAS" ? img.toDataURL("image/png") : img.src;
+ const a = document.createElement("a");
+ a.href = dataURL;
+ a.download = (biz.name || "valuation-form").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-qr.png";
+ a.click();
+});
+
+
+/* ================================================================
+  BOOT
+  ================================================================ */
+(function boot(){
+ if (location.hash.match(/#v=(.+)/)) { location.replace("../index.html" + location.hash); return; }
+ if (window.TBA && typeof window.TBA.consentText === "function") {
+  $("consentText").textContent = window.TBA.consentText();
+ }
+})();
+</script>
+</body>
+</html>

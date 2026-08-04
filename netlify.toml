@@ -1,0 +1,97 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Pretty URLs: force trailing slashes on tool sections and build/done folders
+[[redirects]]
+  from = "/quote"
+  to = "/quote/"
+  status = 301
+
+[[redirects]]
+  from = "/review"
+  to = "/review/"
+  status = 301
+
+[[redirects]]
+  from = "/scorecard"
+  to = "/scorecard/"
+  status = 301
+
+[[redirects]]
+  from = "/reply"
+  to = "/reply/"
+  status = 301
+
+[[redirects]]
+  from = "/booking"
+  to = "/booking/"
+  status = 301
+
+[[redirects]]
+  from = "/valuation"
+  to = "/valuation/"
+  status = 301
+
+[[redirects]]
+  from = "/quote/build"
+  to = "/quote/build/"
+  status = 301
+
+[[redirects]]
+  from = "/quote/done"
+  to = "/quote/done/"
+  status = 301
+
+[[redirects]]
+  from = "/review/build"
+  to = "/review/build/"
+  status = 301
+
+[[redirects]]
+  from = "/review/done"
+  to = "/review/done/"
+  status = 301
+
+[[redirects]]
+  from = "/scorecard/build"
+  to = "/scorecard/build/"
+  status = 301
+
+[[redirects]]
+  from = "/scorecard/done"
+  to = "/scorecard/done/"
+  status = 301
+
+[[redirects]]
+  from = "/reply/build"
+  to = "/reply/build/"
+  status = 301
+
+[[redirects]]
+  from = "/reply/done"
+  to = "/reply/done/"
+  status = 301
+
+[[redirects]]
+  from = "/booking/build"
+  to = "/booking/build/"
+  status = 301
+
+[[redirects]]
+  from = "/booking/done"
+  to = "/booking/done/"
+  status = 301
+
+[[redirects]]
+  from = "/valuation/build"
+  to = "/valuation/build/"
+  status = 301
+
+[[redirects]]
+  from = "/valuation/done"
+  to = "/valuation/done/"
+  status = 301

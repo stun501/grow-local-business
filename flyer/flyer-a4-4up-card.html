@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Grow Local · Flyer Arm A (Scorecard hook) · A6 4-up on A4 (DEPRECATED)</title>
+
+ <!--
+  DEPRECATED — do not send to the professional printer.
+  Use flyer/flyer-a5-arm-a.html instead (A5 portrait, one front + one back, 4mm bleed).
+  Kept for local 4-up proofing / cut tests only.
+
+  Split-test Arm A — Scorecard hook (growlocal-flyer-spec.md §2.1 / §7)
+  QR destination: Scorecard
+  Production URL: https://grow-local-business.netlify.app/scorecard/
+ -->
+ <script>
+  const BASE_URL = "https://grow-local-business.netlify.app";
+  const QR_PATH = "/scorecard/";
+  const QR_URL = BASE_URL + QR_PATH;
+ </script>
+
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Archivo:wght@400;500;600&family=Fraunces:opsz,SOFT,WONK,wght@9..144,0,0,400;9..144,0,0,500;9..144,0,0,600&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="../assets/tokens-shopfront.css">
+ <link rel="stylesheet" href="flyer-shopfront.css">
+</head>
+<body>
+
+ <!--
+  FLAG: Signature asset missing.
+  Expected: assets/signature-bone.png (or assets/signature-*.png) ~30mm wide for Bottle contact band.
+  Checked: no signature file in assets/. Leave reserved space until Craig supplies scanned PNG/SVG.
+ -->
+
+ <template id="tpl-front">
+  <article class="card-tile card-front">
+   <header class="card-band card-band--fascia">
+    <p class="fascia__wordmark">GROW LOCAL</p>
+    <div class="fascia__rule" aria-hidden="true"></div>
+    <p class="card-eyebrow">A growth agency for local business</p>
+   </header>
+
+   <div class="card-band card-band--hook">
+    <h1 class="card-h1">
+     Most local businesses are better than they look online.
+     <span class="card-h1__line2">What does your business score out of 100?</span>
+    </h1>
+    <p class="card-sub">A free tool that scores your Google listing and shows you the three things worth fixing first. Thirty seconds. Nothing to fill in.</p>
+   </div>
+
+   <div class="card-band card-band--certainty">
+    <ul class="card-points">
+     <li>Nothing to install. Nothing to cancel.</li>
+     <li>You don't have to give us anything to see your score.</li>
+     <li>No sign-up. No charge. No sales pitch.</li>
+    </ul>
+   </div>
+
+   <div class="card-band card-band--cost">
+    <p class="card-cost">These tools took months to build. We give them away because they work.</p>
+   </div>
+
+   <div class="card-band card-band--action">
+    <div class="card-qr-panel">
+     <div class="qr-target" aria-label="QR code linking to the Google Listing Scorecard"></div>
+    </div>
+    <p class="card-action"><span class="card-action__lead">SCAN NOW.</span> Takes less time than reading this card</p>
+   </div>
+
+   <footer class="card-band card-band--contact">
+    <div class="card-signature-slot" aria-hidden="true"></div>
+    <p class="card-contact-line">Text us. Quickest way to get an answer. <strong>07379 028832</strong></p>
+    <p class="card-contact-line">hello@growlocalbusiness.co.uk <span class="foot__middot" aria-hidden="true">·</span> growlocalbusiness.co.uk</p>
+    <p class="card-contact-from">Grow Local</p>
+   </footer>
+  </article>
+ </template>
+
+ <template id="tpl-back">
+  <article class="card-tile card-back">
+   <header class="card-band card-band--headband">
+    <p class="card-eyebrow">What's inside</p>
+   </header>
+
+   <ol class="card-tool-list">
+    <li class="card-tool">
+     <span class="card-tool__num">01</span>
+     <span class="card-tool__body">
+      <span class="card-tool__name">Google Listing Scorecard</span>
+      <span class="card-tool__benefit">How your Google listing scores out of 100, and what to fix first.</span>
+     </span>
+    </li>
+    <li class="card-tool">
+     <span class="card-tool__num">02</span>
+     <span class="card-tool__body">
+      <span class="card-tool__name">Instant Quote Form</span>
+      <span class="card-tool__benefit">Gives people a quote when you are closed or on a job, and captures their number</span>
+     </span>
+    </li>
+    <li class="card-tool">
+     <span class="card-tool__num">03</span>
+     <span class="card-tool__body">
+      <span class="card-tool__name">Google Review QR</span>
+      <span class="card-tool__benefit">Ask while they're still smiling, not three days later by email.</span>
+     </span>
+    </li>
+    <li class="card-tool">
+     <span class="card-tool__num">04</span>
+     <span class="card-tool__body">
+      <span class="card-tool__name">Review Reply Writer</span>
+      <span class="card-tool__benefit">Answer every review properly, in your own voice, in about a minute.</span>
+     </span>
+    </li>
+    <li class="card-tool">
+     <span class="card-tool__num">05</span>
+     <span class="card-tool__body">
+      <span class="card-tool__name">Booking Link</span>
+      <span class="card-tool__benefit">One link that ends the back-and-forth over times.</span>
+     </span>
+    </li>
+    <li class="card-tool">
+     <span class="card-tool__num">06</span>
+     <span class="card-tool__body">
+      <span class="card-tool__name">Instant Valuation <em>for estate agents</em></span>
+      <span class="card-tool__benefit">Catch sellers browsing at midnight, months before they'd call you.</span>
+     </span>
+    </li>
+   </ol>
+
+   <p class="card-downsell">Most businesses only ever need one of these. Take the one that fits.</p>
+
+   <div class="card-useful">
+    <p class="card-useful__head">Five things that decide whether people choose you online.</p>
+    <ol class="card-useful__list">
+     <li>1. A photo added in the last month</li>
+     <li>2. Up-to-date opening hours, including bank holidays</li>
+     <li>3. Every review replied to</li>
+     <li>4. The right primary category</li>
+     <li>5. Somewhere to click when they're ready</li>
+    </ol>
+    <p class="card-useful__note">Most listings miss three of these.</p>
+   </div>
+
+   <p class="card-value">If one of these brings in a single extra job a month, it's more than paid for itself. And it costs you nothing.</p>
+
+   <div class="card-closing">
+    <p class="card-closing__q">Know someone who could use this?</p>
+    <p class="card-closing__a">Pass it on. That's how most people find us.</p>
+    <p class="card-closing__url">growlocalbusiness.co.uk</p>
+   </div>
+  </article>
+ </template>
+
+ <!-- SHEET 1; FRONT × 4 -->
+ <div class="sheet-wrap">
+  <p class="sheet-wrap__label" aria-hidden="true">Sheet 1 of 2; front · Arm A (Scorecard)</p>
+  <span class="crop crop--tl" aria-hidden="true"></span>
+  <span class="crop crop--tr" aria-hidden="true"></span>
+  <span class="crop crop--bl" aria-hidden="true"></span>
+  <span class="crop crop--br" aria-hidden="true"></span>
+  <span class="crop crop--tm" aria-hidden="true"></span>
+  <span class="crop crop--bm" aria-hidden="true"></span>
+  <span class="crop crop--ml" aria-hidden="true"></span>
+  <span class="crop crop--mr" aria-hidden="true"></span>
+  <div class="sheet" id="sheet-front"></div>
+ </div>
+
+ <!-- SHEET 2; BACK × 4 -->
+ <div class="sheet-wrap">
+  <p class="sheet-wrap__label" aria-hidden="true">Sheet 2 of 2; back</p>
+  <span class="crop crop--tl" aria-hidden="true"></span>
+  <span class="crop crop--tr" aria-hidden="true"></span>
+  <span class="crop crop--bl" aria-hidden="true"></span>
+  <span class="crop crop--br" aria-hidden="true"></span>
+  <span class="crop crop--tm" aria-hidden="true"></span>
+  <span class="crop crop--bm" aria-hidden="true"></span>
+  <span class="crop crop--ml" aria-hidden="true"></span>
+  <span class="crop crop--mr" aria-hidden="true"></span>
+  <div class="sheet" id="sheet-back"></div>
+ </div>
+
+ <p class="screen-hint">Arm A · Ctrl+P → Save as PDF · A4 · No margins · Background graphics ON · QR → /scorecard/</p>
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+ <script>
+  (function () {
+   var frontTpl = document.getElementById("tpl-front");
+   var backTpl = document.getElementById("tpl-back");
+   var frontSheet = document.getElementById("sheet-front");
+   var backSheet = document.getElementById("sheet-back");
+   var i;
+
+   for (i = 0; i < 4; i++) {
+    frontSheet.appendChild(frontTpl.content.cloneNode(true));
+    backSheet.appendChild(backTpl.content.cloneNode(true));
+   }
+
+   document.querySelectorAll(".qr-target").forEach(function (el) {
+    new QRCode(el, {
+     text: QR_URL,
+     width: 128,
+     height: 128,
+     colorDark: "#0E1613",
+     colorLight: "#F2EFE6",
+     correctLevel: QRCode.CorrectLevel.M
+    });
+   });
+  })();
+ </script>
+</body>
+</html>
