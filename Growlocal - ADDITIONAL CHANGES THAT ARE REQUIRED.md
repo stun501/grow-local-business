@@ -33,7 +33,7 @@ Build the Reply Writer **provider-agnostic**. Don't hard-code any one vendor's S
 * Cap output at \~120 tokens (the PRD's 80-word limit) via max\_tokens. Never leave output length unbounded.  
 * Cap input: reject or truncate any pasted "review" over \~1,500 characters — real reviews are short, and a giant paste is either abuse or a mistake.  
 * Rate-limit per IP: a sensible ceiling (e.g. \~10 generations/hour) to stop anyone hammering the endpoint and running up the bill or draining the free tier.  
-* Add a hard monthly spend cap or usage alert at the provider if available, so cost can never run away silently.  
+* Add a usage / spend **alert** at the provider (OpenRouter) if available, so rising cost is noticed early. A hard monthly spend **cap** that kills the tool is not required unless Craig asks for one.  
 * Don't retry automatically more than once on failure — retry loops multiply cost.
 
 **Safety and quality guardrails (these still live in the system prompt regardless of model)**

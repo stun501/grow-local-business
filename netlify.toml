@@ -5,6 +5,17 @@
 [functions]
   node_bundler = "esbuild"
 
+# Legacy prototype — keep offline; live Quote tool is /quote/
+[[redirects]]
+  from = "/instant-quote-form.html"
+  to = "/quote/"
+  status = 301
+
+[[redirects]]
+  from = "/instant-quote-form"
+  to = "/quote/"
+  status = 301
+
 # Pretty URLs: force trailing slashes on tool sections and build/done folders
 [[redirects]]
   from = "/quote"

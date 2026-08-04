@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Legacy prototype kept offline via Netlify redirect
+Disallow: /instant-quote-form.html
+Disallow: /mobile-preview.html
+Disallow: /flyer/flyer-a4-4up
+Disallow: /planner/
+
+Sitemap: https://www.growlocalbusiness.co.uk/sitemap.xml

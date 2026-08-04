@@ -9,6 +9,13 @@
  *   LLM_FALLBACK_MODEL    (default google/gemini-2.0-flash-lite-001)
  *   LLM_SITE_URL          (optional OpenRouter HTTP-Referer)
  *   LLM_APP_NAME          (optional OpenRouter X-Title)
+ *
+ * Cost guardrails (in code):
+ *   max_tokens ~120, review text capped ~1500 chars, ~10 gens/IP/hour, one retry max
+ *
+ * Operator setup (not a hard monthly spend CAP):
+ *   Set a usage/spend ALERT in OpenRouter (or your LLM provider) so Craig is notified
+ *   if spend rises. Do not block the tool with a hard monthly kill-switch unless asked.
  */
 
 const API_KEY = process.env.LLM_API_KEY || process.env.OPENROUTER_API_KEY || "";

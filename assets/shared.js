@@ -62,7 +62,7 @@
       eyebrow: "Any business with customers",
       blurb:
         "You've earned far more five-star reviews than you've actually been given. This closes the gap.",
-      outcome: "More recent reviews means You're higher in local search"
+      outcome: "More recent reviews means you're higher in local search"
     },
     {
       id: "reply",

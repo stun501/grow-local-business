@@ -53,7 +53,8 @@ Guide: `ops/GOOGLE-PLACES-SETUP.md`
 - Provider-agnostic OpenAI-compatible chat completions
 - Keys only in Netlify env
 - Defaults: OpenRouter + DeepSeek; Gemini Flash-Lite fallback
-- Cost/safety caps in `review-reply.js` header comments
+- Cost/safety caps in `review-reply.js`: ~1500 char input, ~120 tokens out, ~10 gens/IP/hour, one retry
+- **Spend alert (not hard monthly kill-switch):** set a usage/spend alert in OpenRouter billing so Craig is notified if spend rises. Do not add a hard monthly CAP that disables the tool unless explicitly requested.
 
 ## Deploy (Netlify)
 
