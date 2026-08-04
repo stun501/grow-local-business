@@ -10,11 +10,13 @@
   from = "/instant-quote-form.html"
   to = "/quote/"
   status = 301
+  force = true
 
 [[redirects]]
   from = "/instant-quote-form"
   to = "/quote/"
   status = 301
+  force = true
 
 # Pretty URLs: force trailing slashes on tool sections and build/done folders
 [[redirects]]
