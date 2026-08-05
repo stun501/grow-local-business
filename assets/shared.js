@@ -19,8 +19,12 @@
   person: "Craig",
   phone: "07379028832",
   phoneDisplay: "07379 028832",
+  phoneE164: "+447379028832",
   email: "hello@growlocalbusiness.co.uk",
-  smsHref: "sms:07379028832"
+  smsHref: "sms:07379028832",
+  domain: "www.growlocalbusiness.co.uk",
+  siteUrl: "https://www.growlocalbusiness.co.uk"
+  /* Postal address is for Google Business Profile only — do not show on the website */
  };
 
  var BUSINESS_TYPES = [
@@ -43,7 +47,7 @@
       href: "scorecard/",
       eyebrow: "Any business on Google",
       blurb:
-        "Score the essentials on your Google listing out of 100 and see the three things quietly costing you customers.",
+        "Your Google listing is often your first impression and how you attract customers, before they visit your website. See what's costing you customers, and what to fix.",
       outcome: "Most local listings score under 50"
     },
     {

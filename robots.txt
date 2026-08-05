@@ -7,4 +7,20 @@ Disallow: /mobile-preview.html
 Disallow: /flyer/flyer-a4-4up
 Disallow: /planner/
 
+# Utility flow pages (also noindex in HTML)
+Disallow: /scorecard/build/
+Disallow: /scorecard/done/
+Disallow: /quote/build/
+Disallow: /quote/done/
+Disallow: /review/build/
+Disallow: /review/done/
+Disallow: /reply/build/
+Disallow: /reply/done/
+Disallow: /booking/build/
+Disallow: /booking/done/
+Disallow: /booking/request.html
+Disallow: /valuation/build/
+Disallow: /valuation/done/
+
 Sitemap: https://www.growlocalbusiness.co.uk/sitemap.xml
+Allow: /llms.txt

@@ -68,18 +68,26 @@ Or drag-drop the project folder in Netlify UI (see `ops/NETLIFY-DEPLOY.md`).
 
 After env var changes, redeploy so functions pick them up.
 
+## SEO / Search Console (after deploy)
+
+1. Confirm `/sitemap.xml`, `/robots.txt`, `/llms.txt`, `/guides/` live
+2. Submit sitemap in Google Search Console + Bing: `https://www.growlocalbusiness.co.uk/sitemap.xml`
+3. GBP is separate (Craig); do not put street address back on the website
+
 ## Smoke checklist (production)
 
 1. `https://www.growlocalbusiness.co.uk/` loads
 2. Each of six tools: product → build → unlock/done (as applicable)
 3. No 404 on `/TOOL/build/` or `/TOOL/done/`
-4. Scorecard unlock-once on done
+4. Scorecard unlock-once on done; product subhead matches current copy lock
 5. Quote shows Salon + Custom; landing tag includes Salons
 6. Valuation: phone before preview; phone on preview; then unlock
 7. Browser Back steps within Quote/Scorecard/Review/Valuation
 8. Baserow row written; hello@ receives operator email on unlock
 9. Reply Writer generates or fails honestly (no canned template)
 10. Flyer hub `/flyer/` opens Arm A/B proofs
+11. `/guides/` hub + four guides load; About has no postal address
+12. Done pages show one Momentum next-step CTA
 
 ## Print handoff
 

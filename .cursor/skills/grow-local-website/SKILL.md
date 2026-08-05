@@ -48,6 +48,7 @@ Ignore stale “Think Beyond” / three-tool / Resend / ISO-date-for-Scorecard-R
 | Rule | Detail |
 |------|--------|
 | Brand on customer UI | Grow Local only; `hello@growlocalbusiness.co.uk`; `07379 028832` (text-first) |
+| Postal address | For Google Business Profile only. **Do not** publish street address on the website, About, footers, `llms.txt`, or JSON-LD |
 | Audience | Established local businesses with physical ops — not corner shops / market stalls |
 | Design | Shopfront: Bottle/Bone/Gold/Brass; Fraunces + Archivo; **no** gradients, drop shadows, or pure white |
 | Copy | No “Think Beyond”, “automation”, “workflow”, “AI”, “solution”, “high street”; avoid em dashes (—) |
@@ -78,8 +79,11 @@ Rebuild progress:
 - [ ] 11. Valuation build/done + #v= homeowner mode + heuristic
 - [ ] 12. notify-lead (SMTP2GO) wired from shared.js after key Baserow tables
 - [ ] 13. Flyer A5 arms + flyer hub + A2 planner
-- [ ] 14. Baserow tables + CONFIG IDs + create-only token
-- [ ] 15. Netlify env vars + production deploy + smoke tests
+- [ ] 14. Guides hub `/guides/` + ≥4 guides + sitemap/robots/llms.txt
+- [ ] 15. SEO heads (canonical, OG/Twitter, Organization schema, noindex on build/done)
+- [ ] 16. Momentum next-step on each `/done/` page
+- [ ] 17. Baserow tables + CONFIG IDs + create-only token
+- [ ] 18. Netlify env vars + production deploy + smoke tests
 ```
 
 ## Canonical architecture (summary)
@@ -137,6 +141,17 @@ Both can coexist. Never change unlock copy to “we'll email you the report.”
 8. **Valuation** — ballpark heuristic, honest “estimate” framing; journey: name → demo → phone → preview (phone shown) → unlock → QR.
 9. **Quote trades** — Salon top; no Handyman; “Create Custom Quote Form” last (empty editable board).
 10. **Print** — A5 flyer trim 148×210mm with 4mm bleed; flyer wins from `growlocal-flyer-spec.md`.
+11. **Momentum** — each done page: celebrate → why-now → ONE next tool CTA → soft “See all free tools” (see Marketing Hacks).
+12. **SEO** — follow `ops/SEO-REQUIREMENTS.md`; patch helper `ops/patch-seo-heads.py`; guides under `/guides/`.
+
+## Current Scorecard copy (do not regress)
+
+| Surface | Copy |
+|---------|------|
+| Product H1 | Your Google listing is doing more work than your website. |
+| Product subhead | Your Google listing could be costing you customers. Most score under 50. Check yours in 30 seconds. |
+| Landing benefit | Your Google listing is often your first impression and how you attract customers, before they visit your website. See what's costing you customers, and what to fix. |
+| Flyer Scorecard sub-line | Customers judge your business on Google before they visit your website. Check your score. |
 
 ## Smoke test after every deploy
 
@@ -147,6 +162,8 @@ Both can coexist. Never change unlock copy to “we'll email you the report.”
 5. Baserow row appears for unlock
 6. Operator email arrives at hello@ (except Scorecard Runs)
 7. Reply Writer returns a draft (or clear failure + text-us line — never canned)
+8. `/guides/` loads; no postal address anywhere on site
+9. Done pages show a single next-step CTA (not a six-tool pitch)
 
 ## Out of scope for v2 (do not invent)
 

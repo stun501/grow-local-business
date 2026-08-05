@@ -19,8 +19,11 @@
 | `/` | `index.html` |
 | `/about/` | `about/index.html` |
 | `/book/` | `book/index.html` |
+| `/guides/` | `guides/index.html` (+ 4 guide children) |
 | `/qr/` | `qr/index.html` |
 | `/flyer/` | `flyer/index.html` |
+| `/llms.txt` | AI crawler summary |
+| `/sitemap.xml` / `/robots.txt` | Technical SEO |
 
 ### Six tools
 
@@ -139,3 +142,12 @@ From `shared.js`:
 - Email: hello@growlocalbusiness.co.uk
 - Phone: 07379028832 / display 07379 028832
 - Domain: www.growlocalbusiness.co.uk
+- **No postal address** in `BRAND`, About, footers, schema, or `llms.txt` (GBP only, off-site)
+
+## SEO (as-built)
+
+- Checklist: `ops/SEO-REQUIREMENTS.md`
+- Head patcher: `ops/patch-seo-heads.py` (canonical, OG/Twitter, Organization JSON-LD, WebApplication on tools, noindex on build/done)
+- Guides writer: `ops/write-guides.py`
+- FAQ + FAQPage schema on home + Scorecard
+- Organization schema: phone + email only (no `PostalAddress`)

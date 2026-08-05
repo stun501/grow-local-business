@@ -114,3 +114,24 @@ CTA labels should land on `/TOOL/build/`, not a hidden in-page generator.
 | Google Listing Scorecard | Foundation Scorecard (legacy) |
 | Instant Quote Form | Instant quote widget |
 | Grow Local | Think Beyond Automation (customer UI) |
+
+## Contact surfaces
+
+- Show: phone (text-first), email, domain
+- **Do not show** street / postal address on any customer page (including About). Address belongs on Google Business Profile only.
+
+## Scorecard copy lock (current)
+
+- Product H1: Your Google listing is doing more work than your website.
+- Product subhead: Your Google listing could be costing you customers. Most score under 50. Check yours in 30 seconds.
+- Landing benefit: Your Google listing is often your first impression and how you attract customers, before they visit your website. See what's costing you customers, and what to fix.
+- Flyer Scorecard sub-line: Customers judge your business on Google before they visit your website. Check your score.
+
+## Guides content
+
+Hub `/guides/` plus:
+
+1. google-listing-checklist → Scorecard
+2. more-google-reviews → Review QR
+3. quote-form-for-trades → Quote
+4. booking-without-back-and-forth → Booking

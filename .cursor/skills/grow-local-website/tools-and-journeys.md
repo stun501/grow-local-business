@@ -26,6 +26,12 @@ Product page (teaching copy + CTA)
 
 **Paths:** `scorecard/` → `scorecard/build/` → `scorecard/done/`
 
+**Product copy (current)**
+
+- H1: “Your Google listing is doing more work than your website.”
+- Subhead: “Your Google listing could be costing you customers. Most score under 50. Check yours in 30 seconds.”
+- Landing benefit: “Your Google listing is often your first impression and how you attract customers, before they visit your website. See what's costing you customers, and what to fix.”
+
 **Steps (build):** search → pick / none / error / closed → scoring → result (capture + full report)
 
 **APIs:** `places-search`, `places-details` (public data only; photo count not image proxy)
@@ -38,6 +44,22 @@ Product page (teaching copy + CTA)
 - Empty profile photo circle stays hidden when no photo URL
 - Unlock once: payload `unlocked` / `emailed` → hide `#doneCaptureCard` on done; strip injected `#captureCard`
 - Browser Back via `GLFlow` step history
+- Done next-step (Momentum): → Review Reply Writer (`/reply/build/`)
+
+## Momentum chain (done pages)
+
+Celebrate → why-now → one primary Brass CTA → soft link to hub.
+
+| After | Next tool |
+|-------|-----------|
+| Scorecard | Reply Writer |
+| Review | Scorecard |
+| Reply | Booking |
+| Quote | Scorecard |
+| Booking | Quote |
+| Valuation | Scorecard |
+
+CSS: `.next-step*` in `assets/product-shell.css`
 
 ---
 

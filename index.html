@@ -4,7 +4,7 @@
  <meta charset="UTF-8" />
  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
  <title>Grow Local · Free tools for local businesses</title>
- <meta name="description" content="Six free tools for local business. Set one up on your phone in about a minute. No sign-up, no sales pitch." />
+ <meta name="description" content="Six free tools for established local businesses. Score your Google listing, capture quotes, collect reviews, and book appointments. No sign-up.">
 
  <link rel="icon" href="assets/monogram-gl.svg" type="image/svg+xml" />
  <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -732,6 +732,46 @@
 
   .who-behind__link:hover { color: var(--gl-brass); }
 
+  .home-faq {
+   padding: 48px 20px;
+   border-top: var(--gl-rule);
+   background: var(--gl-bone-warm);
+  }
+  @media (min-width: 720px) {
+   .home-faq { padding: 64px 40px; }
+  }
+  .home-faq__inner { max-width: 640px; margin: 0 auto; }
+  .home-faq h2 {
+   font-family: var(--gl-font-display);
+   font-size: clamp(1.5rem, 4vw, 1.85rem);
+   font-weight: 500;
+   margin: 10px 0 22px;
+  }
+  .home-faq details {
+   border-top: 1px solid var(--gl-gold-40);
+   padding: 14px 0;
+  }
+  .home-faq details:last-of-type { border-bottom: 1px solid var(--gl-gold-40); }
+  .home-faq summary {
+   font-family: var(--gl-font-display);
+   font-weight: 500;
+   font-size: 1.05rem;
+   cursor: pointer;
+   list-style: none;
+  }
+  .home-faq summary::-webkit-details-marker { display: none; }
+  .home-faq details p {
+   margin-top: 10px;
+   color: var(--gl-slate);
+  }
+  .home-faq__more {
+   display: inline-block;
+   margin-top: 22px;
+   color: var(--gl-gold);
+   font-weight: 500;
+  }
+  .home-faq__more:hover { color: var(--gl-brass); }
+
   /* -- Enquiry / Ideas -- */
   .enquiry {
    width: 100%;
@@ -914,6 +954,8 @@
   }
 
   .site-footer__about {
+   display: block;
+   margin-top: 10px;
    color: var(--gl-gold);
    font-size: var(--gl-fs-13);
    font-weight: 600;
@@ -921,6 +963,23 @@
 
   .site-footer__about:hover { color: var(--gl-bone); }
  </style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are these tools really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No sign-up wall, no card, and no report emailed to you. You set a tool up and use it. If you ever want help with something bigger, you can text us; if you don't, keep the tools."}},{"@type":"Question","name":"Who are these for?","acceptedAnswer":{"@type":"Answer","text":"Established local businesses with a real operation; garages, trades, clinics, agents, professional services and similar. If you're purely online, we're probably not the right fit."}},{"@type":"Question","name":"How long does a tool take?","acceptedAnswer":{"@type":"Answer","text":"Most take about a minute once you have your business name (and prices, if the tool needs them). The Scorecard is usually under thirty seconds."}},{"@type":"Question","name":"Will you email me a report?","acceptedAnswer":{"@type":"Answer","text":"No. Results stay on the page so you can use them straight away. We don't email tool reports to you."}}]}</script>
+<!-- gl-seo:start -->
+<link rel="canonical" href="https://www.growlocalbusiness.co.uk/">
+<meta property="og:title" content="Grow Local · Free tools for local businesses">
+<meta property="og:description" content="Six free tools for established local businesses. Score your Google listing, capture quotes, collect reviews, and book appointments. No sign-up.">
+<meta property="og:url" content="https://www.growlocalbusiness.co.uk/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://www.growlocalbusiness.co.uk/assets/grow-local-logo.png">
+<meta property="og:site_name" content="Grow Local">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Grow Local · Free tools for local businesses">
+<meta name="twitter:description" content="Six free tools for established local businesses. Score your Google listing, capture quotes, collect reviews, and book appointments. No sign-up.">
+<meta name="twitter:image" content="https://www.growlocalbusiness.co.uk/assets/grow-local-logo.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":["Organization","ProfessionalService"],"name":"Grow Local","url":"https://www.growlocalbusiness.co.uk/","email":"hello@growlocalbusiness.co.uk","telephone":"+447379028832","description":"A growth agency for local business. Free practical tools for established local businesses with a physical operation.","areaServed":"GB"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Grow Local","url":"https://www.growlocalbusiness.co.uk/","description":"Six free tools for established local businesses. Score your Google listing, capture quotes, collect reviews, and book appointments. No sign-up.","publisher":{"@type":"Organization","name":"Grow Local"}}</script>
+<!-- gl-seo:end -->
 </head>
 <body>
  <header class="site-header">
@@ -1021,7 +1080,7 @@
     <span class="tool__copy">
      <span class="utility tool__audience">Any business on Google</span>
      <h3 class="tool__title">Google Listing Scorecard</h3>
-     <p class="tool__benefit">Score the essentials on your Google listing out of 100 and see the three things quietly costing you customers.</p>
+     <p class="tool__benefit">Your Google listing is often your first impression and how you attract customers, before they visit your website. See what's costing you customers, and what to fix.</p>
      <span class="utility tool__outcome">Most local listings score under 50</span>
     </span>
     <span class="tool__go" aria-hidden="true">→</span>
@@ -1103,6 +1162,30 @@
       </span>
      </li>
     </ol>
+   </div>
+  </section>
+
+  <section class="home-faq" aria-labelledby="faq-heading">
+   <div class="home-faq__inner">
+    <p class="utility eyebrow">Common questions</p>
+    <h2 id="faq-heading">Quick answers before you pick a tool.</h2>
+    <details>
+     <summary>Are these tools really free?</summary>
+     <p>Yes. No sign-up wall, no card, and no report emailed to you. You set a tool up and use it. If you ever want help with something bigger, you can text us; if you don't, keep the tools.</p>
+    </details>
+    <details>
+     <summary>Who are these for?</summary>
+     <p>Established local businesses with a real operation; garages, trades, clinics, agents, professional services and similar. If you're purely online, we're probably not the right fit.</p>
+    </details>
+    <details>
+     <summary>How long does a tool take?</summary>
+     <p>Most take about a minute once you have your business name (and prices, if the tool needs them). The Scorecard is usually under thirty seconds.</p>
+    </details>
+    <details>
+     <summary>Will you email me a report?</summary>
+     <p>No. Results stay on the page so you can use them straight away. We don't email tool reports to you.</p>
+    </details>
+    <a class="home-faq__more" href="guides/">Read the practical guides →</a>
    </div>
   </section>
 
@@ -1209,6 +1292,7 @@
    </p>
 
    <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
+   <a class="site-footer__about" href="guides/">Guides for local businesses</a>
    <a class="site-footer__about" href="about/index.html">About Grow Local</a>
   </div>
  </footer>

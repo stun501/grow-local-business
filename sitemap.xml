@@ -9,6 +9,11 @@
   <url><loc>https://www.growlocalbusiness.co.uk/reply/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://www.growlocalbusiness.co.uk/booking/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://www.growlocalbusiness.co.uk/valuation/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.growlocalbusiness.co.uk/guides/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.growlocalbusiness.co.uk/guides/google-listing-checklist/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.growlocalbusiness.co.uk/guides/more-google-reviews/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.growlocalbusiness.co.uk/guides/quote-form-for-trades/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.growlocalbusiness.co.uk/guides/booking-without-back-and-forth/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.growlocalbusiness.co.uk/flyer/</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>https://www.growlocalbusiness.co.uk/qr/</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
 </urlset>

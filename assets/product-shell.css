@@ -386,6 +386,37 @@ textarea:focus {
 }
 .related__list a:hover::after { transform: translateX(4px); }
 
+/* Momentum: single next-step recommendation on DONE pages.
+   One primary CTA only — see Marketing Hacks momentum framework. */
+.next-step {
+  padding: 36px 0 44px;
+  border-top: 1px solid var(--gl-gold);
+  border-bottom: var(--gl-rule);
+  background: var(--gl-bone-warm);
+}
+.next-step__celebrate {
+  font-family: var(--gl-font-display);
+  font-size: 1.375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 8px 0 10px;
+}
+.next-step__why {
+  color: var(--gl-slate);
+  max-width: 40rem;
+  margin-bottom: 20px;
+}
+.next-step__soft {
+  margin-top: 18px;
+  font-size: 0.875rem;
+}
+.next-step__soft a {
+  color: var(--gl-slate);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.next-step__soft a:hover { color: var(--gl-brass); }
+
 .site-footer {
   background: var(--gl-bottle);
   color: var(--gl-bone);
