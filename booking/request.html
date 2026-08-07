@@ -162,7 +162,7 @@
   CONFIG
   ================================================================ */
 const CONFIG = {
- BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ BASEROW_TOKEN: "",
  BOOKING_REQUESTS_TABLE_ID: "1098285",
  BASEROW_URL: "https://api.baserow.io"
 };
@@ -318,22 +318,10 @@ function localClash(business, slotISO) {
 }
 
 async function checkPossibleClash(business, slotISO) {
- // Create-only Baserow tokens cannot read rows. Prefer a same-browser
- // local flag; otherwise Unknown. Never blocks the request.
+ // Client no longer holds a Baserow token (create-only reads were never
+ // reliable anyway). Use same-browser local flag; otherwise Unknown.
  if (localClash(business, slotISO)) return "Yes";
- if (!window.TBA || !window.TBA.baserowReady(CONFIG, CONFIG.BOOKING_REQUESTS_TABLE_ID)) return "Unknown";
- try {
-  const url = CONFIG.BASEROW_URL.replace(/\/+$/, "") +
-   "/api/database/rows/table/" + CONFIG.BOOKING_REQUESTS_TABLE_ID +
-   "/?user_field_names=true&filter__Business__equal=" + encodeURIComponent(business) +
-   "&filter__Slot%20ISO__equal=" + encodeURIComponent(slotISO);
-  const res = await fetch(url, { headers: { "Authorization": "Token " + CONFIG.BASEROW_TOKEN } });
-  if (!res.ok) return "Unknown";
-  const data = await res.json();
-  return (data && data.count > 0) ? "Yes" : "No";
- } catch (e) {
-  return "Unknown";
- }
+ return "Unknown";
 }
 
 $("btnRequest").addEventListener("click", async () => {
@@ -431,12 +419,35 @@ $("btnRequest").addEventListener("click", async () => {
 
  if (Array.isArray(cfg.sv) && cfg.sv.length) {
   const wrap = $("whatForWrap");
-  wrap.innerHTML = '<label for="custWhatFor">What\u2019s it for?</label>' +
-   '<select id="custWhatFor">' +
-   '<option value="">Choose\u2026</option>' +
-   cfg.sv.map((s) => '<option value="' + esc(s.n) + '">' + esc(s.n) + (s.len ? " (" + s.len + " min)" : "") + '</option>').join("") +
-   '<option value="Something else">Something else</option>' +
-   '</select>';
+  wrap.textContent = "";
+  const label = document.createElement("label");
+  label.htmlFor = "custWhatFor";
+  label.textContent = "What\u2019s it for?";
+  const select = document.createElement("select");
+  select.id = "custWhatFor";
+  const opt0 = document.createElement("option");
+  opt0.value = "";
+  opt0.textContent = "Choose\u2026";
+  select.appendChild(opt0);
+  cfg.sv.forEach(function (s) {
+   if (!s || s.n == null) return;
+   const opt = document.createElement("option");
+   const name = String(s.n);
+   opt.value = name;
+   var lenNum = Number(s.len);
+   var labelText = name;
+   if (Number.isFinite(lenNum) && lenNum > 0) {
+    labelText += " (" + Math.round(lenNum) + " min)";
+   }
+   opt.textContent = labelText;
+   select.appendChild(opt);
+  });
+  const optElse = document.createElement("option");
+  optElse.value = "Something else";
+  optElse.textContent = "Something else";
+  select.appendChild(optElse);
+  wrap.appendChild(label);
+  wrap.appendChild(select);
  }
 
  dayList = generateSlots(cfg);

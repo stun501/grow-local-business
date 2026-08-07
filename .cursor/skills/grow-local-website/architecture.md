@@ -19,7 +19,7 @@
 | `/` | `index.html` |
 | `/about/` | `about/index.html` |
 | `/book/` | `book/index.html` |
-| `/guides/` | `guides/index.html` (+ 4 guide children) |
+| `/resources/` | `resources/index.html` (+ 4 guide children) |
 | `/qr/` | `qr/index.html` |
 | `/flyer/` | `flyer/index.html` |
 | `/llms.txt` | AI crawler summary |
@@ -148,6 +148,6 @@ From `shared.js`:
 
 - Checklist: `ops/SEO-REQUIREMENTS.md`
 - Head patcher: `ops/patch-seo-heads.py` (canonical, OG/Twitter, Organization JSON-LD, WebApplication on tools, noindex on build/done)
-- Guides writer: `ops/write-guides.py`
+- Resources writer: `ops/write-guides.py`
 - FAQ + FAQPage schema on home + Scorecard
 - Organization schema: phone + email only (no `PostalAddress`)

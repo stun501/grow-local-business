@@ -371,10 +371,47 @@ function decodeReview(s) {
  return JSON.parse(decodeURIComponent(escape(atob(s))));
 }
 
+function isAllowedGoogleReviewUrl(raw) {
+ try {
+  var url = new URL(String(raw || ""));
+  if (url.protocol !== "https:") return false;
+  var host = url.hostname.toLowerCase();
+  var allowedHost =
+   host === "search.google.com" ||
+   host === "www.google.com" ||
+   host === "google.com" ||
+   host === "maps.google.com" ||
+   host === "www.google.co.uk" ||
+   host === "google.co.uk" ||
+   host === "maps.app.goo.gl" ||
+   host === "g.page" ||
+   host.endsWith(".g.page");
+  if (!allowedHost) return false;
+  var path = url.pathname.toLowerCase();
+  var looksLikeReview =
+   path.indexOf("writereview") !== -1 ||
+   path.indexOf("/maps") !== -1 ||
+   path.indexOf("/place") !== -1 ||
+   host === "g.page" ||
+   host.endsWith(".g.page") ||
+   host === "maps.app.goo.gl" ||
+   url.searchParams.has("placeid") ||
+   url.searchParams.has("place_id");
+  return looksLikeReview;
+ } catch (e) {
+  return false;
+ }
+}
+
 function enterCustomerMode(data) {
+ if (!isAllowedGoogleReviewUrl(data.u)) {
+  console.warn("Blocked non-Google review URL in #r= payload");
+  return false;
+ }
  $("siteChrome").style.display = "none";
- $("custBizName").textContent = data.n;
+ $("custBizName").textContent = String(data.n || "");
  $("custQR").innerHTML = "";
+ $("custQR").title = data.u;
  new QRCode($("custQR"), {
   text: data.u,
   width: 220,
@@ -384,6 +421,7 @@ function enterCustomerMode(data) {
   correctLevel: QRCode.CorrectLevel.M
  });
  $("step-customer").classList.add("active");
+ return true;
 }
 
 (function heroMockupObserver() {

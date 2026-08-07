@@ -38,8 +38,8 @@ Brand constraints still apply: Grow Local only, no Think Beyond, no high-street 
 | ID | Requirement | Status |
 |----|-------------|--------|
 | C1 | At least 4 indexable guide pages | Complete |
-| C2 | Guides use Shopfront shell + tool CTA | Complete |
-| C3 | Guides hub `/guides/` | Complete |
+| C2 | Resources use Shopfront shell + tool CTA | Complete |
+| C3 | Resources hub `/resources/` | Complete |
 | C4 | Landing + About reinforce established local-business positioning | Complete |
 | C5 | Scorecard product hero: H1 “doing more work…” + subhead “could be costing you… Check yours in 30 seconds.” | Complete |
 

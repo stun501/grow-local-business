@@ -127,9 +127,9 @@ CTA labels should land on `/TOOL/build/`, not a hidden in-page generator.
 - Landing benefit: Your Google listing is often your first impression and how you attract customers, before they visit your website. See what's costing you customers, and what to fix.
 - Flyer Scorecard sub-line: Customers judge your business on Google before they visit your website. Check your score.
 
-## Guides content
+## Resources content
 
-Hub `/guides/` plus:
+Hub `/resources/` plus:
 
 1. google-listing-checklist → Scorecard
 2. more-google-reviews → Review QR

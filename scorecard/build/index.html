@@ -359,7 +359,7 @@
   CONFIG
   ================================================================ */
 const CONFIG = {
- BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ BASEROW_TOKEN: "",
  OWNER_LEADS_TABLE_ID: "1092861",
  SCORECARD_RUNS_TABLE_ID: "1098284",
  BASEROW_URL: "https://api.baserow.io"
@@ -987,12 +987,12 @@ async function saveRun(result, name, email) {
 }
 
 function scorecardRunsReady() {
+ if (window.TBA && typeof window.TBA.baserowReady === "function") {
+  return window.TBA.baserowReady(CONFIG, CONFIG.SCORECARD_RUNS_TABLE_ID);
+ }
  return (
-  CONFIG.BASEROW_TOKEN &&
-  !CONFIG.BASEROW_TOKEN.startsWith("PASTE") &&
   CONFIG.SCORECARD_RUNS_TABLE_ID &&
-  !String(CONFIG.SCORECARD_RUNS_TABLE_ID).startsWith("PASTE") &&
-  CONFIG.BASEROW_URL
+  !String(CONFIG.SCORECARD_RUNS_TABLE_ID).startsWith("PASTE")
  );
 }
 

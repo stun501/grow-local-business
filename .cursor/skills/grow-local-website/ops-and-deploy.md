@@ -70,7 +70,7 @@ After env var changes, redeploy so functions pick them up.
 
 ## SEO / Search Console (after deploy)
 
-1. Confirm `/sitemap.xml`, `/robots.txt`, `/llms.txt`, `/guides/` live
+1. Confirm `/sitemap.xml`, `/robots.txt`, `/llms.txt`, `/resources/` live
 2. Submit sitemap in Google Search Console + Bing: `https://www.growlocalbusiness.co.uk/sitemap.xml`
 3. GBP is separate (Craig); do not put street address back on the website
 
@@ -86,7 +86,7 @@ After env var changes, redeploy so functions pick them up.
 8. Baserow row written; hello@ receives operator email on unlock
 9. Reply Writer generates or fails honestly (no canned template)
 10. Flyer hub `/flyer/` opens Arm A/B proofs
-11. `/guides/` hub + four guides load; About has no postal address
+11. `/resources/` hub + four guides load; About has no postal address
 12. Done pages show one Momentum next-step CTA
 
 ## Print handoff

@@ -165,7 +165,7 @@
 <script src="../../assets/tool-flow.js"></script>
 <script>
 const CONFIG = {
- BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ BASEROW_TOKEN: "",
  OWNER_LEADS_TABLE_ID: "1092861",
  BASEROW_URL: "https://api.baserow.io"
 };
@@ -308,6 +308,38 @@ $("btnNotListed").addEventListener("click", () => {
 
 $("btnBackSearch").addEventListener("click", () => show("step-search"));
 
+function isAllowedGoogleReviewUrl(raw) {
+ try {
+  var url = new URL(String(raw || ""));
+  if (url.protocol !== "https:") return false;
+  var host = url.hostname.toLowerCase();
+  var allowedHost =
+   host === "search.google.com" ||
+   host === "www.google.com" ||
+   host === "google.com" ||
+   host === "maps.google.com" ||
+   host === "www.google.co.uk" ||
+   host === "google.co.uk" ||
+   host === "maps.app.goo.gl" ||
+   host === "g.page" ||
+   host.endsWith(".g.page");
+  if (!allowedHost) return false;
+  var path = url.pathname.toLowerCase();
+  return (
+   path.indexOf("writereview") !== -1 ||
+   path.indexOf("/maps") !== -1 ||
+   path.indexOf("/place") !== -1 ||
+   host === "g.page" ||
+   host.endsWith(".g.page") ||
+   host === "maps.app.goo.gl" ||
+   url.searchParams.has("placeid") ||
+   url.searchParams.has("place_id")
+  );
+ } catch (e) {
+  return false;
+ }
+}
+
 $("btnManualGo").addEventListener("click", () => {
  const url = $("manualUrl").value.trim();
  const name = $("manualBiz").value.trim();
@@ -320,8 +352,8 @@ $("btnManualGo").addEventListener("click", () => {
   return;
  }
 
- if (!url.startsWith("http")) {
-  err.textContent = "That doesn't look like a valid URL. It should start with https://";
+ if (!isAllowedGoogleReviewUrl(url)) {
+  err.textContent = "Please paste a Google review or Maps link (https://search.google.com/local/writereview?...).";
   err.classList.add("show");
   return;
  }

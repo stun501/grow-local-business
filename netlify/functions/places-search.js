@@ -17,6 +17,9 @@
    ================================================================ */
 
 const GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
+var rateLimit = require("./_shared/rate-limit");
+var MAX_QUERY_CHARS = 120;
+var MAX_LOCATION_CHARS = 80;
 
 function mapCandidate(r) {
   const placeId = r.place_id;
@@ -131,6 +134,11 @@ exports.handler = async function (event) {
     return { statusCode: 405, headers, body: JSON.stringify({ error: "method_not_allowed" }) };
   }
 
+  var rl = rateLimit.checkRateLimit(event, "places-search", 30, 60 * 60 * 1000);
+  if (rl.limited) {
+    return { statusCode: 429, headers, body: JSON.stringify({ error: "rate_limited" }) };
+  }
+
   if (!GOOGLE_PLACES_API_KEY) {
     return { statusCode: 503, headers, body: JSON.stringify({ error: "not_configured" }) };
   }
@@ -148,7 +156,10 @@ exports.handler = async function (event) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "missing_query" }) };
   }
 
-  const searchTexts = buildSearchTexts(String(query), location);
+  query = String(query).trim().slice(0, MAX_QUERY_CHARS);
+  location = location ? String(location).trim().slice(0, MAX_LOCATION_CHARS) : "";
+
+  const searchTexts = buildSearchTexts(query, location);
   const bias = await geocodeLocation(location, GOOGLE_PLACES_API_KEY);
 
   try {

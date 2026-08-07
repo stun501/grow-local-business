@@ -5,6 +5,24 @@
 [functions]
   node_bundler = "esbuild"
 
+# Guides renamed to Resources
+[[redirects]]
+  from = "/guides/*"
+  to = "/resources/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/guides"
+  to = "/resources/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/resources"
+  to = "/resources/"
+  status = 301
+
 # Legacy prototype — keep offline; live Quote tool is /quote/
 [[redirects]]
   from = "/instant-quote-form.html"

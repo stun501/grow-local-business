@@ -299,7 +299,7 @@
   CONFIG; fill these in once (see SETUP-GUIDE for Baserow setup)
   ================================================================ */
 const CONFIG = {
- BASEROW_TOKEN: "R7z8F7FmgRKthPvyM1z4IEL8Mdh8OeBU",
+ BASEROW_TOKEN: "",
  OWNER_LEADS_TABLE_ID: "1092861",
  CUSTOMER_LEADS_TABLE_ID: "1092866",
  BASEROW_URL: "https://api.baserow.io"
@@ -404,24 +404,25 @@ if (window.GLFlow && typeof window.GLFlow.bindStepHistory === "function") {
 
 /* ---------------- Helpers ---------------- */
 function escAttr(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}
-function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function moneyText(v){
+ var n = Number(String(v == null ? "" : v).replace(/[^0-9.]/g, ""));
+ if (!Number.isFinite(n) || n < 0) return "0";
+ return String(Math.round(n));
+}
 
 /* ---------------- Baserow ---------------- */
 function baserowReady(tableId){
- return CONFIG.BASEROW_TOKEN && !CONFIG.BASEROW_TOKEN.startsWith("PASTE") &&
-     tableId && !String(tableId).startsWith("PASTE");
+ if(window.TBA && typeof window.TBA.baserowReady === "function"){
+  return window.TBA.baserowReady(CONFIG, tableId);
+ }
+ return tableId && !String(tableId).startsWith("PASTE");
 }
 async function baserowAdd(tableId, row){
  if(window.TBA && typeof window.TBA.baserowAdd === "function"){
   return window.TBA.baserowAdd(CONFIG, tableId, row);
  }
- const res = await fetch(`${CONFIG.BASEROW_URL}/api/database/rows/table/${tableId}/?user_field_names=true`,{
-  method:"POST",
-  headers:{"Authorization":"Token "+CONFIG.BASEROW_TOKEN,"Content-Type":"application/json"},
-  body:JSON.stringify(row)
- });
- if(!res.ok) throw new Error("Baserow "+res.status);
- return res.json();
+ throw new Error("Baserow helper missing");
 }
 
 /* ================================================================
@@ -501,8 +502,8 @@ function renderJobRows(){
    row.className = "job-row";
    row.innerHTML = `
     <input type="text" value="${escAttr(j.name)}" aria-label="Job name" data-i="${i}" data-k="name">
-    <input type="text" inputmode="numeric" class="price" value="${j.lo}" aria-label="Price from" data-i="${i}" data-k="lo">
-    <input type="text" inputmode="numeric" class="price" value="${j.hi}" aria-label="Price to" data-i="${i}" data-k="hi">
+    <input type="text" inputmode="numeric" class="price" value="${escHtml(moneyText(j.lo))}" aria-label="Price from" data-i="${i}" data-k="lo">
+    <input type="text" inputmode="numeric" class="price" value="${escHtml(moneyText(j.hi))}" aria-label="Price to" data-i="${i}" data-k="hi">
     <button class="del" aria-label="Remove ${escAttr(j.name)}" data-del="${i}">&times;</button>`;
   }
   list.appendChild(row);
@@ -670,7 +671,7 @@ function renderCustomerForm(container, isPreview){
   if(j.quoteOnly){
    b.innerHTML = `<span class="jname">${escHtml(j.name)}</span><span class="chip visit">Site visit</span>`;
   } else {
-   b.innerHTML = `<span class="jname">${escHtml(j.name)}</span><span class="chip">&pound;${j.lo}&ndash;&pound;${j.hi}</span>`;
+   b.innerHTML = `<span class="jname">${escHtml(j.name)}</span><span class="chip">&pound;${escHtml(moneyText(j.lo))}&ndash;&pound;${escHtml(moneyText(j.hi))}</span>`;
   }
   b.addEventListener("click", ()=>{
    container.querySelectorAll(".pick").forEach(p=>p.setAttribute("aria-pressed","false"));
@@ -683,7 +684,7 @@ function renderCustomerForm(container, isPreview){
    } else {
     $("callbackBox").style.display = "none";
     $("ballpark").style.display = "block";
-    $("bpPrice").textContent = "\u00A3"+j.lo+"\u2013\u00A3"+j.hi;
+    $("bpPrice").textContent = "\u00A3"+moneyText(j.lo)+"\u2013\u00A3"+moneyText(j.hi);
    }
    $("custCapture").style.display = "block";
    $("custCapture").scrollIntoView({behavior:"smooth",block:"center"});

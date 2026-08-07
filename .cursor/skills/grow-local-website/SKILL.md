@@ -79,7 +79,7 @@ Rebuild progress:
 - [ ] 11. Valuation build/done + #v= homeowner mode + heuristic
 - [ ] 12. notify-lead (SMTP2GO) wired from shared.js after key Baserow tables
 - [ ] 13. Flyer A5 arms + flyer hub + A2 planner
-- [ ] 14. Guides hub `/guides/` + ≥4 guides + sitemap/robots/llms.txt
+- [ ] 14. Resources hub `/resources/` + ≥4 guides + sitemap/robots/llms.txt
 - [ ] 15. SEO heads (canonical, OG/Twitter, Organization schema, noindex on build/done)
 - [ ] 16. Momentum next-step on each `/done/` page
 - [ ] 17. Baserow tables + CONFIG IDs + create-only token
@@ -142,7 +142,7 @@ Both can coexist. Never change unlock copy to “we'll email you the report.”
 9. **Quote trades** — Salon top; no Handyman; “Create Custom Quote Form” last (empty editable board).
 10. **Print** — A5 flyer trim 148×210mm with 4mm bleed; flyer wins from `growlocal-flyer-spec.md`.
 11. **Momentum** — each done page: celebrate → why-now → ONE next tool CTA → soft “See all free tools” (see Marketing Hacks).
-12. **SEO** — follow `ops/SEO-REQUIREMENTS.md`; patch helper `ops/patch-seo-heads.py`; guides under `/guides/`.
+12. **SEO** — follow `ops/SEO-REQUIREMENTS.md`; patch helper `ops/patch-seo-heads.py`; guides under `/resources/`.
 
 ## Current Scorecard copy (do not regress)
 
@@ -162,7 +162,7 @@ Both can coexist. Never change unlock copy to “we'll email you the report.”
 5. Baserow row appears for unlock
 6. Operator email arrives at hello@ (except Scorecard Runs)
 7. Reply Writer returns a draft (or clear failure + text-us line — never canned)
-8. `/guides/` loads; no postal address anywhere on site
+8. `/resources/` loads; no postal address anywhere on site
 9. Done pages show a single next-step CTA (not a six-tool pitch)
 
 ## Out of scope for v2 (do not invent)

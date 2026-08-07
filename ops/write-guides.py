@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create Grow Local /guides/ hub + four practical guides."""
+"""Create Grow Local /resources/ hub + four practical guides."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -100,7 +100,7 @@ SHELL = """<!DOCTYPE html>
    <p style="font-family: var(--gl-font-display); font-size: 1.25rem; font-weight: 500;">Grow Local</p>
    <div style="height: 1px; width: 6rem; background: var(--gl-gold); margin: 8px 0 16px;"></div>
    <p>Grow Local · a growth agency for local business.</p>
-   <p><a href="{home}#tools">See the free tools</a> · <a href="{guides_hub}">Guides</a> · <a href="{about}">About</a></p>
+   <p><a href="{home}#tools">See the free tools</a> · <a href="{guides_hub}">Resources</a> · <a href="{about}">About</a></p>
    <p class="utility site-footer__domain">www.growlocalbusiness.co.uk</p>
   </div>
  </footer>
@@ -223,7 +223,7 @@ def guide_body(g: dict) -> str:
    <p class="utility" style="color: var(--gl-gold);">Guide</p>
    <h1>{g["h1"]}</h1>
    <p class="guide-hero__sub">{g["sub"]}</p>
-   <a class="back-link" href="../">← All guides</a>
+   <a class="back-link" href="../">← All resources</a>
   </div>
  </section>
  <main class="guide-body">
@@ -250,8 +250,8 @@ def hub_body() -> str:
         )
     return f""" <section class="guide-hero">
   <div class="wrap">
-   <p class="utility" style="color: var(--gl-gold);">Guides</p>
-   <h1>Practical guides for local businesses.</h1>
+   <p class="utility" style="color: var(--gl-gold);">Resources</p>
+   <h1>Practical resources for local businesses.</h1>
    <p class="guide-hero__sub">Short, useful reads for established local businesses with a real operation; premises, appointments, customers who turn up. Each guide ends with a free tool you can set up in about a minute.</p>
    <a class="back-link" href="../index.html">← Back to the free tools</a>
   </div>
@@ -293,8 +293,8 @@ def write(path: Path, title: str, desc: str, body: str, depth: int) -> None:
 def main() -> None:
     write(
         ROOT / "guides" / "index.html",
-        "Guides for local businesses · Grow Local",
-        "Practical guides for established local businesses; Google listings, reviews, quote forms and booking links. Free tools included.",
+        "Resources for local businesses · Grow Local",
+        "Practical resources for established local businesses; Google listings, reviews, quote forms and booking links. Free tools included.",
         hub_body(),
         depth=1,
     )

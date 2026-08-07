@@ -98,36 +98,36 @@ INDEXABLE = {
         "type": "website",
         "app": None,
     },
-    "guides/index.html": {
-        "path": "/guides/",
-        "title": "Guides for local businesses · Grow Local",
-        "desc": "Practical guides for established local businesses; Google listings, reviews, quote forms and booking links. Free tools included.",
+    "resources/index.html": {
+        "path": "/resources/",
+        "title": "Resources for local businesses · Grow Local",
+        "desc": "Practical resources for established local businesses; Google listings, reviews, quote forms and booking links. Free tools included.",
         "type": "website",
         "app": None,
     },
-    "guides/google-listing-checklist/index.html": {
-        "path": "/guides/google-listing-checklist/",
+    "resources/google-listing-checklist/index.html": {
+        "path": "/resources/google-listing-checklist/",
         "title": "Google listing checklist for local businesses · Grow Local",
         "desc": "A practical checklist for your Google Business Profile. See what customers notice first, then score your listing free.",
         "type": "article",
         "app": None,
     },
-    "guides/more-google-reviews/index.html": {
-        "path": "/guides/more-google-reviews/",
+    "resources/more-google-reviews/index.html": {
+        "path": "/resources/more-google-reviews/",
         "title": "How local businesses get more Google reviews · Grow Local",
         "desc": "Simple ways to ask for reviews at the right moment. Build a free Google Review QR in about a minute.",
         "type": "article",
         "app": None,
     },
-    "guides/quote-form-for-trades/index.html": {
-        "path": "/guides/quote-form-for-trades/",
+    "resources/quote-form-for-trades/index.html": {
+        "path": "/resources/quote-form-for-trades/",
         "title": "Quote forms for trades and salons · Grow Local",
         "desc": "Why after-hours browsers leave without asking for a price, and how a simple quote form captures them.",
         "type": "article",
         "app": None,
     },
-    "guides/booking-without-back-and-forth/index.html": {
-        "path": "/guides/booking-without-back-and-forth/",
+    "resources/booking-without-back-and-forth/index.html": {
+        "path": "/resources/booking-without-back-and-forth/",
         "title": "Booking without the back-and-forth · Grow Local",
         "desc": "Cut the diary ping-pong. Let customers pick a slot from your usual hours with a free booking link.",
         "type": "article",

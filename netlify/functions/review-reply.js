@@ -18,15 +18,17 @@
  *   if spend rises. Do not block the tool with a hard monthly kill-switch unless asked.
  */
 
+var rateLimit = require("./_shared/rate-limit");
+
 const API_KEY = process.env.LLM_API_KEY || process.env.OPENROUTER_API_KEY || "";
 const BASE_URL = (process.env.LLM_BASE_URL || "https://openrouter.ai/api/v1").replace(/\/+$/, "");
 const PRIMARY_MODEL = process.env.LLM_MODEL || "deepseek/deepseek-v3.2";
 const FALLBACK_MODEL = process.env.LLM_FALLBACK_MODEL || "google/gemini-2.0-flash-lite-001";
 const MAX_REVIEW_CHARS = 1500;
+const MAX_CONTEXT_CHARS = 500;
+const MAX_NAME_CHARS = 120;
 const MAX_TOKENS = 120;
 const RATE_LIMIT_PER_HOUR = 10;
-
-const rateBuckets = new Map();
 
 const SYSTEM_PROMPT = `You draft a short, human reply from a UK local-business owner to a single customer review. The owner will read, edit and post it themselves — you are writing a first draft only.
 
@@ -53,29 +55,6 @@ const headersBase = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json"
 };
-
-function clientIp(event) {
-  return (
-    (event.headers["x-nf-client-connection-ip"] ||
-      event.headers["x-forwarded-for"] ||
-      event.headers["client-ip"] ||
-      "unknown")
-      .split(",")[0]
-      .trim()
-  );
-}
-
-function isRateLimited(ip) {
-  const now = Date.now();
-  const windowMs = 60 * 60 * 1000;
-  let bucket = rateBuckets.get(ip);
-  if (!bucket || now - bucket.start > windowMs) {
-    bucket = { start: now, count: 0 };
-    rateBuckets.set(ip, bucket);
-  }
-  bucket.count += 1;
-  return bucket.count > RATE_LIMIT_PER_HOUR;
-}
 
 function buildUserPrompt({ businessName, businessType, reviewText, starRating, tone, context }) {
   const lines = [
@@ -163,8 +142,8 @@ exports.handler = async function (event) {
     };
   }
 
-  const ip = clientIp(event);
-  if (isRateLimited(ip)) {
+  var rl = rateLimit.checkRateLimit(event, "review-reply", RATE_LIMIT_PER_HOUR, 60 * 60 * 1000);
+  if (rl.limited) {
     return {
       statusCode: 429,
       headers: headersBase,
@@ -182,10 +161,10 @@ exports.handler = async function (event) {
     return { statusCode: 400, headers: headersBase, body: JSON.stringify({ error: "invalid_json" }) };
   }
 
-  const businessName = String(body.businessName || "").trim();
-  const businessType = String(body.businessType || "").trim();
+  const businessName = String(body.businessName || "").trim().slice(0, MAX_NAME_CHARS);
+  const businessType = String(body.businessType || "").trim().slice(0, MAX_NAME_CHARS);
   let reviewText = String(body.reviewText || "").trim();
-  const context = String(body.context || "").trim();
+  let context = String(body.context || "").trim();
   const tone = ["Warm", "Brief", "Formal"].includes(body.tone) ? body.tone : "Warm";
   const starRating = Number(body.starRating != null ? body.starRating : body.rating);
 
@@ -206,6 +185,9 @@ exports.handler = async function (event) {
 
   if (reviewText.length > MAX_REVIEW_CHARS) {
     reviewText = reviewText.slice(0, MAX_REVIEW_CHARS);
+  }
+  if (context.length > MAX_CONTEXT_CHARS) {
+    context = context.slice(0, MAX_CONTEXT_CHARS);
   }
 
   const userPrompt = buildUserPrompt({

@@ -1,23 +1,28 @@
 /**
- * Operator lead alert — emails hello@growlocalbusiness.co.uk when a key
- * Baserow row is created (Owner Leads, Tool Ideas, Customer Leads,
- * Valuation Leads, Booking Requests). Does NOT email end users.
+ * Operator lead alert — emails hello@growlocalbusiness.co.uk.
+ * Does NOT email end users.
+ *
+ * Public access is locked: requires header X-GL-Notify-Secret matching
+ * NOTIFY_SHARED_SECRET. Prefer baserow-add.js (which notifies internally).
  *
  * Env (Netlify only — never commit):
  *   SMTP2GO_API_KEY         required to send
+ *   NOTIFY_SHARED_SECRET    required; reject requests without matching header
  *   NOTIFY_TO               default hello@growlocalbusiness.co.uk
  *   NOTIFY_FROM             default hello@growlocalbusiness.co.uk
- *                           (must be a verified sender/domain in SMTP2GO)
  */
 
+var rateLimit = require("./_shared/rate-limit");
+
 const SMTP2GO_API_KEY = process.env.SMTP2GO_API_KEY || "";
+const NOTIFY_SHARED_SECRET = process.env.NOTIFY_SHARED_SECRET || "";
 const NOTIFY_TO = process.env.NOTIFY_TO || "hello@growlocalbusiness.co.uk";
 const NOTIFY_FROM_RAW =
   process.env.NOTIFY_FROM || "hello@growlocalbusiness.co.uk";
 
 const headersBase = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": "Content-Type, X-GL-Notify-Secret",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json"
 };
@@ -78,6 +83,16 @@ function buildText(payload) {
   );
 }
 
+function secretOk(event) {
+  if (!NOTIFY_SHARED_SECRET) return false;
+  var headers = event.headers || {};
+  var provided =
+    headers["x-gl-notify-secret"] ||
+    headers["X-GL-Notify-Secret"] ||
+    "";
+  return String(provided) === NOTIFY_SHARED_SECRET;
+}
+
 exports.handler = async function (event) {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: headersBase, body: "" };
@@ -87,6 +102,35 @@ exports.handler = async function (event) {
       statusCode: 405,
       headers: headersBase,
       body: JSON.stringify({ ok: false, error: "Method not allowed" })
+    };
+  }
+
+  var rl = rateLimit.checkRateLimit(event, "notify-lead", 20, 60 * 60 * 1000);
+  if (rl.limited) {
+    return {
+      statusCode: 429,
+      headers: headersBase,
+      body: JSON.stringify({ ok: false, error: "rate_limited" })
+    };
+  }
+
+  if (!NOTIFY_SHARED_SECRET) {
+    return {
+      statusCode: 503,
+      headers: headersBase,
+      body: JSON.stringify({
+        ok: false,
+        error: "NOTIFY_SHARED_SECRET not configured",
+        hint: "Set NOTIFY_SHARED_SECRET in Netlify env. Prefer /.netlify/functions/baserow-add for lead writes."
+      })
+    };
+  }
+
+  if (!secretOk(event)) {
+    return {
+      statusCode: 401,
+      headers: headersBase,
+      body: JSON.stringify({ ok: false, error: "unauthorized" })
     };
   }
 
@@ -166,11 +210,7 @@ exports.handler = async function (event) {
         body: JSON.stringify({
           ok: false,
           error: "Send failed",
-          status: res.status,
-          detail:
-            parsed && parsed.data && (parsed.data.error || parsed.data.error_code)
-              ? parsed.data.error || parsed.data.error_code
-              : undefined
+          status: res.status
         })
       };
     }

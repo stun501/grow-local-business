@@ -167,15 +167,13 @@
  }
 
  function baserowReady(config, tableId) {
-  var tokenOk =
-   config &&
-   config.BASEROW_TOKEN &&
-   !String(config.BASEROW_TOKEN).startsWith("PASTE");
   var tableOk = tableId && !String(tableId).startsWith("PASTE");
-  if (!tokenOk || !tableOk || !config.BASEROW_URL) {
+  // Writes go through /.netlify/functions/baserow-add (server token).
+  // Client BASEROW_TOKEN is no longer required and should stay empty.
+  if (!tableOk) {
    console.warn(
     "[Grow Local] Baserow not configured: lead capture disabled. " +
-     "Set BASEROW_TOKEN, table IDs, and BASEROW_URL in your tool CONFIG."
+     "Set table IDs in your tool CONFIG, and BASEROW_DATABASE_TOKEN in Netlify env."
    );
    return false;
   }
@@ -201,69 +199,36 @@
  };
 
  /**
-  * Fire-and-forget operator email via Netlify function.
-  * Never blocks the tool UX; never emails the end user a report.
+  * Operator email is handled server-side by baserow-add.
+  * Kept as a no-op stub so older call sites do not open a public mail endpoint.
   */
- function notifyOperator(payload) {
-  try {
-   return fetch("/.netlify/functions/notify-lead", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload || {})
-   }).then(function (res) {
-    if (!res.ok) {
-     return res.text().then(function (body) {
-      console.warn("[Grow Local] Operator notify failed:", res.status, body);
-      return { ok: false };
-     });
-    }
-    return res.json().catch(function () {
-     return { ok: true };
-    });
-   }).catch(function (err) {
-    console.warn("[Grow Local] Operator notify error:", err);
-    return { ok: false };
-   });
-  } catch (e) {
-   console.warn("[Grow Local] Operator notify skipped:", e);
-   return Promise.resolve({ ok: false });
-  }
+ function notifyOperator() {
+  return Promise.resolve({ ok: false, skipped: true });
  }
 
  function baserowAdd(config, tableId, row) {
   if (!baserowReady(config, tableId)) {
    return Promise.reject(new Error("Baserow not configured"));
   }
-  var url =
-   config.BASEROW_URL.replace(/\/+$/, "") +
-   "/api/database/rows/table/" +
-   tableId +
-   "/?user_field_names=true";
 
-  return fetch(url, {
+  return fetch("/.netlify/functions/baserow-add", {
    method: "POST",
-   headers: {
-    Authorization: "Token " + config.BASEROW_TOKEN,
-    "Content-Type": "application/json"
-   },
-   body: JSON.stringify(row)
+   headers: { "Content-Type": "application/json" },
+   body: JSON.stringify({
+    tableId: String(tableId),
+    row: row || {},
+    tool: (row && row.Tool) || OPERATOR_NOTIFY_TABLES[String(tableId)] || ""
+   })
   }).then(function (res) {
    if (!res.ok) {
     return res.text().then(function (body) {
-     throw new Error("Baserow " + res.status + ": " + body);
+     throw new Error("Baserow proxy " + res.status + ": " + body);
     });
    }
    return res.json();
-  }).then(function (json) {
-   var tableLabel = OPERATOR_NOTIFY_TABLES[String(tableId)];
-   if (tableLabel) {
-    notifyOperator({
-     table: tableLabel,
-     tool: (row && row.Tool) || tableLabel,
-     fields: row || {}
-    });
-   }
-   return json;
+  }).then(function (payload) {
+   if (payload && payload.row) return payload.row;
+   return payload || {};
   });
  }
 
