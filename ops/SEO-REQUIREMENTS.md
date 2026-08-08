@@ -115,3 +115,16 @@ Brand defence pack for competing “Grow Local” SERPs:
 - Sitemap + `llms.txt` updated
 
 **Operator (manual):** Request indexing for `/`, `/about/`, `/resources/`, `/resources/what-is-grow-local/`; keep GBP website = growlocalbusiness.co.uk; create consistent social profiles when ready.
+
+## Phase 2 tool-keyword SEO (executed)
+
+Own converting queries around each free tool:
+
+- Keyword-focused titles/descriptions on all 6 tool product pages
+- FAQ + FAQPage schema on Quote, Review, Reply, Booking, Valuation (Scorecard already had FAQ)
+- New resources: free-google-listing-scorecard, google-review-qr-code, reply-to-google-reviews, estate-agent-instant-valuation
+- Existing resources retitled for clearer search intent; hub reorganised by topic
+- Internal links: tool pages → matching resources; resources → tool CTAs
+- Sitemap + `llms.txt` updated
+
+**Operator (manual):** Request indexing for each new `/resources/...` URL and re-submit sitemap; post 1 social link per tool/resource over the next 2 weeks.

@@ -135,11 +135,18 @@ CTA labels should land on `/TOOL/build/`, not a hidden in-page generator.
 - Landing benefit: Your Google listing is often your first impression and how you attract customers, before they visit your website. See what's costing you customers, and what to fix.
 - Flyer Scorecard sub-line: Customers judge your business on Google before they visit your website. Check your score.
 
-## Resources content
+## Resources content (Phase 2)
 
-Hub `/resources/` plus:
+Hub `/resources/` plus brand + tool-keyword pages:
 
-1. google-listing-checklist → Scorecard
-2. more-google-reviews → Review QR
-3. quote-form-for-trades → Quote
-4. booking-without-back-and-forth → Booking
+1. what-is-grow-local → brand entity
+2. free-google-listing-scorecard → Scorecard
+3. google-listing-checklist → Scorecard
+4. google-review-qr-code → Review QR
+5. more-google-reviews → Review QR
+6. reply-to-google-reviews → Reply Writer
+7. quote-form-for-trades → Quote
+8. booking-without-back-and-forth → Booking
+9. estate-agent-instant-valuation → Valuation
+
+Tool product pages keep benefit-led H1s; primary keywords live in `<title>`, meta description, FAQ, and resource links.
