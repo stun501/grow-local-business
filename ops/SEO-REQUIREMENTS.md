@@ -102,3 +102,16 @@ Brand constraints still apply: Grow Local only, no Think Beyond, no high-street 
 1. **Postal address:** Do not publish on the website, About, footers, `llms.txt`, or JSON-LD. GBP only.
 2. **Tool footers (L5 Partial):** Product pages keep a light footer; phone/email on About + Organization schema.
 3. **sameAs:** intentionally omitted until real social URLs exist (do not invent).
+
+## Phase 1 brand SEO (executed)
+
+Brand defence pack for competing “Grow Local” SERPs:
+
+- Homepage title/description + FAQ disambiguation + entity language in hero/who-behind
+- About H1 + “Official Grow Local” lookalike section
+- Resource: `/resources/what-is-grow-local/`
+- Organization schema: `alternateName`, slogan, knowsAbout, stronger description
+- Distinctive Resources meta (includes Grow Local + domain) to reduce snippet confusion
+- Sitemap + `llms.txt` updated
+
+**Operator (manual):** Request indexing for `/`, `/about/`, `/resources/`, `/resources/what-is-grow-local/`; keep GBP website = growlocalbusiness.co.uk; create consistent social profiles when ready.

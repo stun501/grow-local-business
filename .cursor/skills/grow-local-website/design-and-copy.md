@@ -120,6 +120,14 @@ CTA labels should land on `/TOOL/build/`, not a hidden in-page generator.
 - Show: phone (text-first), email, domain
 - **Do not show** street / postal address on any customer page (including About). Address belongs on Google Business Profile only.
 
+## Brand entity (Phase 1 SEO)
+
+- Official domain always: **www.growlocalbusiness.co.uk**
+- Brand: **Grow Local** (alternate phrasing “Grow Local Business” = same org)
+- Disambiguation page: `/resources/what-is-grow-local/`
+- Do not invent `sameAs` social URLs; add only when real profiles exist
+- When similar-named competitors appear in SERPs, reinforce domain + email + phone consistently; do not attack by name in customer copy
+
 ## Scorecard copy lock (current)
 
 - Product H1: Your Google listing is doing more work than your website.
