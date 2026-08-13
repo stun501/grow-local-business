@@ -211,6 +211,11 @@
 
   .hero__headline-gold { color: var(--gl-gold); }
 
+  .hero__headline-lead {
+   display: block;
+   white-space: nowrap;
+  }
+
   .hero__unit {
    font-family: var(--gl-font-body);
    font-size: clamp(1.05rem, 1.5vw + 0.75rem, 1.2rem);
@@ -280,6 +285,13 @@
    .hero__inner {
     padding-left: 14px;
     padding-right: 14px;
+   }
+  }
+
+  @media (max-width: 760px) {
+   .hero__headline {
+    /* Scale so "Get more customers." stays on one line in the padded hero. */
+    font-size: min(var(--gl-fs-64), calc((100vw - 2.75rem) / 11.2));
    }
   }
 
@@ -998,8 +1010,8 @@
     </a>
 
     <p class="utility eyebrow hero__eyebrow">Grow Local · a growth agency for local business</p>
-    <h1 class="hero__headline">More customers. Fewer headaches. <span class="hero__headline-gold">Nothing to pay.</span></h1>
-    <p class="hero__sub">Free tools from Grow Local (growlocalbusiness.co.uk) that bring in more customers, win more reviews, and take the admin off your plate. Works in less than a minute.</p>
+    <h1 class="hero__headline"><span class="hero__headline-lead">Get more customers.</span> Fewer headaches. <span class="hero__headline-gold">Nothing to pay.</span></h1>
+    <p class="hero__sub">Free tools that bring in more customers, win more reviews, and take the admin off your plate. Works in less than a minute.</p>
     <ul class="hero__points">
      <li>Pick a tool. It's yours.</li>
      <li>Add your business name.</li>
