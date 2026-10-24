@@ -1,3 +1,4 @@
+const rateLimit = require("./_shared/rate-limit");
 /* ================================================================
    places-details.js — Google Place Details for the Google Listing Scorecard
    ================================================================
@@ -43,18 +44,6 @@ const GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const detailsCache = new Map(); // placeId -> { data, expires }
 
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
-const RATE_LIMIT_MAX = 30; // per IP per hour, best effort only
-const rateLimitLog = new Map(); // ip -> [timestamps]
-
-function isRateLimited(ip) {
-  const now = Date.now();
-  const hits = (rateLimitLog.get(ip) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  hits.push(now);
-  rateLimitLog.set(ip, hits);
-  return hits.length > RATE_LIMIT_MAX;
-}
-
 const FIELDS = [
   "name",
   "place_id",
@@ -75,6 +64,9 @@ const FIELDS = [
 ].join(",");
 
 exports.handler = async function (event) {
+  if (event.isBase64Encoded || Buffer.byteLength(event.body || "", "utf8") > 24000) {
+    return { statusCode: 413, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "request_too_large" }) };
+  }
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
@@ -94,12 +86,7 @@ exports.handler = async function (event) {
     return { statusCode: 503, headers, body: JSON.stringify({ error: "not_configured" }) };
   }
 
-  const ip =
-    (event.headers["x-nf-client-connection-ip"] ||
-      event.headers["x-forwarded-for"] ||
-      "unknown").split(",")[0].trim();
-
-  if (isRateLimited(ip)) {
+  if ((await rateLimit.checkRateLimit(event, "places-details", 30, 3600000)).limited) {
     return { statusCode: 429, headers, body: JSON.stringify({ error: "rate_limited" }) };
   }
 
@@ -111,7 +98,7 @@ exports.handler = async function (event) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "invalid_json" }) };
   }
 
-  if (!placeId || !placeId.trim()) {
+  if (typeof placeId !== "string" || !/^[A-Za-z0-9_-]{1,300}$/.test(placeId)) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: "missing_place_id" }) };
   }
 
@@ -127,7 +114,7 @@ exports.handler = async function (event) {
   url.searchParams.set("key", GOOGLE_PLACES_API_KEY);
 
   try {
-    const res = await fetch(url.toString());
+    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(15000) });
     const data = await res.json();
 
     if (data.status === "NOT_FOUND" || data.status === "INVALID_REQUEST") {
@@ -176,10 +163,12 @@ exports.handler = async function (event) {
         : []
     };
 
+    for (const [id, cached] of detailsCache) if (cached.expires <= Date.now()) detailsCache.delete(id);
+    if (detailsCache.size >= 500) detailsCache.delete(detailsCache.keys().next().value);
     detailsCache.set(placeId, { data: normalised, expires: Date.now() + CACHE_TTL_MS });
 
     return { statusCode: 200, headers, body: JSON.stringify(normalised) };
   } catch (err) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: "fetch_failed", detail: err.message }) };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: "fetch_failed", detail: "upstream_unavailable" }) };
   }
 };

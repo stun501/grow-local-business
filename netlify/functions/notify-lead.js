@@ -94,6 +94,9 @@ function secretOk(event) {
 }
 
 exports.handler = async function (event) {
+  if (event.isBase64Encoded || Buffer.byteLength(event.body || "", "utf8") > 24000) {
+    return { statusCode: 413, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "request_too_large" }) };
+  }
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: headersBase, body: "" };
   }
@@ -105,7 +108,7 @@ exports.handler = async function (event) {
     };
   }
 
-  var rl = rateLimit.checkRateLimit(event, "notify-lead", 20, 60 * 60 * 1000);
+  var rl = await rateLimit.checkRateLimit(event, "notify-lead", 20, 60 * 60 * 1000);
   if (rl.limited) {
     return {
       statusCode: 429,
@@ -175,6 +178,7 @@ exports.handler = async function (event) {
   try {
     var res = await fetch("https://api.smtp2go.com/v3/email/send", {
       method: "POST",
+      signal: AbortSignal.timeout(15000),
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",

@@ -147,6 +147,7 @@
  }
 </style>
 <meta name="robots" content="noindex,follow">
+<script src="/assets/booking-config.js"></script>
 </head>
 <body>
 
@@ -339,8 +340,9 @@ function minutesToLabel(mins) {
  return h12 + (m ? ":" + pad2(m) : "") + ampm;
 }
 function generateSlots(cfg, opts) {
+ if (!BookingConfig.valid(cfg)) return [];
  opts = opts || {};
- const maxDays = opts.maxDays || 14;
+ const maxDays = Number.isInteger(opts.maxDays) ? Math.max(1, Math.min(14, opts.maxDays)) : 14;
  const now = londonNow();
  const cursor = new Date(Date.UTC(now.y, now.mo - 1, now.d));
  const todayKey = now.y * 10000 + now.mo * 100 + now.d;
@@ -356,7 +358,7 @@ function generateSlots(cfg, opts) {
    const step = cfg.len + cfg.buf;
    const slots = [];
    if (step > 0 && endM > startM) {
-    for (let t = startM; t + cfg.len <= endM; t += step) {
+    for (let t = startM; t + cfg.len <= endM && t < startM + 1440; t += step) {
      if (dayKey === todayKey && t < cutoff) continue;
      slots.push({ mins: t, label: minutesToLabel(t) });
     }
@@ -584,6 +586,8 @@ $("btnGenerate").addEventListener("click", async () => {
   buf: buffer,
   sv: cleanServices
  };
+
+ if (!BookingConfig.valid(cfg)) { err.textContent = "Please check your hours, appointment length, services and business details."; err.classList.add("show"); return; }
 
  const btn = $("btnGenerate");
  btn.disabled = true;

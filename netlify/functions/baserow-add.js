@@ -53,7 +53,7 @@ function esc(s) {
 
 function sanitizeRow(row) {
   if (!row || typeof row !== "object" || Array.isArray(row)) return {};
-  var out = {};
+  var out = Object.create(null);
   Object.keys(row).forEach(function (key) {
     if (typeof key !== "string" || key.length > 80) return;
     var val = row[key];
@@ -122,6 +122,7 @@ async function notifyOperator(tableLabel, tool, fields) {
   try {
     await fetch("https://api.smtp2go.com/v3/email/send", {
       method: "POST",
+      signal: AbortSignal.timeout(15000),
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -141,6 +142,9 @@ async function notifyOperator(tableLabel, tool, fields) {
 }
 
 exports.handler = async function (event) {
+  if (event.isBase64Encoded || Buffer.byteLength(event.body || "", "utf8") > 24000) {
+    return { statusCode: 413, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "request_too_large" }) };
+  }
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: headersBase, body: "" };
   }
@@ -152,7 +156,7 @@ exports.handler = async function (event) {
     };
   }
 
-  var rl = rateLimit.checkRateLimit(event, "baserow-add", 40, 60 * 60 * 1000);
+  var rl = await rateLimit.checkRateLimit(event, "baserow-add", 40, 60 * 60 * 1000);
   if (rl.limited) {
     return {
       statusCode: 429,
@@ -186,7 +190,7 @@ exports.handler = async function (event) {
 
   var tableId = String(body.tableId || "").trim();
   var meta = ALLOWED_TABLES[tableId];
-  if (!meta) {
+  if (!Object.hasOwn(ALLOWED_TABLES, tableId)) {
     return {
       statusCode: 403,
       headers: headersBase,
@@ -194,6 +198,13 @@ exports.handler = async function (event) {
     };
   }
 
+  if (!body.row || typeof body.row !== "object" || Array.isArray(body.row) ||
+      Object.keys(body.row).length > 40 || Object.entries(body.row).some(([key,value]) =>
+        ["__proto__","constructor","prototype"].includes(key) || key.length > 80 ||
+        (value !== null && !["string","number","boolean"].includes(typeof value)) ||
+        (typeof value === "string" && value.length > 2000))) {
+    return { statusCode: 400, headers: headersBase, body: JSON.stringify({ error: "invalid_row" }) };
+  }
   var row = sanitizeRow(body.row);
   var url =
     BASEROW_API_URL +
@@ -204,6 +215,7 @@ exports.handler = async function (event) {
   try {
     var res = await fetch(url, {
       method: "POST",
+      signal: AbortSignal.timeout(15000),
       headers: {
         Authorization: "Token " + BASEROW_TOKEN,
         "Content-Type": "application/json"

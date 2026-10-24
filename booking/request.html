@@ -98,6 +98,7 @@
  }
 </style>
 <meta name="robots" content="noindex,follow">
+<script src="/assets/booking-config.js"></script>
 </head>
 <body>
 
@@ -181,6 +182,7 @@ let chosen = null; // { dayKey, dateLabel, y, mo, d, mins, label }
   DECODE; mirrors booking/index.html's encodeConfig()
   ================================================================ */
 function decodeConfig(s) {
+ if (typeof s !== "string" || s.length > 12000 || !/^[A-Za-z0-9_-]+$/.test(s)) throw new Error("bad config");
  s = s.replace(/-/g, "+").replace(/_/g, "/");
  return JSON.parse(decodeURIComponent(escape(atob(s))));
 }
@@ -207,6 +209,7 @@ function minutesToLabel(mins) {
  return h12 + (m ? ":" + pad2(m) : "") + ampm;
 }
 function generateSlots(c) {
+ if (!BookingConfig.valid(c)) return [];
  const maxDays = 14; // fortnight ahead, maximum
  const now = londonNow();
  const cursor = new Date(Date.UTC(now.y, now.mo - 1, now.d));
@@ -223,7 +226,7 @@ function generateSlots(c) {
    const step = (c.len || 60) + (c.buf || 0);
    const slots = [];
    if (step > 0 && endM > startM) {
-    for (let t = startM; t + (c.len || 60) <= endM; t += step) {
+    for (let t = startM; t + c.len <= endM && t < startM + 1440; t += step) {
      if (dayKey === todayKey && t < cutoff) continue;
      slots.push({ mins: t, label: minutesToLabel(t) });
     }
@@ -392,7 +395,7 @@ $("btnRequest").addEventListener("click", async () => {
 
  try {
   cfg = decodeConfig(m[1]);
-  if (!cfg || !cfg.n || !Array.isArray(cfg.d)) throw new Error("bad config");
+  if (!BookingConfig.valid(cfg)) throw new Error("bad config");
  } catch (e) {
   console.warn("Invalid booking link:", e);
   $("step-error").classList.add("active");

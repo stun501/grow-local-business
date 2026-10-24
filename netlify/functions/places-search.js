@@ -59,7 +59,7 @@ async function geocodeLocation(location, key) {
     url.searchParams.set("components", "country:GB");
     url.searchParams.set("region", "uk");
     url.searchParams.set("key", key);
-    const res = await fetch(url.toString());
+    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(15000) });
     const data = await res.json();
     if (data.status === "OK" && data.results && data.results[0] && data.results[0].geometry) {
       const loc = data.results[0].geometry.location;
@@ -85,7 +85,7 @@ async function textSearch(searchText, bias, key) {
     url.searchParams.set("radius", "20000");
   }
   url.searchParams.set("key", key);
-  const res = await fetch(url.toString());
+  const res = await fetch(url.toString(), { signal: AbortSignal.timeout(15000) });
   return res.json();
 }
 
@@ -101,7 +101,7 @@ async function findPlaceFromText(searchText, bias, key) {
     url.searchParams.set("locationbias", "ipbias");
   }
   url.searchParams.set("key", key);
-  const res = await fetch(url.toString());
+  const res = await fetch(url.toString(), { signal: AbortSignal.timeout(15000) });
   return res.json();
 }
 
@@ -119,6 +119,9 @@ function buildSearchTexts(query, location) {
 }
 
 exports.handler = async function (event) {
+  if (event.isBase64Encoded || Buffer.byteLength(event.body || "", "utf8") > 24000) {
+    return { statusCode: 413, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "request_too_large" }) };
+  }
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
@@ -134,7 +137,7 @@ exports.handler = async function (event) {
     return { statusCode: 405, headers, body: JSON.stringify({ error: "method_not_allowed" }) };
   }
 
-  var rl = rateLimit.checkRateLimit(event, "places-search", 30, 60 * 60 * 1000);
+  var rl = await rateLimit.checkRateLimit(event, "places-search", 30, 60 * 60 * 1000);
   if (rl.limited) {
     return { statusCode: 429, headers, body: JSON.stringify({ error: "rate_limited" }) };
   }
